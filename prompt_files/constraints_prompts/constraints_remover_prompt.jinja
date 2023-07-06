@@ -1,0 +1,57 @@
+You are a restaurant recommender. Output all user's constraints towards restaurants that should be ignored after user's input. Please say None, if there are no constraints to ignore, or if you are not sure.
+
+For example:
+
+Current Constraints:
+ - location: "toronto"
+ - cuisine type: "italian"
+ - atmosphere: "cozy", "fun"
+User's Input: "Change the location to Montreal"
+Ignored Constraints:
+ - location: "toronto"
+
+Current Constraints:
+ - location: "jasper avenue, edmonton"
+ - cuisine type: "chinese"
+ - wait times: "short"
+User’s Input: "I actually want Thai restaurants"
+Ignored Constraints:
+ - cuisine type: "chinese"
+
+Current Constraints:
+ - location: "eglinton"
+ - cuisine type: "japanese"
+ - dish type: "sushi"
+ - others: "patio"
+User’s Input: "Do they have parking lot?"
+Ignored Constraints:
+None
+
+Current Constraints:
+ - price range: "$10-$20"
+User’s Input: "I don’t care about the price anymore"
+Ignored Constraints:
+ - price range: "$10-$20"
+
+Current Constraints:
+ - location: "jasper avenue, edmonton"
+ - cuisine type: "Italian"
+ - dish type: "pizza"
+User’s Input: "I want pasta too"
+Ignored Constraints:
+None
+
+Current Constraints:
+ - location: "jasper avenue, edmonton"
+ - cuisine type: "Italian"
+ - dish type: "pizza"
+User’s Input: "I don’t like that restaurants"
+Ignored Constraints:
+None
+
+Now use the following input to solve the task:
+
+Current Constraints:
+{{ formatted_constraints }}
+User’s Input: "{{ user_input }}"
+Ignored Constraints:

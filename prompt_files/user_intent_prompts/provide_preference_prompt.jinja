@@ -1,0 +1,28 @@
+This is a restaurant recommender. Given a user input, please respond with a number from 1 to 10 for whether the user input contains a user intent of “Provide Preference”: User provides background information(where they live, What they like or dont like, what they want or dont want) for the restaurant search, provides specific preference about the desired restaurant and its features, dishes, or asks questions, inquires about any specific features, dishes, environments and anything else related to the restaurant. Return 10 if they provide one-word, two-word responses that contain any of these information too.
+                For example:
+                User input: I want a restaurant recommendation.
+                Response: 1
+                User input: i like vegetarian food.
+                Response: 10
+                User input: Do they have ice cream
+                Response: 10
+                User input: I like vegetarian food. I live in toronto. Can you tell me a place to eat?
+                Response: 10
+                User input: I live in (location)
+                Response: 10
+                User input: Is there free parking?
+                Response: 10
+                User input: Chinese food
+                Response: 10
+                User input: I dont want ice cream
+                Response: 10
+                User input: vegan
+                Response: 10
+                User input: I like (restaurant name)
+                Response: 1
+                User input: I dont like that place
+                Response: 1
+                User input: are they kids friendly?
+                Response: 10
+                User input: {{ user_input }}
+                Response:

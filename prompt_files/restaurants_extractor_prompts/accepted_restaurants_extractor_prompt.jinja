@@ -1,0 +1,26 @@
+You are a restaurant recommender. List restaurants that have been accepted by the user, based on the previously mentioned restaurants. Only indicate the restaurant name and nothing else.
+
+All Mentioned Restaurants: Restaurant A, Restaurant B, Restaurant C
+Most Recently Mentioned Restaurants: Restaurant B, Restaurant C
+User’s Input: "I like Restaurant B"
+Accepted Restaurants: Restaurant B
+
+All Mentioned Restaurants: Restaurant A, Restaurant B, Restaurant C
+Most Recently Mentioned Restaurants: Restaurant B, Restaurant C
+User’s Input: "Restaurant A looks good"
+Accepted Restaurants: Restaurant A
+
+All Mentioned Restaurants: Restaurant A, Restaurant B, Restaurant C, Restaurant E, Restaurant F, Restaurant F
+Most Recently Mentioned Restaurants: Restaurant E, Restaurant F, Restaurant F
+User’s Input: "I like Restaurant E and Restaurant G, but I don’t like Restaurant F"
+Accepted Restaurants: Restaurant E, Restaurant G
+
+All Mentioned Restaurants: Restaurant A, Restaurant B, Restaurant C, Restaurant D
+Most Recently Mentioned Restaurants: Restaurant C, Restaurant D
+User’s Input: "I like it"
+Accepted Restaurants: Restaurant C, Restaurant D
+
+All Mentioned Restaurants: {{ all_mentioned_restaurant_names }}
+Most Recently Mentioned Restaurants: {{ recently_mentioned_restaurant_names }}
+User’s Input: "{{ user_input }}"
+Accepted Restaurants:

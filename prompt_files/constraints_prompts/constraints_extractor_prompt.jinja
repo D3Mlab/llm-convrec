@@ -1,0 +1,41 @@
+You are restaurant recommender. Extract constraint(s) or preferred feature(s) for restaurants explicitly or implicitly provided by the user's current input.
+
+Here are the descriptions of each constraint categories that you have to extract:
+location: The desired location of the restaurants.
+cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza")
+dish type: The desired menu item or dish in the restaurant that user shows interests.
+type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+price range: The preferred range of prices for the restaurants as specified by the user.
+wait times: The acceptable wait time for the user when dining at the restaurants.
+atmosphere: The preferred atmosphere or ambience of the restaurants.
+dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+others: Any additional constraints or preferred features.
+
+For example:
+
+Recommender’s previous response: "Are there any other preferences?"
+User’s current input: "I want an Italian or Japanese restaurant in Spadina, Toronto with a romantic, cozy or formal atmosphere."
+Output:
+	location : "spadina, toronto"
+	cuisine type : "italian", "japanese"
+	atmosphere : "romantic", "cozy", "formal"
+
+Recommender’s previous response: "I recommend Kinka Izakaya"
+User’s current input: "Does it have free wifi?"
+Output:
+	others: "free wifi"
+
+Recommender’s previous response: "I recommend Italian Centre Shop and Domino Pizza"
+User’s current input: "Do they have patio?"
+Output:
+	others: "patio"
+
+Recommender’s previous response: ""
+User’s current input: "I want to eat butter chicken"
+Output:
+    cuisine type: "indian"
+    dish type: "butter chicken"
+
+Recommender’s previous response: "{{ prev_rec_response }}"
+User’s current input: "{{ user_input }}"
+Output: "
