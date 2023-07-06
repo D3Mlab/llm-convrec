@@ -1,0 +1,45 @@
+utterance 1,utterance 2,utterance 3,location,cuisine type,price range,wait times,type of meal,atmosphere,dish type,dietary restrictions,others
+,,I want recommendation in Toronto,Toronto,,,,,,,,
+,,I want italian restaurants,,Italian,,,,,,,
+,,I want the price to be cheap,,,Cheap,,,,,,
+,,I don't want to wait more than 15 minutes,,,,15 minutes or less,,,,,
+,,I am planning to go to dinner with my friends today. Can you recommend some restaurants?,,,,,dinner,,,,
+,,I want the restaurant to be formal.,,,,,,Formal,,,
+,,I want restaurants with good pizza. ,,italian,,,,,pizza,,
+,,I have lactose intolerance,,,,,,,,lactose intolerance,
+,,I need free wifi,,,,,,,,,free wifi
+,,Can you recommend me French restaurant with moderate price range in Tokyo?,Tokyo,French,Moderate,,,,,,
+,,Recommend me some restaurants. I am vegan. I also prefer having kids menu.,,,,,,,,Vegan,kids menu
+,I recommend Moxies and Adega!,Do they have patio?,,,,,,,,,Patio
+,How about Alo Restaurant?,Is it romantic?,,,,,,Romantic,,,
+,I recommend Harriet's Rooftop. It has very high rating and famous for having romantic atmosphere.,Does it have gluten free menu?,,,,,,,,Gluten free,
+,I recommend Casa Madera.,Is it expensive?,,,affordable,,,,,,
+,How about House of Gourmet?,Does it have Chinese food?,,Chinese,,,,,,,
+,I highly recommend Estiatorio VOLOS!,Does it have free parking?,,,,,,,,,Free parking
+,Could you provide location?,Nashville,Nashville,,,,,,,,
+,Could you provide cuisine type?,Indian restaurant,,Indian,,,,,,,
+,Could you provide cuisine type?,Maybe indian?,,Indian,,,,,,,
+,Is there any additional preferences that you would like to share?,I prefer cozy place,,,,,,Cozy,,,
+,Why do you not like this restaurant?,Because it has no free parking,,,,,,,,,Free parking
+,I recommend Kinka Izakaya because it has fun and energetic atmosphere. ,I don't like it because I like more quiet place. ,,,,,,Quiet,,,
+,I recommend Manchu Wok.,I like it because it's affordable.,,,Affordable,,,,,,
+,I am planning to go to restaurant with my girlfriend tonight.,,,,,,Dinner,Romantic,,,
+,I want to go eat this morning,,,,,,Breakfast,,,,
+,I reocmmend Aji Sai Restaurant.,Does it have sushi?,,Japanese,,,,,sushi,,
+,I recommend subway.,I like it because I like sandwich,,,,,,,sandwich,,
+,How about Kinka Izakaya?,I prefer having nice salad,,,,,,,salad,,
+,,I want restaurant,,,,,,,,,
+,How about Washoku Bistro in Edmonton with 4.0 stars out of 82 reviews or Kiwado Japanese Cuisine in Edmonton with 4.0 stars out of 17 reviews?,What kind of menu do they offer?,,,,,,,,,
+Do they have bike parking?,"For Washoku Bistro, yes they do have bike parking. However, for Kiwado Japanese Cuisine, they do not offer bike parking.","Ok, then I don't like the second one.",,,,,,,,,Bike parking
+,I recommend Dagu Rice noodle.,What is the price range for dagu rice noodle?,,,,,,,,,
+,,"Tower Road NW & Kingsway NW, Edmonton","""Tower Road NW & Kingsway NW, Edmonton""",,,,,,,,
+,,"I want a bubble tea shop that is locally owned that is cheaper than brand name, ""na dis"", located near downtown.",downtown,,cheaper than brand name na dis,,,,bubble tea,,locally owned
+,,I want a restaurant near a mall that has short wait times.,near a mall,,,short,,,,,
+,,I want the price range to be within $30.,,,within $30,,,,,,
+,,What are the best dishes of barbecue king city?,,,,,,,,,
+,,How many seatings does it have?,,,,,,,,,
+,,I want a restaurant.,,,,,,,,,
+,,I want sandwiches,,,,,,,sandwiches,,
+,,I live on 90th Avenue North West Edmonton,"""90th Avenue North West,  Edmonton""",,,,,,,,
+,,I want moose burgers,,,,,,,moose burgers,,
+,I recommend BBQ Chicken,Does it have soju?,,,,,,,soju,,

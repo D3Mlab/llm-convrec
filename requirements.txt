@@ -1,0 +1,16 @@
+openai
+torch
+numpy
+pandas 
+tensorflow
+keras
+python-dotenv
+transformers
+pyyaml
+pytest
+geopy
+Nominatim
+re
+ast
+tenacity
+jinja2
