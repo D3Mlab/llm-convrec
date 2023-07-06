@@ -1,0 +1,6 @@
+streamlit-chatGPT
+__pycache__/
+.env
+logs/*
+.idea/
+information_retrievers/data/All-Edmonton-Restaurants/large_files/
