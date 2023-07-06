@@ -1,0 +1,18 @@
+role,utterance,accepted_restaurants,rejected_restaurants,neutral_restaurants
+setup,,,,
+recommender,How about BAP in Philadelphia with 4.5 stars out of 205 reviews or Hibachi Express in Indianapolis with 4.0 stars out of 20 reviews?,,,
+user,I like BAP but I don't like Hibachi Express,BAP,Hibachi Express,
+setup,,,,
+recommender,How about BAP in Philadelphia with 4.5 stars out of 205 reviews or Hibachi Express in Indianapolis with 4.0 stars out of 20 reviews?,,,
+user,I don't like Hibachi Express,,Hibachi Express,
+recommender,Thank you for the feedback!,,Hibachi Express,
+user,I like BAP though,BAP,Hibachi Express,
+setup,,Canoe,,
+recommender,How about Romanos Macaroni Grill in Reno with 2.5 stars out of 339 reviews or Gavi Italian Restaurant in Tucson with 3.5 stars out of 9 reviews?,Canoe,,
+user,I don't like it.,Canoe,"Romanos Macaroni Grill, Gavi Italian Restaurant",
+setup,,,,
+recommender,I recommend Terroni.,,,
+user,It's fine,,,Terroni
+seup,,,,
+user,How about BAP in Philadelphia with 4.5 stars out of 205 reviews or Hibachi Express in Indianapolis with 4.0 stars out of 20 reviews?,,,
+recommender,Thanks!,"BAP, Hibachi Express",,

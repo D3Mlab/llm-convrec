@@ -1,0 +1,40 @@
+Input,Output1,,,,,,
+I like chinese food,ProvidePreference,,explicit,,,Do they have patio,Inquire
+I enjoy vegetarian dishes,ProvidePreference,,explicit,,,Is there free parking nearby,Inquire
+I'm lactose intolerant,ProvidePreference,,explicit,,,Does the restaurant offer a vegetarian or vegan menu?,Inquire
+I love sushi,ProvidePreference,,explicit,,,Is the restaurant kid-friendly,Inquire
+I enjoy vegetarian dishes,ProvidePreference,,explicit,,,Is there a dress code,Inquire
+I enjoy spicy food and am particularly fond of Mexican cuisine,ProvidePreference,,explicit,,,Do they offer takeaway or delivery services,Inquire
+I'm craving sushi tonight,ProvidePreference,,explicit,,,Do they have a private dining room for events,Inquire
+"I adore Middle Eastern cuisine, especially falafel and hummus",ProvidePreference,,explicit,,,Do they offer a gluten-free menu,Inquire
+I'm in the mood for some comforting Southern-style barbecue,ProvidePreference,,explicit,,,Are they wheelchair accessible,Inquire
+I only eat gluten-free food,ProvidePreference,,explicit,,,Are there any specialty or signature dishes,Inquire
+"I'm on a keto diet, so I'm looking for low-carb options tonight",ProvidePreference,,explicit,,,Are they currently offering any special promotions or discount,Inquire
+"No, I don’t like that one",RejectRecommendation,,,,,,
+"No, tell me another one",RejectRecommendation,,,,,,
+I do not like that place,RejectRecommendation,,,,,,
+I want a recommendation,AskForRecommendation,,,,,,
+I'm new in town and looking for a restaurant recommendation. Any suggestions?,AskForRecommendation,,,,,,
+Looking for a restaurant suggestion,AskForRecommendation,,,,,,
+Can you suggest a good restaurant,AskForRecommendation,,,,,,
+Any recommendations for dining out,AskForRecommendation,,,,,,
+Where can I find a good meal,AskForRecommendation,,,,,,
+"Can you recommend a dining place, any cuisine will do",AskForRecommendation,,,,,,
+"I trust your judgment, suggest a restaurant",AskForRecommendation,,,,,,
+"Just need a restaurant name, don't care about the type",AskForRecommendation,,,,,,
+Can you choose a place for me to eat,AskForRecommendation,,,,,,
+"Give me a restaurant, any style, any cuisine",AskForRecommendation,,,,,,
+Just need a quick recommendation for a place to eat,AskForRecommendation,,,,,,
+Chinese,ProvidePreference,,,,,,
+Korean,ProvidePreference,,,,,,
+hotpot,ProvidePreference,,,,,,
+seafood,ProvidePreference,,,,,,
+vegan,ProvidePreference,,,,,,
+spicy,ProvidePreference,,,,,,
+formal,ProvidePreference,,,,,,
+kid-friendly,ProvidePreference,,,,,,
+I don’t like ice cream,ProvidePreference,,,,,,
+I want ice cream,ProvidePreference,,,,,,
+I don’t want pizza,ProvidePreference,,,,,,
+I don’t like hotpot,ProvidePreference,,,,,,
+I hate hotpot,ProvidePreference,,,,,,

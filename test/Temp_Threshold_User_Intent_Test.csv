@@ -1,0 +1,7 @@
+Input,Output1,Output2,Output3,leng
+I will try out Corso 32 then. What menu do they have?,AcceptRecommendation,Inquire,,2
+yes I will go to Corso 32 then. Do they have patio?,AcceptRecommendation,Inquire,,2
+I will try out Corso 32 then. Do they need reservation?,AcceptRecommendation,Inquire,,2
+"I want to try Corso 32, do I need to reserve a spot?",AcceptRecommendation,Inquire,,2
+"I will go to Corso 32 then, do they have free parking?",AcceptRecommendation,Inquire,,2
+"sure I will try both of them, what famous dishes do they have?",AcceptRecommendation,Inquire,,2
