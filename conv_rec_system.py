@@ -73,7 +73,7 @@ class ConvRecSystem(GPTWrapperObserver):
             geocoder_wrapper = NominatimWrapper()
 
         llm_wrapper = GPTWrapper(model_name=model, observers=[self])
-        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper)
+        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)

@@ -63,6 +63,7 @@ CONSTRAINTS_REMOVE_CHECK_PROMPT_FILENAME: "constraints_remove_check_prompt.jinja
 ITEMS_EXTRACTOR_PROMPT_PATH: "prompt_files/items_extractor_prompts"
 ACCEPTED_ITEMS_EXTRACTOR_PROMPT_FILENAME: "accepted_items_extractor_prompt.jinja"
 REJECTED_ITEMS_EXTRACTOR_PROMPT_FILENAME: "rejected_items_extractor_prompt.jinja"
+CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME: "current_items_extractor_prompt.jinja"
 
 ANSWER_PROMPTS_PATH: "prompt_files/recaction_prompts/answer_prompts"
 ANSWER_VERIFY_METADATA_RESP_PROMPT: "verify_metadata_resp_prompt.jinja"
