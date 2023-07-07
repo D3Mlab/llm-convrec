@@ -63,6 +63,8 @@ class ConvRecSystem(GPTWrapperObserver):
         domain_specific_config_loader = DomainSpecificConfigLoader()
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+        domain = domain_specific_config_loader.load_domain()
+        model = domain_specific_config_loader.load_model()
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
         if config['GEOCODING_METHOD'] == 'GoogleV3':
@@ -70,7 +72,7 @@ class ConvRecSystem(GPTWrapperObserver):
         else:
             geocoder_wrapper = NominatimWrapper()
 
-        llm_wrapper = GPTWrapper(observers=[self])
+        llm_wrapper = GPTWrapper(model_name=model, observers=[self])
         curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper)
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
@@ -102,7 +104,7 @@ class ConvRecSystem(GPTWrapperObserver):
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper,
                                                             constraints_categories,
-                                                            constraints_fewshots, "restaurants",
+                                                            constraints_fewshots, domain,
                                                             enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         accepted_restaurants_extractor = AcceptedItemsExtractor(
             llm_wrapper)
