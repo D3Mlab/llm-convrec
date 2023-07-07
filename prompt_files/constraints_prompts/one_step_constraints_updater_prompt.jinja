@@ -1,102 +1,37 @@
-You are a restaurant recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+{% macro format_constraints(constraints) -%}
+{% if constraints is none -%}
+None
+{%- else -%}
+{% for key in constraints -%}
+ - {{ key }}: {{ constraints[key]|join(", ") }}
+{%- endfor %}
+{%- endif %}
+{%- endmacro %}
+You are a {{ domain }} recommender. Please give me the updated hard and soft constraints towards {{ domain }} based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
 
 Here are the descriptions of each constraint categories that you have to extract:
- - location: The desired location of the restaurants.
- - cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
- - dish type: The desired menu item or dish in the restaurant that user shows interests.
- - type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
- - price range: The preferred range of prices for the restaurants specified by the user.
- - wait times: The acceptable wait time for the user when dining at the restaurants.
- - atmosphere: The preferred atmosphere or ambience of the restaurants.
- - dietary restrictions: Any specific dietary limitations or restrictions the user may have.
- - others: Any additional constraints or preferred features.
+{% for constraint_category in constraint_categories %}
+ - {{ constraint_category['key'] }}: {{ constraint_category['description'] }}
+{% endfor %}
 
 For example:
 
+{% for few_shot in few_shots %}
 Old Hard Constraints:
- - location: "toronto"
+{{ format_constraints(few_shot['old_hard_constraints']) }}
 Old Soft Constraints:
-None
-Recommender’s Previous Response: "Could you provide cuisine type or dish type?"
-User’s Current Input: "pizza and pasta"
+{{ format_constraints(few_shot['old_soft_constraints']) }}
+User’s Current Input: "{{ few_shot['user_input'] }}"
 New Hard Constraints:
- - location: "toronto"
- - cuisine type: "italian"
- - dish type: "pizza", "pasta"
+{{ format_constraints(few_shot['new_hard_constraints']) }}
 New Soft Constraints:
-None
+{{ format_constraints(few_shot['new_soft_constraints']) }}
 
-Old Hard Constraints:
- - location: "jasper avenue, edmonton"
- - cuisine type: "japanese"
-Old Soft Constraints:
- - price range: "moderate"
- - others: "free parking"
-Recommender’s Previous Response: "I recommend Kinka Izakaya"
-User’s Current Input: "does it have a patio?"
-New Hard Constraints:
- - location: "jasper avenue, edmonton"
- - cuisine type: "japanese"
-New Soft Constraints:
- - price range: "moderate"
- - others: "free parking", "patio"
-
-Old Hard Constraints:
- - location: "jasper avenue"
- - cuisine type: "japanese"
-Old Soft Constraints:
-None
-Recommender’s Previous Response: "I recommend I Love Sushi. It has intimate atmosphere and it is good for family."
-User’s Current Input: "What kind of menu does I Love Sushi offer?"
-New Hard Constraints:
- - location: "jasper avenue"
- - cuisine type: "japanese"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-None
-Old Soft Constraints:
-None
-Recommender’s Previous Response: ""
-User’s Current Input: "I want sushi and miso soup"
-New Hard Constraints:
- - cuisine type: "japanese"
- - dish type: "sushi", "miso soup"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
- - location: "Edmonton"
- - cuisine type: "italian"
-Old Soft Constraints:
-None
-Recommender’s Previous Response: "Could you provide more specific locations?"
-User’s Current Input: "Edmonton"
-New Hard Constraints:
- - location: "Edmonton"
- - cuisine type: "italian"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
- - location: "spadina"
- - cuisine type: "european"
-Old Soft Constraints:
-None
-Recommender’s Previous Response: "How about Cibo Wine Bar?"
-User’s Current Input: "Is it expensive?"
-New Hard Constraints:
- - location: "spadina"
- - cuisine type: "european"
-New Soft Constraints:
- - price range: "affordable"
-
+{% endfor %}
 Now use the following input to solve the task:
 
 Old Hard Constraints:
-{{ formatted_hard_constraints }}
+{{ format_constraints(hard_constraints) }}
 Old Soft Constraints:
-{{ formatted_soft_constraints }}
-Recommender’s Previous Response: "{{ prev_rec_response }}"
+{{ format_constraints(soft_constraints) }}
 User’s Current Input: "{{ user_input }}"

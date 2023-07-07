@@ -96,8 +96,19 @@ class ConvRecSystem(GPTWrapperObserver):
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         else:
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
-            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper, constraints,
-                                                            cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
+            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper,
+                                                            [{'key': 'location', 'is_mandatory': True, 'is_cumulative': False,
+                                                              'description': 'The desired location of the restaurants.'},
+                                                             {'key': 'cuisine type', 'is_mandatory': True, 'is_cumulative': False,
+                                                              'description': 'The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").'}
+                                                            ],
+                                                            [{'old_hard_constraints': {'location': ['toronto']},
+                                                            'old_soft_constraints': None, 'user_input': 'pizza and pasta',
+                                                            'new_hard_constraints': {'location': ['toronto'],
+                                                                                     'cuisine type': ['italian'],
+                                                                                     'dish type': ['pizza', 'pasta']},
+                                                            'new_soft_constraints': None
+                                                            }], "restaurants",
                                                             enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         accepted_restaurants_extractor = AcceptedItemsExtractor(
             llm_wrapper)

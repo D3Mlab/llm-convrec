@@ -16,24 +16,27 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
 
     :param llm_wrapper: llm used to update constraints
     :param geocoder_wrapper: wrapper used to geocode location
-    :param default_keys: list of all possible constraints keys
-    :param cumulative_constraints: constraints that is cumulative
+    :param constraints_categories: list of all possible constraint categories and its details
+    :param few_shots: details including the input and ouput of the fewshot examples of the prompt
+    :param domain: domain of the recommendation
     :param enable_location_merge: whether we merge location using geocoding
     """
-    def __init__(self, llm_wrapper: LLMWrapper, geocoder_wrapper: GeocoderWrapper, default_keys: list[str],
-                 cumulative_constraints: set = None, enable_location_merge: bool = True):
+    def __init__(self, llm_wrapper: LLMWrapper, geocoder_wrapper: GeocoderWrapper, constraints_categories: list[dict],
+                 few_shots: list[dict], domain: str, enable_location_merge: bool = True):
         self._llm_wrapper = llm_wrapper
         self._geocoder_wrapper = geocoder_wrapper
-        self._default_keys = default_keys
-        if cumulative_constraints is None:
-            cumulative_constraints = set()
-        self._cumulative_constraints = cumulative_constraints
+        self._constraints_categories = constraints_categories
+        self._constraint_keys = {constraint_category['key'] for constraint_category in constraints_categories}
+        self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
+                                             constraints_categories if constraint_category['is_cumulative']}
         self._enable_location_merge = enable_location_merge
+        self._domain = domain
 
         with open("config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
+        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']), trim_blocks=True, lstrip_blocks=True)
         self.template = env.get_template(config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
+        self._few_shots = few_shots
 
     def update_constraints(self, state_manager: StateManager) -> None:
         """
@@ -102,29 +105,11 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input,
-                                    formatted_hard_constraints=self._format_constraints(
-                                        state_manager.get("hard_constraints")),
-                                    formatted_soft_constraints=self._format_constraints(
-                                        state_manager.get("soft_constraints")))
-
-    def _format_constraints(self, constraints: dict) -> str:
-        """
-        Format the given constraints as shown below:
-         - <constraint key 1>: <constraint value 1>
-         - <constraint key 2>: <constraint value 2>
-         ...
-
-        :param constraints: constraints extracted from the most recent user's input where each key represents
-        the constraint category
-        :return: formatted constraints
-        """
-        if constraints is None:
-            return 'None'
-        result = ""
-        for key in constraints:
-            values = ', '.join(f'"{value}"' for value in constraints[key])
-            result += f" - {key}: {values}\n"
-        return result.removesuffix('\n')
+                                    hard_constraints=state_manager.get("hard_constraints"),
+                                    soft_constraints=state_manager.get("soft_constraints"),
+                                    few_shots=self._few_shots,
+                                    constraint_categories=self._constraints_categories,
+                                    domain=self._domain)
 
     def _format_llm_response(self, llm_response: str) -> dict:
         """
@@ -153,7 +138,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                     constraints_key = line_arr[0].strip()
                     values_str = re.sub(r'\([^)]*\)', '', line_arr[1])
                     values_str = values_str.strip().lower()
-                    if constraints_key in self._default_keys:
+                    if constraints_key in self._constraint_keys:
                         if result.get(constraints_key) is None:
                             result[key][constraints_key] = []
                         values_lst = [value.strip().removesuffix('"').removeprefix('"') for value in
@@ -227,7 +212,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                         break
             if not location_merged:
                 merged_locations.append(new_location)
-        if 'location' in self._cumulative_constraints:
+        if 'location' in self._cumulative_constraints_keys:
             return old_locations + merged_locations
         else:
             return merged_locations
@@ -248,7 +233,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             )
 
         for key in new_constraints:
-            if key not in self._cumulative_constraints and key in updated_keys and \
+            if key not in self._cumulative_constraints_keys and key in updated_keys and \
                     (key != 'location' or self._enable_location_merge) and key in old_constraints:
                 # remove all constraints in old_constraints from new_constraints
                 for item in old_constraints[key]:
