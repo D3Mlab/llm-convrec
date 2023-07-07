@@ -111,9 +111,9 @@ class ConvRecSystem(GPTWrapperObserver):
                                                             constraints_fewshots, domain,
                                                             enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         accepted_restaurants_extractor = AcceptedItemsExtractor(
-            llm_wrapper)
+            llm_wrapper, domain)
         rejected_restaurants_extractor = RejectedItemsExtractor(
-            llm_wrapper)
+            llm_wrapper, domain)
 
         check_location = CheckLocation(
             config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
@@ -139,9 +139,9 @@ class ConvRecSystem(GPTWrapperObserver):
                         AcceptRecommendation(
                             accepted_restaurants_extractor, curr_restaurant_extractor),
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor)]
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, "restaurants"),
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, "restaurants",
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain,
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
