@@ -21,7 +21,7 @@ class CurrentItemsExtractor:
     def __init__(self, llm_wrapper: LLMWrapper, domain: str) -> None:
         self._llm_wrapper = llm_wrapper
         self._domain = domain
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
         env = Environment(loader=FileSystemLoader(config['ITEMS_EXTRACTOR_PROMPT_PATH']),
                           trim_blocks=True, lstrip_blocks=True)
