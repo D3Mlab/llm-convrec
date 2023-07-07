@@ -1,0 +1,13 @@
+Extract the {{ domain }} names from the user input and respond only with the names of the {{ domain }} separated by commas and ending with a period.
+If you cannot extract a {{ domain }} name respond with "None.".
+
+The user may use short forms or 'slang' when referring to the following {{ domain }}: {{ curr_ment_item_names_str }}.
+If this is the case then respond with the entire {{ domain }} name, not the slang or short form the user referred to.
+
+{% for few_shot in few_shots %}
+User Input: {{ few_shot['User Input'] }}
+Response: {{ few_shot['Response'] }}
+
+{% endfor %}
+User Input: {{ user_input }}
+Response:
