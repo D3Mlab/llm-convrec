@@ -19,22 +19,23 @@ class DomainSpecificConfigLoader:
         return data_dict
 
     def load_domain(self) -> str:
-        path_to_csv = self.load_domain_specific_config()['DOMAIN']
-        general_config = pd.read_csv(path_to_csv, encoding='latin1')
-        return general_config.to_dict("records")[0]['domain']
+        return self.load_domain_specific_config()['DOMAIN']
 
     def load_model(self) -> str:
         return self.system_config['MODEL']
 
     def load_constraints_categories(self) -> list[dict]:
-        path_to_csv = self.load_domain_specific_config()[
+        constraints_category_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_CATEGORIES']
+
+        path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
         constraints_df = pd.read_csv(path_to_csv, encoding='latin1')
         return constraints_df.to_dict("records")
 
     def load_constraints_updater_fewshots(self) -> list[dict]:
-        path_to_csv = self.load_domain_specific_config()[
+        constraints_updater_fewshot_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_UPDATER_FEWSHOTS']
+        path_to_csv = f'{self._get_path_to_domain()}/{constraints_updater_fewshot_filename}'
         constraints_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         constraints_fewshots = [
             {
@@ -53,7 +54,10 @@ class DomainSpecificConfigLoader:
         return constraints_fewshots
 
     def load_domain_specific_config(self):
-        path_to_domain = self.system_config['PATH_TO_DOMAIN_CONFIGS']
+        path_to_domain = self._get_path_to_domain()
 
         with open(f'{path_to_domain}/domain_specific_config.yaml') as f:
             return yaml.load(f, Loader=yaml.FullLoader)
+
+    def _get_path_to_domain(self):
+        return self.system_config['PATH_TO_DOMAIN_CONFIGS']
