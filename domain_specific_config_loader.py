@@ -32,6 +32,44 @@ class DomainSpecificConfigLoader:
         constraints_df = pd.read_csv(path_to_csv, encoding='latin1')
         return constraints_df.to_dict("records")
 
+    def load_accepted_items_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        accepted_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        accepted_items_fewshots = [
+            {
+                'user_input': row["user_input"],
+                'all_mentioned_items': list(map(lambda x: x.strip(), row['all_mentioned_items'].split(',')))
+                if isinstance(row['all_mentioned_items'], str) else [],
+                'recently_mentioned_items': list(map(lambda x: x.strip(), row['recently_mentioned_items'].split(',')))
+                if isinstance(row['recently_mentioned_items'], str) else [],
+                'accepted_items': list(map(lambda x: x.strip(), row['accepted_items'].split(',')))
+                if isinstance(row['accepted_items'], str) else [],
+        }
+            for row in accepted_items_fewshots_df.to_dict("records")
+        ]
+
+        return accepted_items_fewshots
+
+    def load_rejected_items_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        rejected_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+
+        rejected_items_fewshots = [
+            {
+                'user_input': row["user_input"],
+                'all_mentioned_items': list(map(lambda x: x.strip(), row['all_mentioned_items'].split(',')))
+                if isinstance(row['all_mentioned_items'], str) else [],
+                'recently_mentioned_items': list(map(lambda x: x.strip(), row['recently_mentioned_items'].split(',')))
+                if isinstance(row['recently_mentioned_items'], str) else [],
+                'rejected_items': list(map(lambda x: x.strip(), row['rejected_items'].split(',')))
+                if isinstance(row['rejected_items'], str) else [],
+        }
+            for row in rejected_items_fewshots_df.to_dict("records")
+        ]
+        return rejected_items_fewshots
+
     def load_constraints_updater_fewshots(self) -> list[dict]:
         constraints_updater_fewshot_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_UPDATER_FEWSHOTS']

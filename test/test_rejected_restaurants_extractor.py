@@ -27,7 +27,7 @@ class TestRejectedRestaurantsExtractorTest:
 
     @pytest.fixture(params=[GPTWrapper()])
     def rejected_restaurants_extractor(self, request):
-        yield RejectedItemsExtractor(request.param)
+        yield RejectedItemsExtractor(request.param, "restaurants")
 
     @pytest.mark.parametrize("utterance,all_mentioned_restaurant_names,recently_mentioned_restaurant_names,rejected_restaurant_names", test_data)
     def test_extract(self, rejected_restaurants_extractor, utterance, all_mentioned_restaurant_names, recently_mentioned_restaurant_names, rejected_restaurant_names):

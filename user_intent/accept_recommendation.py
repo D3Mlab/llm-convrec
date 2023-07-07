@@ -66,9 +66,9 @@ class AcceptRecommendation(UserIntent):
             if curr_res != []:
                 curr_state.update("curr_items", curr_res)
 
-        if curr_state.get("recommended_restaurants") is not None:
+        if curr_state.get("recommended_items") is not None:
             all_mentioned_restaurants = list(chain.from_iterable(
-                curr_state.get('recommended_restaurants')))
+                curr_state.get('recommended_items')))
         else:
             all_mentioned_restaurants = []
 
