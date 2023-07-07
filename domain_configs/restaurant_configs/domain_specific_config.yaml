@@ -1,0 +1,3 @@
+DOMAIN: restaurants
+CONSTRAINTS_CATEGORIES: "constraints_config.csv"
+CONSTRAINTS_UPDATER_FEWSHOTS: "constraints_updater_fewshots.csv"
