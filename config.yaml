@@ -74,3 +74,7 @@ ANSWER_IR_PROMPT: "ir_prompt.jinja"
 ANSWER_MULT_QS_PROMPT: "seperate_questions_prompt.jinja"
 ANSWER_GPT_PROMPT: "gpt_prompt.jinja"
 ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
+
+GENERAL_CONFIG_FILE: "general_config.csv"
+CONSTRAINTS_CONFIG_FILE: "restaurant_configs/constraints_config.csv"
+CONSTRAINTS_UPDATER_FEWSHOTS_FILE: "restaurant_configs/constraints_updater_fewshots.csv"

@@ -12,6 +12,7 @@ from state.constraints.one_step_constraints_updater import OneStepConstraintsUpd
 from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from state.message import Message
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 def load_dict(data_string):
@@ -67,9 +68,12 @@ class TestConstraintsUpdater:
         ('safe_three_steps_constraints_updater', GPTWrapper(), GoogleV3Wrapper())
     ])
     def updater(self, request, constraints, constraint_descriptions, cumulative_constraints):
-
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        constraints_categories = domain_specific_config_loader.load_constraints_categories()
+        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         if request.param[0] == 'one_step_constraints_updater':
-            yield OneStepConstraintsUpdater(request.param[1], request.param[2], constraints, constraint_descriptions,
+            yield OneStepConstraintsUpdater(request.param[1], request.param[2], constraints_categories,
+                                            constraints_fewshots,'restaurants',
                                             enable_location_merge=True)
         else:
             constraints_extractor = KeyValuePairConstraintsExtractor(

@@ -34,7 +34,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
 
         with open("config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']), trim_blocks=True, lstrip_blocks=True)
+        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
         self._few_shots = few_shots
 

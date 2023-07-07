@@ -44,6 +44,7 @@ from information_retrievers.neural_ir.neural_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
 from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class ConvRecSystem(GPTWrapperObserver):
@@ -59,6 +60,9 @@ class ConvRecSystem(GPTWrapperObserver):
 
     def __init__(self, config: dict):
         constraints = config['ALL_CONSTRAINTS']
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        constraints_categories = domain_specific_config_loader.load_constraints_categories()
+        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
         if config['GEOCODING_METHOD'] == 'GoogleV3':
@@ -97,18 +101,8 @@ class ConvRecSystem(GPTWrapperObserver):
         else:
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper,
-                                                            [{'key': 'location', 'is_mandatory': True, 'is_cumulative': False,
-                                                              'description': 'The desired location of the restaurants.'},
-                                                             {'key': 'cuisine type', 'is_mandatory': True, 'is_cumulative': False,
-                                                              'description': 'The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").'}
-                                                            ],
-                                                            [{'old_hard_constraints': {'location': ['toronto']},
-                                                            'old_soft_constraints': None, 'user_input': 'pizza and pasta',
-                                                            'new_hard_constraints': {'location': ['toronto'],
-                                                                                     'cuisine type': ['italian'],
-                                                                                     'dish type': ['pizza', 'pasta']},
-                                                            'new_soft_constraints': None
-                                                            }], "restaurants",
+                                                            constraints_categories,
+                                                            constraints_fewshots, "restaurants",
                                                             enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         accepted_restaurants_extractor = AcceptedItemsExtractor(
             llm_wrapper)
@@ -196,7 +190,7 @@ class ConvRecSystem(GPTWrapperObserver):
 if __name__ == '__main__':
     warnings.simplefilter("default")
     logging.config.fileConfig('logging.conf')
-    with open("config.yaml") as f:
+    with open('config.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     conv_rec_system = ConvRecSystem(config)
     conv_rec_system.run()
