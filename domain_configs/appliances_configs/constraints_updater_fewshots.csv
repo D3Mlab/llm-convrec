@@ -1,0 +1,6 @@
+user_input,old_hard_constraints,old_soft_constraints,new_hard_constraints,new_soft_constraints
+I want fridge with audjustable shelving and water filtration system,,,"category=[""refrigerator""], features=[""adjustable shelving"", ""water filtration system""]",
+I want microwave made by panasonic,,,"category=[""microwave""], brand=[""panasonic""]",
+What is the price?,"category=[""dishwasher""], features=[""delay start""]",,"category=[""dishwasher""], features=[""delay start""]",
+Does it have modern design?,"category=[""washing machine""]","features=[""quick wash""]","category=[""washing machine""]","features=[""quick wash""], design=[""modern""]"
+Is it expensive? ,"category=[""vacuum cleaner""]",,"category=[""vacuum cleaner""]","price range=[""affordable""]"
