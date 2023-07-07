@@ -1,0 +1,26 @@
+You are {{ domain }} recommender. List {{ domain }} that have been accepted by the user, based on the previously mentioned {{ domain }}. Only indicate the {{ domain }} name and nothing else.
+
+All mentioned {{ domain }}: {{ domain }} A, {{ domain }} B, {{ domain }} C
+Most recently mentioned {{ domain }}: {{ domain }} B, {{ domain }} C
+User’s input: "I like {{ domain }} B"
+Accepted {{ domain }}: {{ domain }} B
+
+All mentioned {{ domain }}: {{ domain }} A, {{ domain }} B, {{ domain }} C
+Most recently mentioned {{ domain }}: {{ domain }} B, {{ domain }} C
+User’s input: "{{ domain }} A looks good"
+Accepted {{ domain }}: {{ domain }} A
+
+All mentioned {{ domain }}: {{ domain }} A, {{ domain }} B, {{ domain }} C, {{ domain }} E, {{ domain }} F, {{ domain }} G
+Most recently mentioned {{ domain }}: {{ domain }} E, {{ domain }} F, {{ domain }} G
+User’s input: "I like {{ domain }} E and {{ domain }} G, but I don’t like {{ domain }} F"
+Accepted {{ domain }}: {{ domain }} E, {{ domain }} G
+
+All mentioned {{ domain }}: {{ domain }} A, {{ domain }} B, {{ domain }} C, {{ domain }} D
+Most recently mentioned {{ domain }}: {{ domain }} C, {{ domain }} D
+User’s input: "I like it"
+Accepted {{ domain }}: {{ domain }} C, {{ domain }} D
+
+All mentioned {{ domain }}: {{ all_mentioned_item_names }}
+Most recently mentioned {{ domain }}: {{ recently_mentioned_item_names }}
+User’s input: "{{ user_input }}"
+Accepted {{ domain }}:
