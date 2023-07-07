@@ -21,7 +21,7 @@ logger = logging.getLogger('answer')
 class Answer(RecAction):
     """
     Class representing Answer recommender action.
-    :param config: config values from config.yaml
+    :param config: config values from system_config.yaml
     :param priority_score_range: range of scores for smth TODO: fill in smth
     :param information_retriever: information retriever that is used to fetch restaurant recommendations
     :param llm_wrapper: object to make request to LLM
@@ -52,7 +52,7 @@ class Answer(RecAction):
 
         self._prompt = ""
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
 
         self.env = Environment(loader=FileSystemLoader(
@@ -86,8 +86,10 @@ class Answer(RecAction):
             self.config['ANSWER_IR_PROMPT'])
 
         self._extract_category_few_shots = [{'Input': "What's their addresses?", 'Output': "address"},
-                                            {'Input': "Can you recommend any dishes or specialties?", 'Output': "none"},
-                                            {'Input': "Can I make a reservation?", 'Output': "HasReservations"},
+                                            {'Input': "Can you recommend any dishes or specialties?",
+                                                'Output': "none"},
+                                            {'Input': "Can I make a reservation?",
+                                                'Output': "HasReservations"},
                                             {'Input': "What are the meals it's known for?", 'Output': 'PopularMeals'}]
 
         self._ir_prompt_few_shots = [{'Question': "Do they have a slide in the restaurant?",
@@ -104,7 +106,8 @@ class Answer(RecAction):
                                               {'Question': "Do they take reservations or is it first-come, first-served?", 'Individual Questions': "Do they take reservations?\nAre the reservations first-come, first-served?"}]
 
         self._verify_metadata_prompt_few_shots = [{'Question': "Do they have a high chair?", 'Answer': "Subway is kid friendly.", 'Response': "No."},
-                                                  {'Question': "Do they serve vodka?", 'Answer': "They have a full bar.", 'Response': "No."},
+                                                  {'Question': "Do they serve vodka?",
+                                                      'Answer': "They have a full bar.", 'Response': "No."},
                                                   {'Question': "Are their gluten free options?", 'Answer': "Yes, there are gluten free options.", 'Response': "Yes."}]
 
     def get_name(self) -> str:

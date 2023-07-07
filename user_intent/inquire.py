@@ -16,10 +16,11 @@ class Inquire(UserIntent):
 
     def __init__(self, current_restaurants_extractor: CurrentItemsExtractor):
         self._current_restaurants_extractor = current_restaurants_extractor
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-    
-        env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
+
+        env = Environment(loader=FileSystemLoader(
+            config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
 
     def get_name(self) -> str:
@@ -45,21 +46,21 @@ class Inquire(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        
+
         # Update current restaurant
         reccommended_restaurants = curr_state.get("recommended_items")
 
         if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(reccommended_restaurants, curr_state.get("conv_history"))
-            
+            curr_res = self._current_restaurants_extractor.extract(
+                reccommended_restaurants, curr_state.get("conv_history"))
+
             # If current restaurant is [] then just keep it the same
             if curr_res != []:
                 curr_state.update("curr_items", curr_res)
-            
-                
+
         return curr_state
-    
-    def get_prompt_for_classification(self, curr_state:StateManager) -> str:
+
+    def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
         Returns prompt for generating True/False representing how likely the user input matches with the user intent of inquire
 

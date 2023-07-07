@@ -20,10 +20,12 @@ class RejectedItemsExtractor:
     def __init__(self, llm_wrapper: LLMWrapper, domain: str):
         self._llm_wrapper = llm_wrapper
         self._domain = domain
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['ITEMS_EXTRACTOR_PROMPT_PATH']))
-        self.template = env.get_template(config['REJECTED_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
+        env = Environment(loader=FileSystemLoader(
+            config['ITEMS_EXTRACTOR_PROMPT_PATH']))
+        self.template = env.get_template(
+            config['REJECTED_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
 
     def extract(self, conv_history: list[Message], all_mentioned_restaurants: list[RecommendedItem],
                 recently_mentioned_restaurants: list[RecommendedItem]) -> list[RecommendedItem]:
@@ -35,9 +37,11 @@ class RejectedItemsExtractor:
         :param recently_mentioned_restaurants: most recently mentioned restaurants
         :return: list of restaurants rejected by the user
         """
-        prompt = self._generate_prompt(conv_history, all_mentioned_restaurants, recently_mentioned_restaurants)
+        prompt = self._generate_prompt(
+            conv_history, all_mentioned_restaurants, recently_mentioned_restaurants)
         llm_response = self._llm_wrapper.make_request(prompt)
-        restaurant_names = {restaurant.strip().casefold() for restaurant in llm_response.split(',')}
+        restaurant_names = {restaurant.strip().casefold()
+                            for restaurant in llm_response.split(',')}
         result = []
         for restaurant in all_mentioned_restaurants:
             if restaurant.get("name").casefold() in restaurant_names:
@@ -52,11 +56,16 @@ class RejectedItemsExtractor:
         :param conv_history: past messages in the conversation
         :return: prompt for extracting rejected restaurants.
         """
-        all_mentioned_restaurant_names = ', '.join([restaurant.get("name") for restaurant in all_mentioned_restaurants])
-        recently_mentioned_restaurant_names = ', '.join([restaurant.get("name") for restaurant in recently_mentioned_restaurants])
-        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
+        all_mentioned_restaurant_names = ', '.join(
+            [restaurant.get("name") for restaurant in all_mentioned_restaurants])
+        recently_mentioned_restaurant_names = ', '.join(
+            [restaurant.get("name") for restaurant in recently_mentioned_restaurants])
+        curr_user_input = conv_history[-1].get_content() if len(
+            conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(
+            conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(
+            conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input,
                                     recently_mentioned_item_names=recently_mentioned_restaurant_names,

@@ -21,21 +21,25 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     :param domain: domain of the recommendation
     :param enable_location_merge: whether we merge location using geocoding
     """
+
     def __init__(self, llm_wrapper: LLMWrapper, geocoder_wrapper: GeocoderWrapper, constraints_categories: list[dict],
                  few_shots: list[dict], domain: str, enable_location_merge: bool = True):
         self._llm_wrapper = llm_wrapper
         self._geocoder_wrapper = geocoder_wrapper
         self._constraints_categories = constraints_categories
-        self._constraint_keys = {constraint_category['key'] for constraint_category in constraints_categories}
+        self._constraint_keys = {
+            constraint_category['key'] for constraint_category in constraints_categories}
         self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
                                              constraints_categories if constraint_category['is_cumulative']}
         self._enable_location_merge = enable_location_merge
         self._domain = domain
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
-        self.template = env.get_template(config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
+        env = Environment(loader=FileSystemLoader(
+            config['CONSTRAINTS_PROMPT_PATH']))
+        self.template = env.get_template(
+            config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
         self._few_shots = few_shots
 
     def update_constraints(self, state_manager: StateManager) -> None:
@@ -49,18 +53,20 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         new_constraints = self._format_llm_response(llm_response)
 
         updated_hard_constraints_keys = self._get_updated_keys_in_constraints(
-                state_manager.get("hard_constraints"),
-                new_constraints.get("hard_constraints")
-            )
+            state_manager.get("hard_constraints"),
+            new_constraints.get("hard_constraints")
+        )
 
         updated_soft_constraints_keys = self._get_updated_keys_in_constraints(
-                state_manager.get("soft_constraints"),
-                new_constraints.get("soft_constraints")
-            )
+            state_manager.get("soft_constraints"),
+            new_constraints.get("soft_constraints")
+        )
         if updated_hard_constraints_keys is not None and updated_hard_constraints_keys != {}:
-            state_manager.get("updated_keys")["hard_constraints"] = updated_hard_constraints_keys
+            state_manager.get("updated_keys")[
+                "hard_constraints"] = updated_hard_constraints_keys
         if updated_soft_constraints_keys is not None and updated_hard_constraints_keys != {}:
-            state_manager.get("updated_keys")["soft_constraints"] = updated_soft_constraints_keys
+            state_manager.get("updated_keys")[
+                "soft_constraints"] = updated_soft_constraints_keys
 
         if state_manager.get("hard_constraints") is not None and new_constraints.get("hard_constraints") is not None:
             self._merge_constraints(state_manager.get("hard_constraints"), new_constraints.get("hard_constraints"),
@@ -68,7 +74,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         if new_constraints.get("hard_constraints") == {}:
             state_manager.update("hard_constraints", None)
         else:
-            state_manager.update("hard_constraints", new_constraints.get("hard_constraints"))
+            state_manager.update("hard_constraints",
+                                 new_constraints.get("hard_constraints"))
 
         if state_manager.get("soft_constraints") is not None and new_constraints.get("soft_constraints") is not None:
             self._merge_constraints(state_manager.get("soft_constraints"), new_constraints.get("soft_constraints"),
@@ -76,7 +83,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         if new_constraints.get("soft_constraints") == {}:
             state_manager.update("soft_constraints", None)
         else:
-            state_manager.update("soft_constraints", new_constraints.get("soft_constraints"))
+            state_manager.update("soft_constraints",
+                                 new_constraints.get("soft_constraints"))
 
         if state_manager.get("soft_constraints") == {}:
             state_manager.update("soft_constraints", None)
@@ -99,14 +107,19 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :return: prompt for updating constraints
         """
         conv_history = state_manager.get('conv_history')
-        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
+        curr_user_input = conv_history[-1].get_content() if len(
+            conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(
+            conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(
+            conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input,
-                                    hard_constraints=state_manager.get("hard_constraints"),
-                                    soft_constraints=state_manager.get("soft_constraints"),
+                                    hard_constraints=state_manager.get(
+                                        "hard_constraints"),
+                                    soft_constraints=state_manager.get(
+                                        "soft_constraints"),
                                     few_shots=self._few_shots,
                                     constraint_categories=self._constraints_categories,
                                     domain=self._domain)
@@ -204,7 +217,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                     location_merged = True
                     break
                 else:
-                    merged_location = self._geocoder_wrapper.merge_location_query(new_location, old_location)
+                    merged_location = self._geocoder_wrapper.merge_location_query(
+                        new_location, old_location)
                     if merged_location is not None:
                         old_locations.pop(i)
                         merged_locations.append(merged_location)
@@ -239,4 +253,3 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                 for item in old_constraints[key]:
                     if item in new_constraints[key]:
                         new_constraints[key].remove(item)
-

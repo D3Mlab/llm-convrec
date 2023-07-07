@@ -55,7 +55,7 @@ class Recommend(RecAction):
         self._llm_wrapper = llm_wrapper
         self._domain = domain
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
         if config["TOPK_RESTAURANTS"] and config["TOPK_REVIEWS"] and config["RECOMMEND_PROMPTS_PATH"] \
