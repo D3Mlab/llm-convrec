@@ -34,7 +34,8 @@ class Answer(RecAction):
     _prompt: str
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str = "restaurants", priority_score_range: tuple[float, float] = (1, 10)) -> None:
+                 information_retriever: InformationRetriever, domain: str,
+                 priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._filter_restaurants = filter_restaurants
         self._domain = domain
@@ -55,7 +56,7 @@ class Answer(RecAction):
             self.config = yaml.load(f, Loader=yaml.FullLoader)
 
         self.env = Environment(loader=FileSystemLoader(
-            self.config['ANSWER_PROMPTS_PATH']))
+            self.config['ANSWER_PROMPTS_PATH']), trim_blocks=True, lstrip_blocks=True)
 
         self.gpt_template = self.env.get_template(
             self.config['ANSWER_GPT_PROMPT'])
@@ -83,6 +84,28 @@ class Answer(RecAction):
 
         self.ir_template = self.env.get_template(
             self.config['ANSWER_IR_PROMPT'])
+
+        self._extract_category_few_shots = [{'Input': "What's their addresses?", 'Output': "address"},
+                                            {'Input': "Can you recommend any dishes or specialties?", 'Output': "none"},
+                                            {'Input': "Can I make a reservation?", 'Output': "HasReservations"},
+                                            {'Input': "What are the meals it's known for?", 'Output': 'PopularMeals'}]
+
+        self._ir_prompt_few_shots = [{'Question': "Do they have a slide in the restaurant?",
+                                      'Information': ["I really like this place. They have great food."],
+                                      'Answer': "I do not know."}]
+
+        self._separate_qs_prompt_few_shots = [{'Question': "Do they have wine?", 'Individual Questions': "Do they have wine?"},
+                                              {'Question': "What are dishes, cocktails and types of wine do you recommend?",
+                                               'Individual Questions': "What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend?"},
+                                              {'Question': "Does starbucks serve bubble tea or coffee?",
+                                               'Individual Questions': "Does starbucks serve bubble tea?\nDoes starbucks serve coffee?"},
+                                              {'Question': "Are they busy, if so, what days are the busiest and which servers are the best?",
+                                               'Individual Questions': "Are they busy?\nIf they are busy what days are busiest?\nIf they are busy which servers are the best?"},
+                                              {'Question': "Do they take reservations or is it first-come, first-served?", 'Individual Questions': "Do they take reservations?\nAre the reservations first-come, first-served?"}]
+
+        self._verify_metadata_prompt_few_shots = [{'Question': "Do they have a high chair?", 'Answer': "Subway is kid friendly.", 'Response': "No."},
+                                                  {'Question': "Do they serve vodka?", 'Answer': "They have a full bar.", 'Response': "No."},
+                                                  {'Question': "Are their gluten free options?", 'Answer': "Yes, there are gluten free options.", 'Response': "Yes."}]
 
     def get_name(self) -> str:
         """
@@ -226,7 +249,7 @@ class Answer(RecAction):
             "conv_history")[-1].get_content()
 
         prompt = self.mult_qs_template.render(
-            current_user_input=current_user_input)
+            current_user_input=current_user_input, few_shots=self._separate_qs_prompt_few_shots)
 
         resp = self._llm_wrapper.make_request(prompt)
 
@@ -290,7 +313,7 @@ class Answer(RecAction):
         """
 
         prompt = self.verify_metadata_template.render(
-            question=question, resp=resp)
+            question=question, resp=resp, few_shots=self._verify_metadata_prompt_few_shots)
 
         valid_resp = self._llm_wrapper.make_request(prompt)
 
@@ -393,7 +416,8 @@ class Answer(RecAction):
         categories += " or none"
 
         prompt = self.extract_category_template.render(
-            curr_item=curr_restaurant, categories=categories, question=question, domain=self._domain)
+            curr_item=curr_restaurant, categories=categories, question=question, domain=self._domain,
+            few_shots=self._extract_category_few_shots)
 
         return self._llm_wrapper.make_request(prompt)
 
@@ -682,7 +706,8 @@ class Answer(RecAction):
 
         try:
             prompt = self.ir_template.render(
-                curr_item=curr_restaurant, question=question, reviews=reviews, domain=self._domain)
+                curr_item=curr_restaurant, question=question, reviews=reviews, domain=self._domain,
+                few_shots=self._ir_prompt_few_shots)
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
@@ -699,7 +724,8 @@ class Answer(RecAction):
                 summarized_reviews.append(summarized_review)
 
             prompt = self.ir_template.render(
-                curr_item=curr_restaurant, question=question, reviews=summarized_reviews, domain=self._domain)
+                curr_item=curr_restaurant, question=question, reviews=summarized_reviews, domain=self._domain,
+                few_shots=self._ir_prompt_few_shots)
 
             return self._llm_wrapper.make_request(prompt)
 

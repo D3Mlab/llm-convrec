@@ -26,7 +26,7 @@ class TestAnswer:
     def answer(self, request):
         with open("../config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        yield Answer(config, request.param, None)
+        yield Answer(config, request.param, None, "restaurants")
 
     @pytest.mark.parametrize('utterance,restaurant_attributes,category', test_data)
     def test_extract_category_from_input(self, answer, utterance, restaurant_attributes, category) -> None:

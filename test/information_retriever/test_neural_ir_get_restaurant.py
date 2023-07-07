@@ -95,7 +95,7 @@ class TestGetBestMatchingRestaurants:
         :param topk_reviews: the number of reviews to store in a RecommendedRestaurant object
         """
         llm_wrapper = GPTWrapper(observers=[self])
-        recommend = Recommend(llm_wrapper, filter_restaurant, information_retriever,
+        recommend = Recommend(llm_wrapper, filter_restaurant, information_retriever, "restaurants",
                               mandatory_constraints={"location", "cuisine type"},
                               specific_location_required=False)
         query = recommend.convert_state_to_query(state_manager)

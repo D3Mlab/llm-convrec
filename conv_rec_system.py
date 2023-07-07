@@ -137,8 +137,9 @@ class ConvRecSystem(GPTWrapperObserver):
                                           default_location=default_location),
                         AcceptRecommendation(accepted_restaurants_extractor, curr_restaurant_extractor),
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor)]
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever), ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever,
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, "restaurants"),
+                       ExplainPreference(),
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, "restaurants",
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],

@@ -57,7 +57,7 @@ curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper)
 user_intents = [AskForRecommendation(), Inquire(curr_restaurant_extractor)]
 state_manager = CommonStateManager(
     {user_intents[0], user_intents[1]}, user_intents[0])
-answer_rec_action = Answer(config, llm_wrapper, filter_restaurant, information_retriever)
+answer_rec_action = Answer(config, llm_wrapper, filter_restaurant, information_retriever, "restaurants")
 restaurant_meta_data = pd.read_csv(
     "information_retrievers/data/Edmonton-Restaurants/Edmonton_restaurants_sorted.csv", encoding = "ISO-8859-1")
 

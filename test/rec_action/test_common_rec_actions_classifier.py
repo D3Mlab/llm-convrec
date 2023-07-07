@@ -25,7 +25,7 @@ class TestCommonRecActionsClassifier:
         when user asks for recommendation, but it doesn't have the mandatory constraints and k = 1.
         """
         mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
                        RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
@@ -44,7 +44,7 @@ class TestCommonRecActionsClassifier:
         """
 
         mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
                        RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
@@ -61,7 +61,7 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers classifies recommender action to Answer
         when unsatisfied goal has user intent, Inquire, and k = 1.
         """
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message("user", "Do they have patio?"))
@@ -76,7 +76,7 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers doesn't classify to any recommender action when unsatisfied goals
         doesn't exist
         """
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message("user", "Hello"))
@@ -90,7 +90,7 @@ class TestCommonRecActionsClassifier:
         Test whether CommonRecActionsClassifier two recommender actions correctly by prioritizing more recent
         unsatisfied goals.
         """
-        rec_actions = [RequestInformation(None, specific_location_required=False), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), Answer(config, None, None)]
+        rec_actions = [RequestInformation(None, specific_location_required=False), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), Answer(config, None, None, "restaurants")]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update("conv_history", [Message("DUMMY", "DUMMY")] * 4)

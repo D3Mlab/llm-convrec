@@ -41,10 +41,9 @@ class Recommend(RecAction):
     _summarize_review_prompt: jinja2.Template
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever,
+                 information_retriever: InformationRetriever, domain: str,
                  mandatory_constraints: str = None,
-                 priority_score_range=(1, 10), specific_location_required: bool = True,
-                 domain: str = "restaurants"):
+                 priority_score_range=(1, 10), specific_location_required: bool = True):
         super().__init__(priority_score_range)
         if mandatory_constraints is None:
             mandatory_constraints = [['location']]
