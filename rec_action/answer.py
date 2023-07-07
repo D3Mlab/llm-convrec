@@ -34,9 +34,10 @@ class Answer(RecAction):
     _prompt: str
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+                 information_retriever: InformationRetriever, domain: str = "restaurants", priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._filter_restaurants = filter_restaurants
+        self._domain = domain
 
         if config["NUM_REVIEWS_TO_RETURN"]:
             self._num_of_reviews_to_return = int(
@@ -192,7 +193,7 @@ class Answer(RecAction):
                                 f'Answer with GPT')
 
                             prompt = self.gpt_template.render(
-                                curr_mentioned_restaurant=curr_mentioned_restaurant, question=question)
+                                curr_mentioned_item=curr_mentioned_restaurant, question=question)
 
                             llm_resp = self._llm_wrapper.make_request(
                                 prompt)
@@ -351,7 +352,8 @@ class Answer(RecAction):
         if (len(answers) > 1):
 
             prompt = self.format_mult_resp_template.render(
-                question=question, curr_ment_res_names_str=curr_ment_res_names_str, res_to_answ=res_to_answ)
+                question=question, curr_ment_item_names_str=curr_ment_res_names_str,
+                res_to_answ=res_to_answ, domain=self._domain)
 
             resp = self._llm_wrapper.make_request(prompt)
 
@@ -391,7 +393,7 @@ class Answer(RecAction):
         categories += " or none"
 
         prompt = self.extract_category_template.render(
-            curr_restaurant=curr_restaurant, categories=categories, question=question)
+            curr_item=curr_restaurant, categories=categories, question=question, domain=self._domain)
 
         return self._llm_wrapper.make_request(prompt)
 
@@ -441,7 +443,7 @@ class Answer(RecAction):
                     except:
 
                         prompt = self.hours_template.render(
-                            question=question, recommended_restaurant=recommended_restaurant)
+                            question=question, recommended_item=recommended_restaurant)
 
                         return self._llm_wrapper.make_request(prompt)
 
@@ -680,7 +682,7 @@ class Answer(RecAction):
 
         try:
             prompt = self.ir_template.render(
-                curr_restaurant=curr_restaurant, question=question, reviews=reviews)
+                curr_item=curr_restaurant, question=question, reviews=reviews, domain=self._domain)
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
@@ -697,7 +699,7 @@ class Answer(RecAction):
                 summarized_reviews.append(summarized_review)
 
             prompt = self.ir_template.render(
-                curr_restaurant=curr_restaurant, question=question, reviews=summarized_reviews)
+                curr_item=curr_restaurant, question=question, reviews=summarized_reviews, domain=self._domain)
 
             return self._llm_wrapper.make_request(prompt)
 
