@@ -77,9 +77,11 @@ class ConvRecSystem(GPTWrapperObserver):
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
-            constraints_classifier = ConstraintsClassifier(llm_wrapper, constraints)
+            constraints_classifier = ConstraintsClassifier(
+                llm_wrapper, constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = ConstraintsRemover(llm_wrapper, constraints)
+                constraints_remover = ConstraintsRemover(
+                    llm_wrapper, constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
@@ -90,9 +92,11 @@ class ConvRecSystem(GPTWrapperObserver):
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
-            constraints_classifier = ConstraintsClassifier(llm_wrapper, constraints)
+            constraints_classifier = ConstraintsClassifier(
+                llm_wrapper, constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = SafeConstraintsRemover(llm_wrapper, default_keys=constraints)
+                constraints_remover = SafeConstraintsRemover(
+                    llm_wrapper, default_keys=constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
@@ -111,7 +115,8 @@ class ConvRecSystem(GPTWrapperObserver):
         rejected_restaurants_extractor = RejectedItemsExtractor(
             llm_wrapper)
 
-        check_location = CheckLocation(config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
+        check_location = CheckLocation(
+            config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
         check_cuisine_type = CheckCuisineDishType()
         check_already_recommended_restaurant = CheckAlreadyRecommendedRestaurant()
         data_holder = DataHolder(config["PATH_TO_RESTAURANT_METADATA"], config["PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS"],
@@ -131,7 +136,8 @@ class ConvRecSystem(GPTWrapperObserver):
         user_intents = [Inquire(curr_restaurant_extractor),
                         ProvidePreference(constraints_updater, curr_restaurant_extractor, geocoder_wrapper,
                                           default_location=default_location),
-                        AcceptRecommendation(accepted_restaurants_extractor, curr_restaurant_extractor),
+                        AcceptRecommendation(
+                            accepted_restaurants_extractor, curr_restaurant_extractor),
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor)]
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, "restaurants"),
                        ExplainPreference(),
@@ -193,7 +199,7 @@ class ConvRecSystem(GPTWrapperObserver):
 if __name__ == '__main__':
     warnings.simplefilter("default")
     logging.config.fileConfig('logging.conf')
-    with open('config.yaml') as f:
+    with open('system_config.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     conv_rec_system = ConvRecSystem(config)
     conv_rec_system.run()
