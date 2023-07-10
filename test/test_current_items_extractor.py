@@ -8,7 +8,8 @@ from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 
-test_file_path = 'test/current_restaurants_extractor_test.csv'
+domain = "appliances"
+test_file_path = 'test/current_appliances_extractor_test.csv'
 test_df = pd.read_csv(test_file_path)
 
 recommended_restaurants = []
@@ -61,7 +62,7 @@ class TestCurrRestaurantsExtractor:
 
         conv_history = state_manager.get("conv_history")
 
-        extractor = CurrentItemsExtractor(gpt_wrapper)
+        extractor = CurrentItemsExtractor(gpt_wrapper, domain)
 
         answer = extractor.extract(recommended_restaurants, conv_history)
         assert list_curr_restaurant_objs == answer
