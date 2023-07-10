@@ -133,12 +133,18 @@ class ConvRecSystem(GPTWrapperObserver):
 
         default_location = config.get('DEFAULT_LOCATION') if config.get(
             'DEFAULT_LOCATION') != 'None' else None
-        user_intents = [Inquire(curr_restaurant_extractor),
+        
+
+        inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
+        accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
+        reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
+
+        user_intents = [Inquire(curr_restaurant_extractor, inquire_classification_fewshots,domain),
                         ProvidePreference(constraints_updater, curr_restaurant_extractor, geocoder_wrapper,
                                           default_location=default_location),
                         AcceptRecommendation(
-                            accepted_restaurants_extractor, curr_restaurant_extractor),
-                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor)]
+                            accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
+                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
                        Recommend(llm_wrapper, filter_restaurant, information_retriever, domain,
