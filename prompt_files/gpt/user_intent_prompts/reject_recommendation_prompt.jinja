@@ -1,29 +1,11 @@
 This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
-            For example:
-            User input: I dont like (restaurant name)
-            Response: True
 
-            User input: I have been to (restaurant name) so I won't go there
-            Response: True
+For example:
+{% for example in few_shots %}
+User input: {{ example.input }}
+Response: {{ example.response }}
+{% endfor %}
 
-            User input: Can you tell me somewhere to eat?
-            Response: False
-
-            User input: i like vegetarian food.
-            Response: False
-
-            User input: Whats the price range?
-            Response: False
-
-            User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
-            Response: False
-
-            User input: Sure, I will go there then.
-            Response: False
-
-            User input: That place sounds good!
-            Response: False
-    
-            Now, provide a response to the actual user input:
-            User Input: {{ user_input }}
-            Response:
+Now, provide a response to the actual user input:
+User input: {{ user_input }}
+Response: 

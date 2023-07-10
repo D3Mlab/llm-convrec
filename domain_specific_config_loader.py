@@ -175,8 +175,8 @@ class DomainSpecificConfigLoader:
         inquire_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         inquire_classification_fewshots = [
             {
-                'user input': row["input"],
-                'Response': row["output"],
+                'input': row["User input"],
+                'response': row["Response"],
             }
             for row in inquire_classification_fewshots_df.to_dict("records")
         ]
@@ -188,8 +188,8 @@ class DomainSpecificConfigLoader:
         accept_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         accept_classification_fewshots = [
             {
-                'user input': row["input"],
-                'Response': row["output"],
+                'input': row["User input"],
+                'response': row["Response"],
             }
             for row in accept_classification_fewshots_df.to_dict("records")
         ]
@@ -201,8 +201,8 @@ class DomainSpecificConfigLoader:
         reject_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         reject_classification_fewshots = [
             {
-                'user input': row["input"],
-                'Response': row["output"],
+                'input': row["User input"],
+                'response': row["Response"],
             }
             for row in reject_classification_fewshots_df.to_dict("records")
         ]

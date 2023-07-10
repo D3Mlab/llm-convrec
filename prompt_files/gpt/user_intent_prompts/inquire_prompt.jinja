@@ -1,47 +1,11 @@
 This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
-        For example:
-        User input: Is there patio
-        Response: True
 
-        User input: Whats the price range?
-        Response: True
+For example:
+{% for example in few_shots %}
+User input: {{ example.input }}
+Response: {{ example.response }}
+{% endfor %}
 
-        User input: Is it nearby? Is it in Toronto?
-        Response: True
-
-        User input: can you please recommend some menu items 
-        Response: True
-
-        User input: compare them, list the pros and cons of them
-        Response: True
-
-        User input: Do they have pizza?
-        Response: True
-
-        User input: Boulevard, Edmonton
-        Response: False
-
-        User input: Can you tell me somewhere to eat?
-        Response: False
-
-        User input: i would like some vegetarian food.
-        Response: False
-
-        User input: I am allergic to seafood, i want to find a restaurant.
-        Response: False
-
-        User input: Can you give me a recommendation?
-        Response: False
-
-        User input: i want a restaurant in (location)
-        Response: False
-
-        User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
-        Response: False
-
-        User input: i want kid's menu
-        Response: False
-
-        Now, provide a response to the actual user input:
-        User input: {{ user_input }}
-        Response:
+Now, provide a response to the actual user input:
+User input: {{ user_input }}
+Response: 

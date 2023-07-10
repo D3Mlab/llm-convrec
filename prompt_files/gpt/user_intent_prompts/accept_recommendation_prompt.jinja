@@ -1,32 +1,11 @@
 This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
-            For example:
-            User input: i like vegetarian food.
-            Response: False
 
-            User input: Whats the price range?
-            Response: False
+For example:
+{% for example in few_shots %}
+User input: {{ example.input }}
+Response: {{ example.response }}
+{% endfor %}
 
-            User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
-            Response: False
-
-            User input: No, give me another recommendation
-            Response: False
-            
-            User input: Sure, I will go there then
-            Response: True
-
-            User input: That place sounds good, do i need reservation?
-            Response: True
-
-            User input: I will try (Restaurant name). It sounds good!
-            Response: True
-
-            User input: (Restaurant name) sounds good, what dishes do they have?
-            Response: True
-
-            User input: thanks / Thank you
-            Response: True
-
-            Now, provide a response to the actual user input:
-            User Input: {{ user_input }}
-            Response:
+Now, provide a response to the actual user input:
+User input: {{ user_input }}
+Response: 
