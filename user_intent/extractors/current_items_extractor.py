@@ -1,5 +1,4 @@
-from textwrap import dedent
-
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
 from information_retrievers.recommended_item import RecommendedItem
@@ -26,15 +25,9 @@ class CurrentItemsExtractor:
         env = Environment(loader=FileSystemLoader(config['ITEMS_EXTRACTOR_PROMPT_PATH']),
                           trim_blocks=True, lstrip_blocks=True)
         self.template = env.get_template(config['CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
-        self._few_shots = [{'User Input': "I don't like thai express, starbucks or subway.",
-                            'Response': "Thai Express, Starbucks, Subway."},
-                           {'User Input': "I like that they have a patio.",
-                            'Response': "None."},
-                           {'User Input': "Does thai express have a balcony?",
-                            'Response': "Thai Express."},
-                           {'User Input': "where is timmy's?",
-                            'Response': "Tim Hortons."}
-                           ]
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._few_shots = domain_specific_config_loader.load_current_items_fewshots()
+
 
     def extract(self, recommended_restaurants: list[list[RecommendedItem]], conv_history: list[Message]) -> RecommendedItem | None:
         """

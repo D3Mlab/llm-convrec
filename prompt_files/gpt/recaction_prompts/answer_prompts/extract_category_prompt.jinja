@@ -5,8 +5,8 @@ Please classify it into one of the following categories:
 Only respond with the name of the category. 
 
 {% for few_shot in few_shots %}
-Input: {{ few_shot['Input'] }}
-Output: {{ few_shot['Output'] }}
+Input: {{ few_shot['input'] }}
+Output: {{ few_shot['output'] }}
 
 {% endfor %}
 Input: {{question}}

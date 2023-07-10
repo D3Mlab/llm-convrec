@@ -4,14 +4,12 @@ from state.state_manager import StateManager
 from user_intent.inquire import Inquire
 from state.message import Message
 from decimal import Decimal
-
 from string import ascii_letters
-
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
 from information_retrievers.neural_information_retriever import InformationRetriever
 from intelligence.llm_wrapper import LLMWrapper
-
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 import yaml
 
@@ -85,30 +83,19 @@ class Answer(RecAction):
         self.ir_template = self.env.get_template(
             self.config['ANSWER_IR_PROMPT'])
 
-        self._extract_category_few_shots = [{'Input': "What's their addresses?", 'Output': "address"},
-                                            {'Input': "Can you recommend any dishes or specialties?",
-                                                'Output': "none"},
-                                            {'Input': "Can I make a reservation?",
-                                                'Output': "HasReservations"},
-                                            {'Input': "What are the meals it's known for?", 'Output': 'PopularMeals'}]
+        domain_specific_config_loader = DomainSpecificConfigLoader()
 
-        self._ir_prompt_few_shots = [{'Question': "Do they have a slide in the restaurant?",
-                                      'Information': ["I really like this place. They have great food."],
-                                      'Answer': "I do not know."}]
+        self._extract_category_few_shots \
+            = domain_specific_config_loader.load_answer_extract_category_fewshots()
 
-        self._separate_qs_prompt_few_shots = [{'Question': "Do they have wine?", 'Individual Questions': "Do they have wine?"},
-                                              {'Question': "What are dishes, cocktails and types of wine do you recommend?",
-                                               'Individual Questions': "What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend?"},
-                                              {'Question': "Does starbucks serve bubble tea or coffee?",
-                                               'Individual Questions': "Does starbucks serve bubble tea?\nDoes starbucks serve coffee?"},
-                                              {'Question': "Are they busy, if so, what days are the busiest and which servers are the best?",
-                                               'Individual Questions': "Are they busy?\nIf they are busy what days are busiest?\nIf they are busy which servers are the best?"},
-                                              {'Question': "Do they take reservations or is it first-come, first-served?", 'Individual Questions': "Do they take reservations?\nAre the reservations first-come, first-served?"}]
+        self._ir_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_ir_fewshots()
 
-        self._verify_metadata_prompt_few_shots = [{'Question': "Do they have a high chair?", 'Answer': "Subway is kid friendly.", 'Response': "No."},
-                                                  {'Question': "Do they serve vodka?",
-                                                      'Answer': "They have a full bar.", 'Response': "No."},
-                                                  {'Question': "Are their gluten free options?", 'Answer': "Yes, there are gluten free options.", 'Response': "Yes."}]
+        self._separate_qs_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_separate_questions_fewshots()
+
+        self._verify_metadata_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots()
 
     def get_name(self) -> str:
         """

@@ -5,8 +5,8 @@ The user may use short forms or 'slang' when referring to the following {{ domai
 If this is the case then respond with the entire {{ domain }} name, not the slang or short form the user referred to.
 
 {% for few_shot in few_shots %}
-User Input: {{ few_shot['User Input'] }}
-Response: {{ few_shot['Response'] }}
+User Input: {{ few_shot['user_input'] }}
+Response: {{ few_shot['response'] }}
 
 {% endfor %}
 User Input: {{ user_input }}

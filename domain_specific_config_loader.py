@@ -45,7 +45,7 @@ class DomainSpecificConfigLoader:
                 if isinstance(row['recently_mentioned_items'], str) else [],
                 'accepted_items': list(map(lambda x: x.strip(), row['accepted_items'].split(',')))
                 if isinstance(row['accepted_items'], str) else [],
-        }
+            }
             for row in accepted_items_fewshots_df.to_dict("records")
         ]
 
@@ -65,10 +65,23 @@ class DomainSpecificConfigLoader:
                 if isinstance(row['recently_mentioned_items'], str) else [],
                 'rejected_items': list(map(lambda x: x.strip(), row['rejected_items'].split(',')))
                 if isinstance(row['rejected_items'], str) else [],
-        }
+            }
             for row in rejected_items_fewshots_df.to_dict("records")
         ]
         return rejected_items_fewshots
+
+    def load_current_items_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        current_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        current_items_fewshots = [
+            {
+                'user_input': row["user_input"],
+                'response': row["response"],
+            }
+            for row in current_items_fewshots_df.to_dict("records")
+        ]
+        return current_items_fewshots
 
     def load_constraints_updater_fewshots(self) -> list[dict]:
         constraints_updater_fewshot_filename = self.load_domain_specific_config()[
@@ -90,6 +103,60 @@ class DomainSpecificConfigLoader:
             for row in constraints_fewshots_df.to_dict("records")
         ]
         return constraints_fewshots
+
+    def load_answer_extract_category_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        answer_extract_category_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        answer_extract_category_fewshots = [
+            {
+                'input': row["input"],
+                'output': row["output"],
+            }
+            for row in answer_extract_category_fewshots_df.to_dict("records")
+        ]
+        return answer_extract_category_fewshots
+
+    def load_answer_ir_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['ANSWER_IR_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        answer_ir_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        answer_ir_fewshots = [
+            {
+                'question': row["question"],
+                'information': [row["information"]],
+                'answer': row["answer"],
+            }
+            for row in answer_ir_fewshots_df.to_dict("records")
+        ]
+        return answer_ir_fewshots
+
+    def load_answer_separate_questions_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        answer_separate_questions_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        answer_separate_questions_fewshots = [
+            {
+                'question': row["question"],
+                'individual_questions': row["individual_questions"],
+            }
+            for row in answer_separate_questions_fewshots_df.to_dict("records")
+        ]
+        return answer_separate_questions_fewshots
+
+    def load_answer_verify_metadata_resp_fewshots(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        answer_verify_metadata_resp_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
+        answer_verify_metadata_resp_fewshots = [
+            {
+                'question': row["question"],
+                'answer': row["answer"],
+                'response': row["response"],
+            }
+            for row in answer_verify_metadata_resp_fewshots_df.to_dict("records")
+        ]
+        return answer_verify_metadata_resp_fewshots
 
     def load_domain_specific_config(self):
         path_to_domain = self._get_path_to_domain()

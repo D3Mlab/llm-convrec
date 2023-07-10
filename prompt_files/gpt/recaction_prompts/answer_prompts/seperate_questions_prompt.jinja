@@ -1,8 +1,8 @@
 You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
 
 {% for few_shot in few_shots %}
-Question: {{ few_shot['Question'] }}
-Individual Questions: {{ few_shot['Individual Questions'] }}
+Question: {{ few_shot['question'] }}
+Individual Questions: {{ few_shot['individual_questions'] }}
 
 {% endfor %}
 Question: {{current_user_input}}

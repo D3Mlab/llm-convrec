@@ -1,9 +1,9 @@
 Does the answer to the following question directly address the user's question?
 
 {% for few_shot in few_shots %}
-Question: "{{ few_shot['Question'] }}"
-Answer: "{{ few_shot['Answer'] }}"
-Response: {{ few_shot['Response'] }}
+Question: "{{ few_shot['question'] }}"
+Answer: "{{ few_shot['answer'] }}"
+Response: {{ few_shot['response'] }}
 
 {% endfor %}
 Question: "{{question}}"
