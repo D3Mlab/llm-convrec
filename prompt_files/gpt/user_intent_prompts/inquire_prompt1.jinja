@@ -1,0 +1,11 @@
+This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.
+
+{% for row in example_data.itertuples() %}
+User input: {{ row.user_input }}
+Response: {{ row.response }}
+
+{% endfor %}
+
+Now, provide a response to the actual user input:
+User input: {{ user_input }}
+Response:

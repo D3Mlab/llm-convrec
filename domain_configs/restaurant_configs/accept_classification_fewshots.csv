@@ -1,0 +1,10 @@
+input,output
+i like vegetarian food.,False
+Whats the price range?,False
+I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes,False
+"No, give me another recommendation",False
+"Sure, I will go there then",True
+"That place sounds good, do i need reservation?",True
+I will try (Restaurant name). It sounds good!,True
+"(Restaurant name) sounds good, what dishes do they have?",True
+thanks / Thank you,True
