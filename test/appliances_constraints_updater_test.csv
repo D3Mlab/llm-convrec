@@ -1,0 +1,31 @@
+utterance 1,utterance 2,utterance 3,old hard constraints,old soft constraints,new hard constraints,new soft constraints
+,,I want new oven,,,"category=[""oven""]",
+,,Recommend me good refrigerator,,,"category=[""refrigerator""]",
+,,I would like to upgrade my dishwasher,,,"category=[""dishwasher""]",
+,,I want appliances from panasonic,,,"brand=[""panasonic""]",
+,,I like it to be small as possible. ,,,"features=[""small""]",
+,,I want ice maker in the refrigerator,"category=[""refrigerator""]",,"category=[""refrigerator""], features=[""ice maker""]",
+,,I want cheap ones,,,"price range=[""cheap""]",
+,,I want the color to be gray,,,"design=[""gray""]",
+,,I want appliances with no professional installation required,,,"others=[""no professional installation required""]",
+,Could you provide the category of appliances?,vacuum cleaner,,,"category=[""vacuum cleaner""]",
+,Do you have any preferences on the brand?,Dyson,,,"brand=[""dyson""]",
+,What are some features or funcionality you want?,I want it to be energy efficient,"category=[""dishwasher""]",,"category=[""dishwasher""], features=[""energy efficient""]",
+,I recommend  12000 BTU Portable Air Conditioner from Danby. It is very quiey and energy efficient.,"Hmm, I actually like more modern design.","category=[""air conditioner""],  features=[""portable""]",,"category=[""air conditioner""], design=[""modern""], features=[""portable""]",
+,How about BESPOKE from Samsung?,Does it have ice maker?,"category=[""refrigerator""]",,"category=[""refrigerator""]","features=[""ice maker""]"
+,How about model YWML55011HB from Whirlpool?,Is the color black?,"category=[""microwaves""]",,"category=[""microwaves""]","design=[""black""]"
+,I recommend MAKITA 18V LXT LithiumIon!,Is it expensive?,,,,"price range=[""affordable""]"
+,,I want portable air conditioner ,"category=[""air conditioner""]",,"category=[""air conditioner""], features=[""portable""]",
+,,Can you please recommend me robotic vacuums?,"category=[""vacuums""]",,"category=[""robotic vacuums""]",
+,,I want quiet dishwasher and energy-eficient dishwashers with modern design  ,,,"features=[""quiet"", ""energy-efficient""], category=[""dishwasher""], design=[""modern""]",
+,,I want to buy new coffee makers and toasters.,,,"category=[""coffee maker"", ""toaster""]",
+,,Can you recommend wine coolers that can contain more than 12 bottles?,,,"category=[""wine cooler""], others=[""can contain more than 12 bottles""]",
+,I recommend Samsung DW80R2031US!,"Thanks for recommending. Now, I want you to recommend microwaves.","category=[""dishwasher""], features=[""quiet""]",,"category=[""microwave""]",
+,How about Samsung DW80R2031US?,Forget everything I said,"features=[""quiet"", ""energy-efficient""], category=[""dishwashers""], design=[""modern""]",,,
+,,"Now, I don't care about the price.","category=[""vacuum cleaners""], price range=[""$0-$100""]",,"category=[""vacuum cleaners""]",
+,,I want cheap freezers. I also prefer the size to be small if possible. ,,,"category=[""freezers""], price range=[""cheap""]"," features=[""small""]"
+,What are some features or funcionality you want?,"I don't have strong preference, but I might prefer it to be quiet.","category=[""washing machine""]",,"category=[""washing machine""]","features=[""quiet""]"
+,Do you have any preferences on the brand?,I like products from LG Electronics but it doesn't have to be LG in this case.,"category=[""portable air conditioner""]",,"category=[""portable air conditioner""]","brand=[""LG Electronics""]"
+,,Can you give me more options?,"category=[""washing machine""], features=[""delay start""]","design=[""black""]","category=[""washing machine""], features=[""delay start""]","design=[""black""]"
+,How about Dyson V15 Detect Total Clean Cordless Vacuum Cleaner? The price is $849.99.,I don't like it,"category=[""vacuum cleaners""], price range=[""$0-$100""]","design=[""modern""]","category=[""vacuum cleaners""], price range=[""$0-$100""]","design=[""modern""]"
+,I recommend  DeLonghi Pinguino Plus.,Give me more details about that product,"category=[""air conditioner""]","features=[""energy-efficient""]","category=[""air conditioner""]","features=[""energy-efficient""]"
