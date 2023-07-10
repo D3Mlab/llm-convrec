@@ -9,7 +9,8 @@ from rec_action.answer import Answer
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 
-test_file_path = 'rec_action/qa_category_extraction_test.csv'
+domain = "restaurants"
+test_file_path = 'test/rec_action/qa_category_extraction_test.csv'
 test_df = pd.read_csv(test_file_path)
 test_data = [
     (
@@ -19,19 +20,16 @@ test_data = [
     )
     for row in test_df.to_dict("records")]
 
-
 class TestAnswer:
 
     @pytest.fixture(params=[GPTWrapper()])
     def answer(self, request):
-        with open("../config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        yield Answer(config, request.param, None, "restaurants")
+        yield Answer(config, request.param, None, None, domain)
 
     @pytest.mark.parametrize('utterance,restaurant_attributes,category', test_data)
     def test_extract_category_from_input(self, answer, utterance, restaurant_attributes, category) -> None:
-        state_manager = CommonStateManager(set())
-        state_manager.update_conv_history(Message('user', utterance))
         dictionary_info = {"name": "name",
                            "address": "address",
                            "city": "city",
@@ -47,5 +45,5 @@ class TestAnswer:
                            "hours": {}}
         restaurant = RecommendedItem(Item("business_id", dictionary_info), "", [])
 
-        actual = answer._extract_category_from_input(state_manager, restaurant)
+        actual = answer._extract_category_from_input(utterance, restaurant)
         assert actual == category
