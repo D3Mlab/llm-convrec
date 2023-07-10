@@ -6,8 +6,7 @@ from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.item import Item
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.answer import Answer
-from state.common_state_manager import CommonStateManager
-from state.message import Message
+
 
 domain = "restaurants"
 test_file_path = 'test/rec_action/qa_category_extraction_test.csv'
