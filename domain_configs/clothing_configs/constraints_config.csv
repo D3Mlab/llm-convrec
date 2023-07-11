@@ -1,0 +1,7 @@
+key,description,is_mandatory,is_cumulative
+category,Desired category of the clothings,TRUE,TRUE
+brand,Desired brand or manufacturer of the clothings,FALSE,TRUE
+design,Desired design or style of the clothings,FALSE,TRUE
+price range,Desired price range of the clothings,FALSE,TRUE
+size,Desired size of the clothings,FALSE,TRUE
+others,Any additional constraints or preferred features.,FALSE,TRUE
