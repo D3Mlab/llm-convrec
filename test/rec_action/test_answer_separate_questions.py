@@ -7,8 +7,8 @@ from rec_action.answer import Answer
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 
-domain = "restaurants"
-test_file_path = 'test/rec_action/qa_separate_question_test.csv'
+domain = "clothings"
+test_file_path = 'test/rec_action/qa_separate_question_clothing_test.csv'
 test_df = pd.read_csv(test_file_path)
 test_data = [
     (
@@ -30,5 +30,5 @@ class TestAnswer:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
         actual = answer._seperate_input_into_multiple_qs(state_manager)
-        assert str(actual).lower().replace(" ", "").replace("\\", "") \
-               == str(individual_questions).lower().replace(" ", "").replace("\\", "")
+        assert str(actual).lower().strip() \
+               == str(individual_questions).lower().strip()
