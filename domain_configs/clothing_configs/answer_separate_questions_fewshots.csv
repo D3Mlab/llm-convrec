@@ -1,6 +1,6 @@
 question,individual_questions
 Does it use organic cotton?,Does it use organic cotton?
-What are the good things or unique things about that yellow shoes?,What are the good things about that yellow shoes?\nWhat are the unique things about that yellow shoes?
+What are the good/unique things about that yellow shoes?,What are the good things about that yellow shoes?\nWhat are the unique things about that yellow shoes?
 "Does that jeans have pockets, and if so, is it in the front or back?","Does that jeans have pockets?\nIf it does have pockets, are they in the front or back?"
 "Is it in stock right now, and if not, when will it be in stock?","Is it in stock right now?\nIf it is not in stock now, when will it be in stock?"
 "Is delivery free, if not, how much is the delivery fee?","Is delivery free?\nIf delivery is not free, how much is the delivery fee?"
