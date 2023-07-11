@@ -11,6 +11,7 @@ from state.common_state_manager import CommonStateManager
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.message import Message
 import time
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class TestThresholdUserIntentsClassifier:
@@ -21,20 +22,24 @@ class TestThresholdUserIntentsClassifier:
     The test checks whether the length of the returned result matches the expected length, and whether the returned intents match the expected intents.
     """
     @pytest.mark.parametrize("input_message, expected_intent_1, expected_intent_2, leng",
-                             [(row['Input'], row['Output1'], row['Output2'], row['leng']) for index, row in pd.read_csv('test/Temp_Threshold_User_Intent_Test.csv', encoding='ISO-8859-1').iterrows()])
+                             [(row['Input'], row['Output1'], row['Output2'], row['leng']) for index, row in pd.read_csv('test/Threshold_User_Intent_Test.csv', encoding='ISO-8859-1').iterrows()])
     def test_multilabel_user_intents_classifier(self, input_message, expected_intent_1, expected_intent_2, leng):
         gpt_wrapper = GPTWrapper()
         
-
-        constraints_extractor = ConstraintsExtractor(gpt_wrapper)
         ask_for_recommendation = AskForRecommendation()
 
-        curr_res_extractor = CurrentItemsExtractor(gpt_wrapper)
-
         possible_goals = {ask_for_recommendation}
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain = domain_specific_config_loader.load_domain()
 
-        user_intents = [Inquire(curr_res_extractor),  AcceptRecommendation(None, curr_res_extractor), RejectRecommendation(None, curr_res_extractor)]
+        inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
+        accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
+        reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
+        user_intents = [Inquire(None, inquire_classification_fewshots,domain),
+                        AcceptRecommendation(
+                            None,None, accept_classification_fewshots, domain),
+                        RejectRecommendation(None,None, reject_classification_fewshots, domain)]
         classifier = MultilabelUserIntentsClassifier(user_intents, gpt_wrapper)
         message = Message("user", input_message)
         state = CommonStateManager(possible_goals)
