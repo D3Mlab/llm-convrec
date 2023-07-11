@@ -8,8 +8,8 @@ from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 
-domain = "appliances"
-test_file_path = 'test/current_appliances_extractor_test.csv'
+domain = "clothings"
+test_file_path = 'test/current_clothing_extractor_test.csv'
 test_df = pd.read_csv(test_file_path)
 
 recommended_restaurants = []
@@ -17,9 +17,9 @@ test_data = []
 
 for col in test_df.to_dict("records"):
     row = [col["user_input"]]
-    if col["current_restaurant_names"] != "None.":
+    if col["current_item_names"] != "None.":
 
-        list_curr_restaurant_names = col["current_restaurant_names"][:-1].split(
+        list_curr_restaurant_names = col["current_item_names"][:-1].split(
             ',')
         one_turn_reccommended_restaurants = []
 

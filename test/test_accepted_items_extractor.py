@@ -12,12 +12,12 @@ test_df = pd.read_csv(test_file_path, encoding='latin1')
 test_data = [
     (
         row["utterance"],
-        list(map(lambda x: x.strip(), row['all mentioned restaurants'].split(',')))
-        if isinstance(row['all mentioned restaurants'], str) else [],
-        list(map(lambda x: x.strip(), row['recently mentioned restaurants'].split(',')))
-        if isinstance(row['recently mentioned restaurants'], str) else [],
-        list(map(lambda x: x.strip(), row['accepted restaurants'].split(',')))
-        if isinstance(row['accepted restaurants'], str) else [],
+        list(map(lambda x: x.strip(), row['all mentioned items'].split(',')))
+        if isinstance(row['all mentioned items'], str) else [],
+        list(map(lambda x: x.strip(), row['recently mentioned items'].split(',')))
+        if isinstance(row['recently mentioned items'], str) else [],
+        list(map(lambda x: x.strip(), row['accepted items'].split(',')))
+        if isinstance(row['accepted items'], str) else [],
     )
     for row in test_df.to_dict("records")
 ]

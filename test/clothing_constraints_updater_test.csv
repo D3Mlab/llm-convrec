@@ -1,0 +1,31 @@
+utterance 1,utterance 2,utterance 3,old hard constraints,old soft constraints,new hard constraints,new soft constraints
+,,I want new T-Shirts,,,"category=[""T-Shirts""]",
+,,Recommend me good jeans for me,,,"category=[""Jeans""]",
+,,I would like to get new underwear,,,"category=[""Underwear""]",
+,,I like clothes from H&M,,,"brand=[""H&M""]",
+,,I want free size clothing.,,,"size=[""Free Size""]",
+,,I want formal clothes,,,"occasion=[""Formal""]",
+,,I want more moderately priced clothes,,,"price range=[""moderate""]",
+,,I like Shirts with 100% cotton,"category=[""Shirts""]",,"category=[""Shirts""], material=[""Cotton""]",
+,,I want cheap ones,,,"price range=[""cheap""]",
+,,I want the color to be white,"category=[""Dress""]",,"category=[""Dress""], design=[""White""]",
+,,I want machine washable suits.,,,"category=[""Suits""], others=[""Machine Washable""]",
+,Could you provide the category of clothing?,Mens,,,"category=[""Men""]",
+,Do you have any preferences on the brand?,uniqlo,,,"brand=[""uniqlo""]",
+,Do you have any preferences on the brand?,No,,,,
+,What are your design preferences?,I likeT-Shirts with trendy and fashionable style,"category=[""Men"", ""T-Shirts""]",,"category=[""Men"", ""T-Shirts""], design=[""Trendy"", ""Fashionable""]",
+,How about Giorgio Cerruti Men's Single Breasted 3 Button Gray Pinstripe Super 150's Wool Feel Dress Suit?,Is it machine washable?,"category=[""Suits""]",,"category=[""Suits""]","others=[""Machine Washable""]"
+,I recommend Amy Byer Girls' Big Knit Suede Circle Skirt with Belt!,Does it have brown?,"category=[""Skirts""]",,"category=[""Skirts""]","design=[""Brown""]"
+,How about Tommy Hilfiger Big Boys' Anchor Jacket?,Is it cruelty free?,"category=[""Kids""]",,"category=[""Kids""]","others=[""cruelty free""]"
+,I recommend Ingear Women Halter Tube Jumpsuit Pants!,Is it expensive?,"category=[""Jumpsuits""]",,"category=[""Jumpsuits""]","price range=[""affordable""]"
+,,I want V-Neck T-Shirts,"category=[""T-Shirts""]",,"category=[""T-Shirts""], design=[""V-neck""]",
+,,I want to find Jumpsuits with trendy style that is made by Polyester.,,,"category=[""Jumpsuits""], design=[""trendy""], material=[""polyester""]",
+,,"I am looking for skirts. If possible, I prefer silk.",,,"category=[""skirts""]","material=[""silk""]"
+,,I want to buy new clothes for summer. ,,,"occasion=[""Summer""]",
+,I recommend Calvin Klein Men's Slim Fit Suit Separates,Is it made by polyester?,"category=[""Jackets""]","occasion=[""formal""], brand=[""Calvin Klein""]","category=[""Jackets""]","occasion=[""formal""], brand=[""Calvin Klein""], material=[""polyester""]"
+,How about URBANFIND Men's PU Leather Jacket Slim Fit Fleece Motorcycle Coats?,"Thank you for recommending. Now, I want beanie. ","category=[""Winter Jackets""]",,"category=[""Beanie""]",
+,How about Bump Set Spike: Ladies Slim Fit Basic T-Shirt and Old Glory Halloween Horror Redrum Black Juniors Soft T-Shirt?,Forget everything I said.,"category=[""T-Shirts"", ""Women""],  design=[""brown""]","occasion=[""casual""]",,
+,How about Fruit of the Loom Men's Eversoft Cotton Stay Tucked Crew T-Shirt?,Which size are available?,"category=[""Shirts""], occasion=[""summer""]","occasion=[""casual""]","category=[""Shirts""], occasion=[""summer""]","occasion=[""casual""]"
+,I recommend CAMEL CROWN Men's Winter Ski Jackets!,What's the color?,"category=[""Winter Jackets""]",,"category=[""Winter Jackets""]",
+,How about  The Drop Women's Maya Silky Slip Skirt?,What's the material?,"category=[""Skirts""]","occasion=[""formal""]","category=[""Skirts""]","occasion=[""formal""]"
+,How about Carhartt Men's Canvas Cap?,What are the reviews?,"category=[""Hats""]","occasion=[""casual""], material=[""cotton""]","category=[""Hats""]","occasion=[""casual""], material=[""cotton""]"
