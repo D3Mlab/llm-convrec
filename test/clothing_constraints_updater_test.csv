@@ -15,7 +15,7 @@ utterance 1,utterance 2,utterance 3,old hard constraints,old soft constraints,ne
 ,Do you have any preferences on the brand?,No,,,,
 ,What are your design preferences?,I likeT-Shirts with trendy and fashionable style,"category=[""Men"", ""T-Shirts""]",,"category=[""Men"", ""T-Shirts""], design=[""Trendy"", ""Fashionable""]",
 ,How about Giorgio Cerruti Men's Single Breasted 3 Button Gray Pinstripe Super 150's Wool Feel Dress Suit?,Is it machine washable?,"category=[""Suits""]",,"category=[""Suits""]","others=[""Machine Washable""]"
-,I recommend Amy Byer Girls' Big Knit Suede Circle Skirt with Belt!,Is the color brown?,"category=[""Skirts""]",,"category=[""Skirts""]","design=[""Brown""]"
+,I recommend Amy Byer Girls' Big Knit Suede Circle Skirt with Belt!,Does it have brown?,"category=[""Skirts""]",,"category=[""Skirts""]","design=[""Brown""]"
 ,How about Tommy Hilfiger Big Boys' Anchor Jacket?,Is it cruelty free?,"category=[""Kids""]",,"category=[""Kids""]","others=[""cruelty free""]"
 ,I recommend Ingear Women Halter Tube Jumpsuit Pants!,Is it expensive?,"category=[""Jumpsuits""]",,"category=[""Jumpsuits""]","price range=[""affordable""]"
 ,,I want V-Neck T-Shirts,"category=[""T-Shirts""]",,"category=[""T-Shirts""], design=[""V-neck""]",
@@ -28,4 +28,4 @@ utterance 1,utterance 2,utterance 3,old hard constraints,old soft constraints,ne
 ,How about Fruit of the Loom Men's Eversoft Cotton Stay Tucked Crew T-Shirt?,Which size are available?,"category=[""Shirts""], occasion=[""summer""]","occasion=[""casual""]","category=[""Shirts""], occasion=[""summer""]","occasion=[""casual""]"
 ,I recommend CAMEL CROWN Men's Winter Ski Jackets!,What's the color?,"category=[""Winter Jackets""]",,"category=[""Winter Jackets""]",
 ,How about  The Drop Women's Maya Silky Slip Skirt?,What's the material?,"category=[""Skirts""]","occasion=[""formal""]","category=[""Skirts""]","occasion=[""formal""]"
-,How about  Carhartt Men's Canvas Cap?,What are the reviews?,"category=[""Hats""]","occasion=[""casual""], material=[""cotton""]","category=[""Hats""]","occasion=[""casual""], material=[""cotton""]"
+,How about Carhartt Men's Canvas Cap?,What are the reviews?,"category=[""Hats""]","occasion=[""casual""], material=[""cotton""]","category=[""Hats""]","occasion=[""casual""], material=[""cotton""]"
