@@ -1,6 +1,6 @@
 user_input,old_hard_constraints,old_soft_constraints,new_hard_constraints,new_soft_constraints
-"I want black, casual T-shirt that are cheap. I want M size.",,,"category=[""T-Shirts""], design=[""Casual"", ""Black""], price range=[""Cheap""], size=[""Medium""]",
-I am looking for a dress for Women from Nordstrom that are comfortable.,,,"category=[""Women"", ""Dress""], barnd=[""Nordstrom""], others=[""Comfortable""]",
+"I want black, casual T-shirt for summer that are cheap. I want M size.",,,"category=[""T-Shirts""], design=[""Black""], occasion=[""Casual"", ""Summer""], price range=[""Cheap""], size=[""Medium""]",
+I am looking for a dress for Women from Nordstrom that are comfortable.,,,"category=[""Women"", ""Dress""], brand=[""Nordstrom""], others=[""Comfortable""]",
 What is the size?,"category=[""Men"", ""Pants""], brand=[""h&m""]",,"category=[""Men"", ""Pants""], brand=[""h&m""]",
-Is it made by cotton?,"category=[""Baby""], price=[""Moderate""]",,"category=[""Baby""], price=[""Moderate""]","material=[""Cotton""]"
-Is it expensive? ,"categiry=[""Sweaters""], design=[""Gray""]",,"categiry=[""Sweaters""]","price range=[""Affordable""]"
+Is it made by cotton?,"category=[""Baby""], price range=[""Moderate""]",,"category=[""Baby""], price range=[""Moderate""]","material=[""Cotton""]"
+Is it expensive? ,"category=[""Sweaters""], design=[""Gray""]",,"category=[""Sweaters""], design=[""Gray""]","price range=[""Affordable""]"
