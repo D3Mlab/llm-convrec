@@ -1,4 +1,4 @@
-input,output
+User input,Response
 I dont like (restaurant name),True
 I have been to (restaurant name) so I won't go there,True
 Can you tell me somewhere to eat?,False

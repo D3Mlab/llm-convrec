@@ -20,7 +20,7 @@ class AcceptRecommendation(UserIntent):
     _current_restaurants_extractor: CurrentItemsExtractor
     _accepted_restaurants_extractor: AcceptedItemsExtractor
 
-    def __init__(self, accepted_restaurants_extractor: AcceptedItemsExtractor, current_restaurants_extractor: CurrentItemsExtractor):
+    def __init__(self, accepted_restaurants_extractor: AcceptedItemsExtractor, current_restaurants_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str):
         self._accepted_restaurants_extractor = accepted_restaurants_extractor
         self._current_restaurants_extractor = current_restaurants_extractor
 
@@ -31,6 +31,9 @@ class AcceptRecommendation(UserIntent):
             config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(
             config['ACCEPT_RECOMMENDATION_PROMPT_FILENAME'])
+        
+        self._few_shots = few_shots
+        self._domain = domain
 
     def get_name(self) -> str:
         """

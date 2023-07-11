@@ -19,7 +19,7 @@ class RejectRecommendation(UserIntent):
     _current_restaurants_extractor: CurrentItemsExtractor
     _rejected_restaurants_extractor: RejectedItemsExtractor
 
-    def __init__(self, rejected_restaurants_extractor: RejectedItemsExtractor, current_restaurants_extractor: CurrentItemsExtractor):
+    def __init__(self, rejected_restaurants_extractor: RejectedItemsExtractor, current_restaurants_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str):
         self._rejected_restaurants_extractor = rejected_restaurants_extractor
         self._current_restaurants_extractor = current_restaurants_extractor
 
@@ -30,6 +30,8 @@ class RejectRecommendation(UserIntent):
             config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(
             config['REJECT_RECOMMENDATION_PROMPT_FILENAME'])
+        self._few_shots = few_shots
+        self._domain = domain
 
     def get_name(self) -> str:
         """
