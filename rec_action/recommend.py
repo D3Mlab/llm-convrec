@@ -12,6 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 import logging
 import jinja2
 from jinja2 import Environment, FileSystemLoader
+from user.user_interface import UserInterface
 
 logger = logging.getLogger('recommend')
 
@@ -39,9 +40,11 @@ class Recommend(RecAction):
     _format_recommendation_prompt: jinja2.Template
     _no_matching_restaurant_prompt: jinja2.Template
     _summarize_review_prompt: jinja2.Template
+    _user_interface: UserInterface
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
                  information_retriever: InformationRetriever, domain: str,
+                 user_interface: UserInterface,
                  mandatory_constraints: str = None,
                  priority_score_range=(1, 10), specific_location_required: bool = True):
         super().__init__(priority_score_range)
@@ -54,6 +57,7 @@ class Recommend(RecAction):
         self._specific_location_required = specific_location_required
         self._llm_wrapper = llm_wrapper
         self._domain = domain
+        self._user_interface = user_interface
 
         with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -216,7 +220,7 @@ class Recommend(RecAction):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                print(
+                self._user_interface.display_warning(
                     'Sorry.. running into some difficulties, this is going to take longer than ususal.')
 
                 logger.debug("Reviews are too long, summarizing...")

@@ -14,3 +14,4 @@ re
 ast
 tenacity
 jinja2
+gradio

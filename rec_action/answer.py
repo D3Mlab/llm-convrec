@@ -12,6 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 import yaml
+from user.user_interface import UserInterface
 
 logger = logging.getLogger('answer')
 
@@ -30,13 +31,16 @@ class Answer(RecAction):
     _information_retriever: InformationRetriever
     _llm_wrapper: LLMWrapper
     _prompt: str
+    _user_interface: UserInterface
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
                  information_retriever: InformationRetriever, domain: str,
+                 user_interface: UserInterface,
                  priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._filter_restaurants = filter_restaurants
         self._domain = domain
+        self._user_interface = user_interface
 
         if config["NUM_REVIEWS_TO_RETURN"]:
             self._num_of_reviews_to_return = int(
@@ -701,7 +705,7 @@ class Answer(RecAction):
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
-            print(
+            self._user_interface.display_warning(
                 'Sorry.. running into some difficulties, this is going to take longer than ususal.')
 
             logger.debug("Reviews are too long, summarizing...")
