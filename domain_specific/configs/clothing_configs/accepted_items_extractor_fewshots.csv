@@ -1,0 +1,5 @@
+all_mentioned_items,recently_mentioned_items,user_input,accepted_items
+"Clothing A,Clothing B,Clothing C","Clothing B, Clothing C","I like Clothing B","Clothing B"
+"Clothing A,Clothing B,Clothing C","Clothing B, Clothing C","Clothing A looks good","Clothing A"
+"Clothing A, Clothing B, Clothing C, Clothing E, Clothing F, Clothing F","Clothing E, Clothing F, Clothing F","I like Clothing E and Clothing G, but I don't like Clothing F","Clothing E, Clothing G"
+"Clothing A, Clothing B, Clothing C, Clothing D","Clothing C, Clothing D","I like it","Clothing C, Clothing D"
