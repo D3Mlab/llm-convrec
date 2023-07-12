@@ -1,6 +1,6 @@
-key,description,is_mandatory,is_cumulative, merger_filename, merger_classname
-location,The desired location of the restaurants.,TRUE,FALSE,location_constraint_merger.py,LocationConstraintMerger
-cuisine type,"The desired specific style of cooking or cuisine offered by the restaurants (e.g., ""Italian"", ""Mexican"", ""Chinese""). This can be implicitly provided through dish type (e.g ""italian"" if dish type is ""pizza"").",TRUE,FALSE,None,None
+key,description,is_mandatory,is_cumulative, merger_classname
+location,The desired location of the restaurants.,TRUE,FALSE,location_constraint_merger.py,Location
+cuisine type,"The desired specific style of cooking or cuisine offered by the restaurants (e.g., ""Italian"", ""Mexican"", ""Chinese""). This can be implicitly provided through dish type (e.g ""italian"" if dish type is ""pizza"").",TRUE,FALSE,Default
 dish type,The desired menu item or dish in the restaurant that user shows interests.,TRUE,TRUE,None,None
 type of meal,"The desired category of food consumption associated with specific times of day (e.g., ""breakfast"", ""lunch"", ""dinner"").",FALSE,TRUE,None,None
 price range,The preferred range of prices for the restaurants specified by the user.,FALSE,TRUE,None,None

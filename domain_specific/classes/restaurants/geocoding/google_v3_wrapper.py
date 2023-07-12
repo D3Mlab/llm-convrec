@@ -1,5 +1,6 @@
 from geopy import GoogleV3, Location
-from geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+
 import os
 
 

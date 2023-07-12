@@ -21,8 +21,6 @@ class ConstraintsClassifier:
     _default_keys: set[str]
 
     def __init__(self, llm_wrapper: LLMWrapper, default_keys: list[str] = None):
-        if default_keys is None:
-            default_keys = ["location"]
         self._llm_wrapper = llm_wrapper
         self._default_keys = set(default_keys)
         with open("system_config.yaml") as f:
