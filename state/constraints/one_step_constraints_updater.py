@@ -192,44 +192,6 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                         break
         return result
 
-    # def _merged_location(self, old_locations: list[str], new_locations: list[str]) -> list[str]:
-    #     """
-    #     Return locations where new_locations are merged with old_locations using geocoding.
-    #     New location is merged with most recently added location in old_locations if it can be merged.
-
-    #     location merged in old_locations will be removed.
-
-    #     :param old_locations: original locations
-    #     :param new_locations: new locations that's added
-    #     :return merged locations
-    #     """
-    #     merged_locations = []
-    #     for new_location in new_locations:
-    #         if new_location in old_locations:
-    #             continue
-    #         location_merged = False
-    #         for i in range(len(old_locations) - 1, -1, -1):
-    #             old_location = old_locations[i]
-    #             if old_location in new_location:
-    #                 old_locations.pop(i)
-    #                 merged_locations.append(new_location)
-    #                 location_merged = True
-    #                 break
-    #             else:
-    #                 merged_location = self._geocoder_wrapper.merge_location_query(
-    #                     new_location, old_location)
-    #                 if merged_location is not None:
-    #                     old_locations.pop(i)
-    #                     merged_locations.append(merged_location)
-    #                     location_merged = True
-    #                     break
-    #         if not location_merged:
-    #             merged_locations.append(new_location)
-    #     if 'location' in self._cumulative_constraints_keys:
-    #         return old_locations + merged_locations
-    #     else:
-    #         return merged_locations
-
     def _merge_constraints(self, old_constraints: dict, new_constraints: dict, updated_keys: dict) -> None:
         """
         Merge the given old_constraint to new_constraints.
