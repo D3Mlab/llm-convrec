@@ -65,7 +65,8 @@ class ConvRecSystem(GPTWrapperObserver):
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         domain = domain_specific_config_loader.load_domain()
-        model = domain_specific_config_loader.load_model()
+        
+        model = config["MODEL"]
         
                 
         self._constraints = constraints
