@@ -24,8 +24,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                  few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger]):
         self._llm_wrapper = llm_wrapper
         self._constraints_categories = constraints_categories
-        self._constraint_keys = {
-            constraint_category['key'] for constraint_category in constraints_categories}
+        self._constraint_keys = [
+            constraint_category['key'] for constraint_category in constraints_categories]
         self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
                                              constraints_categories if constraint_category['is_cumulative']}
         
@@ -244,7 +244,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                     old_constraints.get(constraint_merger.get_constraint()),
                     new_constraints.get(constraint_merger.get_constraint())
                 )
-
+        
         for key in new_constraints:
             if key not in self._cumulative_constraints_keys and key in updated_keys and key in old_constraints:
                 # remove all constraints in old_constraints from new_constraints
