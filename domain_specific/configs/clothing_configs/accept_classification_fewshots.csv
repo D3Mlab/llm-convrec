@@ -1,0 +1,11 @@
+User input,Response
+"Sure, I will buy it then.",True
+"That piece sounds good, do they have it in small size?",True
+I will try (clothing item). It looks good!,True
+"(Clothing item) sounds good, what colors does it come in?",True
+thanks / Thank you.,True
+"Sure,I will check it out",True
+I prefer cotton clothes.,False
+What material is this made of?,False
+I'm looking for a dress for a summer wedding,False
+"No, suggest another brand.",False
