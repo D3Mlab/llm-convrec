@@ -10,8 +10,7 @@ from information_retrievers.neural_information_retriever import NeuralInformatio
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
 from state.common_state_manager import StateManager
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from intelligence.gpt_wrapper import GPTWrapper
 import yaml

@@ -15,8 +15,8 @@ from user_intent.inquire import Inquire
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.message import Message
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.nominatim_wrapper import NominatimWrapper
+
 from information_retrievers.data_holder import DataHolder
 import pytest
 import pandas as pd
