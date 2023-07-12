@@ -79,13 +79,6 @@ class ProvidePreference(UserIntent):
         # Update constraints
         self._constraints_updater.update_constraints(curr_state)
 
-        # If user did not specify a location in query make it the default value
-        if self._default_location is not None and curr_state.get('hard_constraints') and \
-                curr_state.get('hard_constraints').get('location') is None \
-                and curr_state.get('hard_constraints').get('location') != []:
-            curr_hard_constraints = curr_state.get('hard_constraints')
-            curr_hard_constraints['location'] = [self._default_location]
-            curr_state.update('hard_constraints', curr_hard_constraints)
 
         if 'location' in curr_state.get("updated_keys").get("hard_constraints", {}):
             self._update_location_type(curr_state)

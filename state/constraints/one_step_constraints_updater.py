@@ -26,8 +26,9 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         self._constraints_categories = constraints_categories
         self._constraint_keys = [
             constraint_category['key'] for constraint_category in constraints_categories]
-        self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
-                                             constraints_categories if constraint_category['is_cumulative']}
+        self._cumulative_constraints_keys = [constraint_category['key'] for constraint_category in
+                                             constraints_categories if constraint_category['is_cumulative']]
+        self._key_to_default_value = {constraint_category["key"]: constraint_category["default_value"] for constraint_category in constraints_categories}
         
         self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
@@ -97,6 +98,13 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             for key in set(state_manager.get("hard_constraints")):
                 if not state_manager.get("hard_constraints")[key]:
                     state_manager.get('hard_constraints').pop(key)
+        
+        for key, default_val in self._key_to_default_value.items():
+            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None and state_manager.get('hard_constraints').get(key) != []:
+                # Update hard constraints 
+                state_manager.get('hard_constraints')[key] = [default_val]
+                #Update updated keys
+                state_manager.get("updated_keys")["hard_constraints"][key] = True
 
     def _generate_prompt(self, state_manager: StateManager) -> str:
         """
