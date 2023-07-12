@@ -1,4 +1,7 @@
 DOMAIN: clothing
+INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
+ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
+REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
 CONSTRAINTS_CATEGORIES: "constraints_config.csv"
 CONSTRAINTS_UPDATER_FEWSHOTS: "constraints_updater_fewshots.csv"
 ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "accepted_items_extractor_fewshots.csv"
