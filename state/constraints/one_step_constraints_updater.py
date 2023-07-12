@@ -64,7 +64,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         if updated_hard_constraints_keys is not None and updated_hard_constraints_keys != {}:
             state_manager.get("updated_keys")[
                 "hard_constraints"] = updated_hard_constraints_keys
-        if updated_soft_constraints_keys is not None and updated_hard_constraints_keys != {}:
+        if updated_soft_constraints_keys is not None and updated_soft_constraints_keys != {}:
             state_manager.get("updated_keys")[
                 "soft_constraints"] = updated_soft_constraints_keys
 
@@ -99,8 +99,9 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                 if not state_manager.get("hard_constraints")[key]:
                     state_manager.get('hard_constraints').pop(key)
         
+        #Update constraint to default value if applicable
         for key, default_val in self._key_to_default_value.items():
-            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None and state_manager.get('hard_constraints').get(key) != []:
+            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None:
                 # Update hard constraints 
                 state_manager.get('hard_constraints')[key] = [default_val]
                 #Update updated keys
