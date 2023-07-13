@@ -19,6 +19,7 @@ from state.common_state_manager import CommonStateManager
 from state.constraints.one_step_constraints_updater import OneStepConstraintsUpdater
 from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from user.terminal import Terminal
+from user.gradio import GradioInterface
 from user.user_interface import UserInterface
 from user_intent.accept_recommendation import AcceptRecommendation
 from user_intent.ask_for_recommendation import AskForRecommendation
@@ -58,7 +59,8 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list):
+    def __init__(self, config: dict, user_defined_constraint_mergers: list,
+                 user_interface_str: str=None):
         constraints = config['ALL_CONSTRAINTS']
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
@@ -148,7 +150,10 @@ class ConvRecSystem(WarningObserver):
                             accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
 
-        self.user_interface = Terminal()
+        if user_interface_str == "demo":
+            self.user_interface = GradioInterface()
+        else:
+            self.user_interface = Terminal()
 
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),

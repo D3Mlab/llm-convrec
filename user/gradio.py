@@ -1,7 +1,7 @@
 from user.user_interface import UserInterface
 import gradio as gr
 
-class Gradio(UserInterface):
+class GradioInterface(UserInterface):
     """
     Class that implements UserInterface with terminal.
     """
