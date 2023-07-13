@@ -148,9 +148,9 @@ class ConvRecSystem(GPTWrapperObserver):
 
         self.user_interface = Terminal()
 
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, self.user_interface),
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, self.user_interface,
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self],
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
@@ -202,6 +202,14 @@ class ConvRecSystem(GPTWrapperObserver):
                     "OpenAI API are currently busy. It might take longer than usual.")
 
         self.is_gpt_retry_notified = True
+
+    def notify_warning(self, warning_msg: str):
+        """
+        Notify this object about warnings.
+
+        :param warning_msg: warning message to be displayed
+        """
+        self.user_interface.display_warning(warning_msg)
 
 
 if __name__ == '__main__':

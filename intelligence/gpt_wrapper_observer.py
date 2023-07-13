@@ -11,3 +11,10 @@ class GPTWrapperObserver:
         """
         raise NotImplementedError()
 
+    def notify_warning(self, warning_msg: str):
+        """
+        Notify this object about warnings.
+
+        :param warning_msg: warning message to be displayed
+        """
+        raise NotImplementedError()

@@ -11,7 +11,6 @@ from user_intent.reject_recommendation import RejectRecommendation
 
 from user_intent.user_intent import UserIntent
 from rec_action.rec_action import RecAction
-import copy
 
 class CommonStateManager(StateManager):
     """
@@ -35,7 +34,7 @@ class CommonStateManager(StateManager):
         self._data = data
         self._data['conv_history'] = []
         self._possible_goals = possible_goals
-        self._default_goal_original = copy.deepcopy(default_goal)
+        self._default_goal_original = default_goal
         self._default_goal = default_goal
 
     def get(self, key: str) -> Any:
