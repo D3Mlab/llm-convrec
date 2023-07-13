@@ -10,8 +10,7 @@ from information_retrievers.neural_information_retriever import NeuralInformatio
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
 from state.common_state_manager import StateManager
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from intelligence.gpt_wrapper import GPTWrapper
 import yaml
@@ -95,7 +94,7 @@ class TestGetBestMatchingRestaurants:
         :param topk_reviews: the number of reviews to store in a RecommendedRestaurant object
         """
         llm_wrapper = GPTWrapper(observers=[self])
-        recommend = Recommend(llm_wrapper, filter_restaurant, information_retriever,
+        recommend = Recommend(llm_wrapper, filter_restaurant, information_retriever, "restaurants",
                               mandatory_constraints={"location", "cuisine type"},
                               specific_location_required=False)
         query = recommend.convert_state_to_query(state_manager)

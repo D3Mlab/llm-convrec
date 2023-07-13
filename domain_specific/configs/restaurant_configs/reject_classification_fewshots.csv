@@ -1,0 +1,10 @@
+User input,Response
+I dont like (restaurant name),True
+I have been to (restaurant name) so I won't go there,True
+Can you tell me somewhere to eat?,False
+i like vegetarian food.,False
+Whats the price range?,False
+I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes,False
+"Sure, I will go there then.",False
+That place sounds good!,False
+

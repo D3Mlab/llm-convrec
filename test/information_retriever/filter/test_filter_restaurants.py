@@ -4,8 +4,7 @@ from information_retrievers.filter.check_already_recommended_restaurant import C
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.item import Item
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from state.common_state_manager import CommonStateManager
 import dotenv

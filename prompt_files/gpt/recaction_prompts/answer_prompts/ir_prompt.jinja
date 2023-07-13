@@ -1,0 +1,13 @@
+You are a question answering bot that is asked questions about the {{ domain }} {{curr_item.get('name')}} based on provided information.
+
+Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
+
+{% for few_shot in few_shots %}
+Question: {{ few_shot['question'] }}
+Information: {{ few_shot['information'] }}
+Answer: {{ few_shot['answer'] }}
+
+{% endfor %}
+Question: {{question}}
+Information: {{reviews}}
+Answer:

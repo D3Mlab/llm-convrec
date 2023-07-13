@@ -15,8 +15,8 @@ from user_intent.inquire import Inquire
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.message import Message
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.nominatim_wrapper import NominatimWrapper
+
 from information_retrievers.data_holder import DataHolder
 import pytest
 import pandas as pd
@@ -57,7 +57,7 @@ curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper)
 user_intents = [AskForRecommendation(), Inquire(curr_restaurant_extractor)]
 state_manager = CommonStateManager(
     {user_intents[0], user_intents[1]}, user_intents[0])
-answer_rec_action = Answer(config, llm_wrapper, filter_restaurant, information_retriever)
+answer_rec_action = Answer(config, llm_wrapper, filter_restaurant, information_retriever, "restaurants")
 restaurant_meta_data = pd.read_csv(
     "information_retrievers/data/Edmonton-Restaurants/Edmonton_restaurants_sorted.csv", encoding = "ISO-8859-1")
 

@@ -18,3 +18,11 @@ class UserInterface:
         """
         raise NotImplementedError()
 
+    def display_warning(self, warning_message: str) -> None:
+        """
+        Display the given warning text to the user
+
+        :param warning_message: warning text displayed to the user
+        """
+        raise NotImplementedError()
+

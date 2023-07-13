@@ -1,0 +1,15 @@
+User input,Response
+Is there patio,True
+Whats the price range?,True
+Is it nearby? Is it in Toronto?,True
+can you please recommend some menu items ,True
+"compare them, list the pros and cons of them",True
+Do they have pizza?,True
+"Boulevard, Edmonton",False
+Can you tell me somewhere to eat?,False
+i would like some vegetarian food.,False
+"I am allergic to seafood, i want to find a restaurant.",False
+Can you give me a recommendation?,False
+i want a restaurant in (location),False
+i want restaurants with delicious pizza in jasper avenue that has great patio.,False
+i want kid's menu,False

@@ -12,7 +12,6 @@ from user_intent.reject_recommendation import RejectRecommendation
 from user_intent.user_intent import UserIntent
 from rec_action.rec_action import RecAction
 
-
 class CommonStateManager(StateManager):
     """
     Implementation of StateManager that uses dictionary.
@@ -21,15 +20,21 @@ class CommonStateManager(StateManager):
     :param possible_goals: set of user intent that can be goals
     """
 
+    _data_original: dict[str, Any]
     _data: dict[str, Any]
+    _possible_goals: set[UserIntent]
+    _default_goal_original: UserIntent
+    _default_goal: UserIntent
 
     def __init__(self, possible_goals: set[UserIntent], default_goal: UserIntent = None, data=None):
         if data is None:
             data = {}
 
+        self._data_original = data.copy()
         self._data = data
         self._data['conv_history'] = []
         self._possible_goals = possible_goals
+        self._default_goal_original = default_goal
         self._default_goal = default_goal
 
     def get(self, key: str) -> Any:
@@ -161,3 +166,11 @@ class CommonStateManager(StateManager):
 
     def __str__(self) -> str:
         return str(self._data)
+
+    def reset_state(self) -> None:
+        """
+        Reset state.
+        """
+        self._data = self._data_original.copy()
+        self._data['conv_history'] = []
+        self._default_goal = copy.deepcopy(self._default_goal_original)

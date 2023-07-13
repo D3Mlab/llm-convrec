@@ -1,22 +1,33 @@
-from textwrap import dedent
-
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
 from information_retrievers.recommended_item import RecommendedItem
 
 from string import punctuation
-
+import yaml
+from jinja2 import Environment, FileSystemLoader
 
 class CurrentItemsExtractor:
     """
     Class used to extract the current restaurant the user is referring to from the most recent user's input.
 
     :param llm_wrapper: LLMWrapper used to extract restaurants
+    :param domain: domain of recommendation
     """
     _llm_wrapper: LLMWrapper
+    _domain: str
 
-    def __init__(self, llm_wrapper: LLMWrapper) -> None:
+    def __init__(self, llm_wrapper: LLMWrapper, domain: str) -> None:
         self._llm_wrapper = llm_wrapper
+        self._domain = domain
+        with open("system_config.yaml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        env = Environment(loader=FileSystemLoader(config['ITEMS_EXTRACTOR_PROMPT_PATH']),
+                          trim_blocks=True, lstrip_blocks=True)
+        self.template = env.get_template(config['CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._few_shots = domain_specific_config_loader.load_current_items_fewshots()
+
 
     def extract(self, recommended_restaurants: list[list[RecommendedItem]], conv_history: list[Message]) -> RecommendedItem | None:
         """
@@ -55,29 +66,9 @@ class CurrentItemsExtractor:
 
         current_user_input = conv_history[-1].get_content()
 
-        return dedent(f"""
-        Extract the restaurant names from the user input and respond only with the names of the restaurant separated by commas and ending with a period. 
-        If you cannot extract a restaurant name respond with "None.".
-
-        The user may use short forms or 'slang' when referring to the following restaurants: {curr_ment_res_names_str}. 
-        If this is the case then respond with the entire restaurant name, not the slang or short form the user referred to.
-
-        User Input: I don't like thai express, starbucks or subway.
-        Response: Thai Express, Starbucks, Subway.
-
-        User Input: I like that they have a patio.
-        Response: None.
-
-        User Input: Does thai express have a balcony?
-        Response: Thai Express.
-
-        User Input: where is timmy's?
-        Response: Tim Hortons.
-
-        User Input: "{current_user_input}".
-        Response:
-
-        """)
+        return self.template.render(user_input=current_user_input,
+                                    curr_ment_item_names_str=curr_ment_res_names_str,
+                                    domain=self._domain, few_shots=self._few_shots)
 
     def _clean_string(self, llm_response) -> str:
         """

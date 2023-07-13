@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 import yaml
 
 
+
 class Inquire(UserIntent):
     """
     Class representing Inquire user intent.
@@ -14,13 +15,15 @@ class Inquire(UserIntent):
 
     _current_restaurants_extractor: CurrentItemsExtractor
 
-    def __init__(self, current_restaurants_extractor: CurrentItemsExtractor):
+    def __init__(self, current_restaurants_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str):
         self._current_restaurants_extractor = current_restaurants_extractor
-        with open("config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
-    
+        
+        with open("system_config.yaml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)    
         env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
+        self._few_shots = few_shots
+        self._domain = domain
 
     def get_name(self) -> str:
         """
@@ -45,21 +48,21 @@ class Inquire(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        
+
         # Update current restaurant
         reccommended_restaurants = curr_state.get("recommended_items")
 
         if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(reccommended_restaurants, curr_state.get("conv_history"))
-            
+            curr_res = self._current_restaurants_extractor.extract(
+                reccommended_restaurants, curr_state.get("conv_history"))
+
             # If current restaurant is [] then just keep it the same
             if curr_res != []:
                 curr_state.update("curr_items", curr_res)
-            
-                
+
         return curr_state
-    
-    def get_prompt_for_classification(self, curr_state:StateManager) -> str:
+
+    def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
         Returns prompt for generating True/False representing how likely the user input matches with the user intent of inquire
 
@@ -67,5 +70,5 @@ class Inquire(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input)
+        prompt = self.template.render(user_input=user_input, few_shots=self._few_shots,domain=self._domain)
         return prompt

@@ -21,14 +21,14 @@ class ConstraintsClassifier:
     _default_keys: set[str]
 
     def __init__(self, llm_wrapper: LLMWrapper, default_keys: list[str] = None):
-        if default_keys is None:
-            default_keys = ["location"]
         self._llm_wrapper = llm_wrapper
         self._default_keys = set(default_keys)
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
-        self.template = env.get_template(config['CONSTRAINTS_CLASSIFIER_PROMPT_FILENAME'])
+        env = Environment(loader=FileSystemLoader(
+            config['CONSTRAINTS_PROMPT_PATH']))
+        self.template = env.get_template(
+            config['CONSTRAINTS_CLASSIFIER_PROMPT_FILENAME'])
 
     def classify(self, conv_history: list[Message], extracted_constraints: dict) -> dict:
         """
@@ -53,9 +53,12 @@ class ConstraintsClassifier:
         the constraint category
         :return: prompt for classifying constraints.
         """
-        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
+        curr_user_input = conv_history[-1].get_content() if len(
+            conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(
+            conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(
+            conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input,
@@ -74,7 +77,8 @@ class ConstraintsClassifier:
         """
         result = ""
         for key in extracted_constraints:
-            values = ', '.join(f'"{value}"' for value in extracted_constraints[key])
+            values = ', '.join(
+                f'"{value}"' for value in extracted_constraints[key])
             result += f" - {key}: {values}\n"
         return result.removesuffix('\n')
 

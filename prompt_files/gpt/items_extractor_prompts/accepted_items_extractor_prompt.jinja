@@ -1,0 +1,11 @@
+You are a {{ domain }} recommender. List {{ domain }} that have been rejected by the user, based on the previously mentioned {{ domain }}. Only indicate the {{ domain }} name and nothing else.
+{% for few_shot in few_shots %}
+All Mentioned {{ domain[0]|upper}}{{domain[1:] }}: {{ few_shot['all_mentioned_items']|join(", ") }}
+Most Recently Mentioned {{ domain[0]|upper}}{{domain[1:] }}: {{ few_shot['recently_mentioned_items']|join(", ") }}
+User’s Input: "{{ few_shot['user_input'] }}"
+Accepted {{ domain[0]|upper}}{{domain[1:] }}: {{ few_shot['accepted_items']|join(", ") }}
+{% endfor %}
+All Mentioned {{ domain[0]|upper}}{{domain[1:] }}: {{ all_mentioned_items|join(", ") }}
+Most Recently Mentioned {{ domain[0]|upper}}{{domain[1:] }}: {{ recently_mentioned_items|join(", ") }}
+User's Input: "{{ user_input }}"
+Accepted {{ domain[0]|upper}}{{domain[1:] }}:

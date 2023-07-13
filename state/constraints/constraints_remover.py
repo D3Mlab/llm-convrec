@@ -20,10 +20,12 @@ class ConstraintsRemover:
     def __init__(self, llm_wrapper: LLMWrapper, default_keys: list):
         self._llm_wrapper = llm_wrapper
         self._default_keys = set(default_keys)
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
-        self.template = env.get_template(config['CONSTRAINTS_REMOVER_PROMPT_FILENAME'])
+        env = Environment(loader=FileSystemLoader(
+            config['CONSTRAINTS_PROMPT_PATH']))
+        self.template = env.get_template(
+            config['CONSTRAINTS_REMOVER_PROMPT_FILENAME'])
 
     def remove_ignored_constraints(self, state_manager: StateManager) -> dict:
         """
@@ -35,16 +37,20 @@ class ConstraintsRemover:
         soft_constraints = state_manager.get("soft_constraints")
         ignored_constraints = {}
         if hard_constraints is not None:
-            prompt = self._generate_prompt(state_manager.get('conv_history'), hard_constraints)
+            prompt = self._generate_prompt(
+                state_manager.get('conv_history'), hard_constraints)
             llm_response = self._llm_wrapper.make_request(prompt)
             new_constraints, ignored_constraints['hard_constraints'] = \
-                self._update_constraints_from_llm_response(llm_response, hard_constraints)
+                self._update_constraints_from_llm_response(
+                    llm_response, hard_constraints)
             state_manager.update("hard_constraints", new_constraints)
         if soft_constraints is not None:
-            prompt = self._generate_prompt(state_manager.get('conv_history'), soft_constraints)
+            prompt = self._generate_prompt(
+                state_manager.get('conv_history'), soft_constraints)
             llm_response = self._llm_wrapper.make_request(prompt)
             new_constraints, ignored_constraints['soft_constraints'] = \
-                self._update_constraints_from_llm_response(llm_response, soft_constraints)
+                self._update_constraints_from_llm_response(
+                    llm_response, soft_constraints)
             state_manager.update("soft_constraints", new_constraints)
         return ignored_constraints
 
@@ -56,9 +62,12 @@ class ConstraintsRemover:
         :param constraints: current constraints (hard or soft)
         :return: prompt for removing constraints
         """
-        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
+        curr_user_input = conv_history[-1].get_content() if len(
+            conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(
+            conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(
+            conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input,
@@ -77,7 +86,8 @@ class ConstraintsRemover:
         """
         result = ""
         for key in extracted_constraints:
-            values = ', '.join(f'"{value}"' for value in extracted_constraints[key])
+            values = ', '.join(
+                f'"{value}"' for value in extracted_constraints[key])
             result += f" - {key}: {values}\n"
         return result.removesuffix('\n')
 

@@ -1,0 +1,35 @@
+{%- macro format_constraints(constraints) -%}
+{%- if constraints is none -%}
+None
+{%- else -%}
+{%- for key in constraints -%}
+ - {{ key }}: {% for item in constraints[key] -%}"{{ item }}"{%- if not loop.last -%}, {% endif -%}{%- endfor -%} {%- if not loop.last %}
+{% endif -%}
+{%- endfor %}
+{%- endif -%}
+{%- endmacro -%}
+You are a {{ domain }} recommender. Please give me the updated hard and soft constraints towards {{ domain }} based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+{% for constraint_category in constraint_categories -%}
+ - {{ constraint_category['key'] }}: {{ constraint_category['description'] }}
+{% endfor %}
+For example:
+{% for few_shot in few_shots %}
+Old Hard Constraints:
+{{ format_constraints(few_shot['old_hard_constraints']) }}
+Old Soft Constraints:
+{{ format_constraints(few_shot['old_soft_constraints']) }}
+User’s Current Input: "{{ few_shot['user_input'] }}"
+New Hard Constraints:
+{{ format_constraints(few_shot['new_hard_constraints']) }}
+New Soft Constraints:
+{{ format_constraints(few_shot['new_soft_constraints']) }}
+{% endfor %}
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+{{ format_constraints(hard_constraints) }}
+Old Soft Constraints:
+{{ format_constraints(soft_constraints) }}
+User’s Current Input: "{{ user_input }}"

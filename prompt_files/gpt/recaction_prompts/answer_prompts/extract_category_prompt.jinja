@@ -1,0 +1,13 @@
+Does the following input mention any one of the following categories? They are referring to the {{ domain }} {{curr_item.get('name')}}.
+
+Please classify it into one of the following categories: 
+{{categories}}
+Only respond with the name of the category. 
+
+{% for few_shot in few_shots %}
+Input: {{ few_shot['input'] }}
+Output: {{ few_shot['output'] }}
+
+{% endfor %}
+Input: {{question}}
+Output:

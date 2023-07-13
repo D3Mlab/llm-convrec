@@ -1,0 +1,5 @@
+all_mentioned_items,recently_mentioned_items,user_input,rejected_items
+"Clothing A,Clothing B,Clothing C","Clothing B, Clothing C","I don't like Clothing B","Clothing B"
+"Clothing A,Clothing B,Clothing C","Clothing B, Clothing C","Clothing A sounds bad","Clothing A"
+"Clothing A, Clothing B, Clothing C, Clothing E, Clothing F, Clothing F","Clothing E, Clothing F, Clothing F","I don't like Clothing E and Clothing G, but like Clothing F","Clothing E, Clothing G"
+"Clothing A, Clothing B, Clothing C, Clothing D","Clothing C, Clothing D","I hate it","Clothing C, Clothing D"
