@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 import yaml
 from rec_action.rec_action import RecAction
@@ -12,6 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 import logging
 import jinja2
 from jinja2 import Environment, FileSystemLoader
+from warning_observer import WarningObserver
 
 logger = logging.getLogger('recommend')
 
@@ -39,10 +40,11 @@ class Recommend(RecAction):
     _format_recommendation_prompt: jinja2.Template
     _no_matching_restaurant_prompt: jinja2.Template
     _summarize_review_prompt: jinja2.Template
+    _observers: list[WarningObserver]
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever,
-                 mandatory_constraints: str = None,
+                 information_retriever: InformationRetriever, domain: str,
+                 observers=None, mandatory_constraints: str = None,
                  priority_score_range=(1, 10), specific_location_required: bool = True):
         super().__init__(priority_score_range)
         if mandatory_constraints is None:
@@ -53,8 +55,10 @@ class Recommend(RecAction):
         self._current_recommended_restaurants = []
         self._specific_location_required = specific_location_required
         self._llm_wrapper = llm_wrapper
+        self._domain = domain
+        self._observers = observers
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
         if config["TOPK_RESTAURANTS"] and config["TOPK_REVIEWS"] and config["RECOMMEND_PROMPTS_PATH"] \
@@ -157,13 +161,13 @@ class Recommend(RecAction):
             loc_name = self._get_all_loc_name_in_text(state_manager)
             return "Sorry, there is no restaurant near " + loc_name + "."
 
-    def _get_prompt_for_no_matching_item(self, loc_name):
+    def _get_prompt_for_no_matching_item(self):
         """
         Get the prompt to get recommendation text with explanation.
         :param loc_name: location name(s)
         :return: prompt to use when there is no matching item
         """
-        return self._no_matching_restaurant_prompt.render(loc_name=loc_name)
+        return self._no_matching_restaurant_prompt.render(domain=self._domain)
 
     def _get_all_loc_name_in_text(self, state_manager: StateManager):
         """
@@ -180,11 +184,12 @@ class Recommend(RecAction):
         :param explanation: explanation of why the restaurants are recommended
         :return: prompt to get recommendation text with explanation
         """
-        restaurant_names = ' and '.join(
+        item_names = ' and '.join(
             [f'{rec_restaurant.get("name")}' for rec_restaurant in self._current_recommended_restaurants])
         explanation_str = ', '.join(
             [f'{key}: {val}' for key, val in explanation.items()])
-        return self._format_recommendation_prompt.render(restaurant_names=restaurant_names, explanation=explanation_str)
+        return self._format_recommendation_prompt.render(
+            item_names=item_names, explanation=explanation_str, domain=self._domain)
 
     def _get_explanation_for_each_restaurant(self, state_manager: StateManager) -> dict[Any, str]:
         """
@@ -214,8 +219,7 @@ class Recommend(RecAction):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                print(
-                    'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+                self._notify_observers()
 
                 logger.debug("Reviews are too long, summarizing...")
 
@@ -238,11 +242,18 @@ class Recommend(RecAction):
 
         return explanation
 
-    def _get_prompt_to_explain_recommendation(self, restaurant_name: str, metadata: str, reviews: list[str],
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
+        for observer in self._observers:
+            observer.notify_warning()
+
+    def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:
         """
         Get the prompt to get explanation.
-        :param restaurant_name: restaurant name
+        :param item_names: item name
         :param metadata: metadata of the restaurant
         :param reviews: reviews of the restaurant
         :param hard_constraints: hard constraints in current statemanager
@@ -250,8 +261,8 @@ class Recommend(RecAction):
         :return: prompt to get explanation
         """
         return self._explain_recommendation_prompt.render(
-            restaurant_name=restaurant_name, metadata=metadata, reviews=reviews,
-            hard_constraints=hard_constraints, soft_constraints=soft_constraints)
+            item_names=item_names, metadata=metadata, reviews=reviews,
+            hard_constraints=hard_constraints, soft_constraints=soft_constraints, domain=self._domain)
 
     def _get_prompt_to_summarize_review(self, constraints: dict, review: str) -> str:
         """
@@ -261,12 +272,11 @@ class Recommend(RecAction):
         """
         constraints_str = ', '.join(
             [f'{key}: {val}' for key, val in constraints.items()])
-        return self._summarize_review_prompt.render(constraints=constraints_str, review=review)
+        return self._summarize_review_prompt.render(constraints=constraints_str, review=review, domain=self._domain)
 
     def _get_metadata_of_rec_item(self, recommended_restaurant: RecommendedItem):
         """
         Get metadata of a restaurant used for recommend
-        :param state_manager: current statemanager
         :param recommended_restaurant: recommended restaurant whose metadata to be returned
         """
         metadata = f"""location: at {recommended_restaurant.get('address')}, """
@@ -286,7 +296,7 @@ class Recommend(RecAction):
         data = state_manager.to_dict()
         soft_constraints = data.get('soft_constraints')
         prompt = self._convert_state_to_query_prompt.render(
-            hard_constraints=hard_constraints, soft_constraints=soft_constraints)
+            hard_constraints=hard_constraints, soft_constraints=soft_constraints, domain=self._domain)
         query = self._llm_wrapper.make_request(prompt)
 
         return query

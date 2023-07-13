@@ -1,0 +1,5 @@
+all_mentioned_items,recently_mentioned_items,user_input,rejected_items
+"Restaurant A,Restaurant B,Restaurant C","Restaurant B, Restaurant C","I don't like Restaurant B","Restaurant B"
+"Restaurant A,Restaurant B,Restaurant C","Restaurant B, Restaurant C","Restaurant A sounds bad","Restaurant A"
+"Restaurant A, Restaurant B, Restaurant C, Restaurant E, Restaurant F, Restaurant F","Restaurant E, Restaurant F, Restaurant F","I don't like Restaurant E and Restaurant G, but like Restaurant F","Restaurant E, Restaurant G"
+"Restaurant A, Restaurant B, Restaurant C, Restaurant D","Restaurant C, Restaurant D","I hate it","Restaurant C, Restaurant D"

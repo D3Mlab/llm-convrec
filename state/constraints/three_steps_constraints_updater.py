@@ -1,4 +1,4 @@
-from geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 from state.state_manager import StateManager
 from state.constraints.constraints_classifier import ConstraintsClassifier
 from state.constraints.constraints_remover import ConstraintsRemover

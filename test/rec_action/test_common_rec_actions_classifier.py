@@ -11,8 +11,9 @@ import yaml
 from dotenv import load_dotenv
 load_dotenv()
 
-with open("config.yaml") as f:
+with open("system_config.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
+
 
 class TestCommonRecActionsClassifier:
     """
@@ -25,13 +26,15 @@ class TestCommonRecActionsClassifier:
         when user asks for recommendation, but it doesn't have the mandatory constraints and k = 1.
         """
         mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
                        RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
-        state_manager.update_conv_history(Message("user", "I want recommendation in Toronto"))
+        state_manager.update_conv_history(
+            Message("user", "I want recommendation in Toronto"))
         state_manager.update("hard_constraints", {"location": "Toronto"})
-        state_manager.update("unsatisfied_goals", [{"user_intent": AskForRecommendation(), "utterance_index": 0}])
+        state_manager.update("unsatisfied_goals", [
+                             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -44,13 +47,16 @@ class TestCommonRecActionsClassifier:
         """
 
         mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
                        RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
-        state_manager.update_conv_history(Message("user", "I want italian restaurants in Toronto"))
-        state_manager.update("hard_constraints", {"location": "Toronto", "cuisine type": "italian"})
-        state_manager.update("unsatisfied_goals", [{"user_intent": AskForRecommendation(), "utterance_index": 0}])
+        state_manager.update_conv_history(
+            Message("user", "I want italian restaurants in Toronto"))
+        state_manager.update("hard_constraints", {
+                             "location": "Toronto", "cuisine type": "italian"})
+        state_manager.update("unsatisfied_goals", [
+                             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -61,11 +67,14 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers classifies recommender action to Answer
         when unsatisfied goal has user intent, Inquire, and k = 1.
         """
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(
+            None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
-        state_manager.update_conv_history(Message("user", "Do they have patio?"))
-        state_manager.update("unsatisfied_goals", [{"user_intent": Inquire(None), "utterance_index": 0}])
+        state_manager.update_conv_history(
+            Message("user", "Do they have patio?"))
+        state_manager.update("unsatisfied_goals", [
+                             {"user_intent": Inquire(None), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -76,7 +85,8 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers doesn't classify to any recommender action when unsatisfied goals
         doesn't exist
         """
-        rec_actions = [Answer(config, None, None), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(
+            None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message("user", "Hello"))
@@ -90,7 +100,8 @@ class TestCommonRecActionsClassifier:
         Test whether CommonRecActionsClassifier two recommender actions correctly by prioritizing more recent
         unsatisfied goals.
         """
-        rec_actions = [RequestInformation(None, specific_location_required=False), ExplainPreference(), Recommend(None, None, config, specific_location_required=False), Answer(config, None, None)]
+        rec_actions = [RequestInformation(None, specific_location_required=False), ExplainPreference(), Recommend(
+            None, None, config, specific_location_required=False), Answer(config, None, None, "restaurants")]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update("conv_history", [Message("DUMMY", "DUMMY")] * 4)
@@ -98,8 +109,3 @@ class TestCommonRecActionsClassifier:
                                                    {"user_intent": Inquire(None), "utterance_index": 4}])
         result = rec_action_classifier.classify(state_manager, k=5)
         assert len(result) == 2 and result == [rec_actions[3], rec_actions[0]]
-
-
-
-
-

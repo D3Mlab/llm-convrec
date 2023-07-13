@@ -4,16 +4,15 @@ from state.state_manager import StateManager
 from user_intent.inquire import Inquire
 from state.message import Message
 from decimal import Decimal
-
 from string import ascii_letters
-
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
 from information_retrievers.neural_information_retriever import InformationRetriever
 from intelligence.llm_wrapper import LLMWrapper
-
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 import yaml
+from warning_observer import WarningObserver
 
 logger = logging.getLogger('answer')
 
@@ -21,7 +20,7 @@ logger = logging.getLogger('answer')
 class Answer(RecAction):
     """
     Class representing Answer recommender action.
-    :param config: config values from config.yaml
+    :param config: config values from system_config.yaml
     :param priority_score_range: range of scores for smth TODO: fill in smth
     :param information_retriever: information retriever that is used to fetch restaurant recommendations
     :param llm_wrapper: object to make request to LLM
@@ -32,11 +31,16 @@ class Answer(RecAction):
     _information_retriever: InformationRetriever
     _llm_wrapper: LLMWrapper
     _prompt: str
+    _observers: list[WarningObserver]
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+                 information_retriever: InformationRetriever, domain: str,
+                 observers=None,
+                 priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._filter_restaurants = filter_restaurants
+        self._domain = domain
+        self._observers = observers
 
         if config["NUM_REVIEWS_TO_RETURN"]:
             self._num_of_reviews_to_return = int(
@@ -50,11 +54,11 @@ class Answer(RecAction):
 
         self._prompt = ""
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
 
         self.env = Environment(loader=FileSystemLoader(
-            self.config['ANSWER_PROMPTS_PATH']))
+            self.config['ANSWER_PROMPTS_PATH']), trim_blocks=True, lstrip_blocks=True)
 
         self.gpt_template = self.env.get_template(
             self.config['ANSWER_GPT_PROMPT'])
@@ -82,6 +86,20 @@ class Answer(RecAction):
 
         self.ir_template = self.env.get_template(
             self.config['ANSWER_IR_PROMPT'])
+
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+
+        self._extract_category_few_shots \
+            = domain_specific_config_loader.load_answer_extract_category_fewshots()
+
+        self._ir_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_ir_fewshots()
+
+        self._separate_qs_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_separate_questions_fewshots()
+
+        self._verify_metadata_prompt_few_shots \
+            = domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots()
 
     def get_name(self) -> str:
         """
@@ -192,7 +210,7 @@ class Answer(RecAction):
                                 f'Answer with GPT')
 
                             prompt = self.gpt_template.render(
-                                curr_mentioned_restaurant=curr_mentioned_restaurant, question=question)
+                                curr_mentioned_item=curr_mentioned_restaurant, question=question)
 
                             llm_resp = self._llm_wrapper.make_request(
                                 prompt)
@@ -225,7 +243,7 @@ class Answer(RecAction):
             "conv_history")[-1].get_content()
 
         prompt = self.mult_qs_template.render(
-            current_user_input=current_user_input)
+            current_user_input=current_user_input, few_shots=self._separate_qs_prompt_few_shots)
 
         resp = self._llm_wrapper.make_request(prompt)
 
@@ -289,7 +307,7 @@ class Answer(RecAction):
         """
 
         prompt = self.verify_metadata_template.render(
-            question=question, resp=resp)
+            question=question, resp=resp, few_shots=self._verify_metadata_prompt_few_shots)
 
         valid_resp = self._llm_wrapper.make_request(prompt)
 
@@ -351,7 +369,8 @@ class Answer(RecAction):
         if (len(answers) > 1):
 
             prompt = self.format_mult_resp_template.render(
-                question=question, curr_ment_res_names_str=curr_ment_res_names_str, res_to_answ=res_to_answ)
+                question=question, curr_ment_item_names_str=curr_ment_res_names_str,
+                res_to_answ=res_to_answ, domain=self._domain)
 
             resp = self._llm_wrapper.make_request(prompt)
 
@@ -391,7 +410,8 @@ class Answer(RecAction):
         categories += " or none"
 
         prompt = self.extract_category_template.render(
-            curr_restaurant=curr_restaurant, categories=categories, question=question)
+            curr_item=curr_restaurant, categories=categories, question=question, domain=self._domain,
+            few_shots=self._extract_category_few_shots)
 
         return self._llm_wrapper.make_request(prompt)
 
@@ -441,7 +461,7 @@ class Answer(RecAction):
                     except:
 
                         prompt = self.hours_template.render(
-                            question=question, recommended_restaurant=recommended_restaurant)
+                            question=question, recommended_item=recommended_restaurant)
 
                         return self._llm_wrapper.make_request(prompt)
 
@@ -680,12 +700,13 @@ class Answer(RecAction):
 
         try:
             prompt = self.ir_template.render(
-                curr_restaurant=curr_restaurant, question=question, reviews=reviews)
+                curr_item=curr_restaurant, question=question, reviews=reviews, domain=self._domain,
+                few_shots=self._ir_prompt_few_shots)
+
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
-            print(
-                'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+            self._notify_observers()
 
             logger.debug("Reviews are too long, summarizing...")
 
@@ -697,11 +718,19 @@ class Answer(RecAction):
                 summarized_reviews.append(summarized_review)
 
             prompt = self.ir_template.render(
-                curr_restaurant=curr_restaurant, question=question, reviews=summarized_reviews)
+                curr_item=curr_restaurant, question=question, reviews=summarized_reviews, domain=self._domain,
+                few_shots=self._ir_prompt_few_shots)
 
             return self._llm_wrapper.make_request(prompt)
 
         return resp
+
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
+        for observer in self._observers:
+            observer.notify_warning()
 
     def is_response_hard_coded(self) -> bool:
         """

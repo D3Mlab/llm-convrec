@@ -4,10 +4,10 @@ import warnings
 import openai.error
 import yaml
 
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+
 from intelligence.gpt_wrapper import GPTWrapper
-from intelligence.gpt_wrapper_observer import GPTWrapperObserver
+from warning_observer import WarningObserver
 from rec_action.answer import Answer
 from rec_action.explain_preference import ExplainPreference
 from rec_action.recommend import Recommend
@@ -19,6 +19,7 @@ from state.common_state_manager import CommonStateManager
 from state.constraints.one_step_constraints_updater import OneStepConstraintsUpdater
 from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from user.terminal import Terminal
+from user.gradio import GradioInterface
 from user.user_interface import UserInterface
 from user_intent.accept_recommendation import AcceptRecommendation
 from user_intent.ask_for_recommendation import AskForRecommendation
@@ -44,9 +45,10 @@ from information_retrievers.neural_ir.neural_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
 from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
-class ConvRecSystem(GPTWrapperObserver):
+class ConvRecSystem(WarningObserver):
     """
     Class responsible for setting up and running the conversational recommendation system.
 
@@ -57,23 +59,33 @@ class ConvRecSystem(GPTWrapperObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, user_defined_constraint_mergers: list,
+                 user_interface_str: str=None):
         constraints = config['ALL_CONSTRAINTS']
+        
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        constraints_categories = domain_specific_config_loader.load_constraints_categories()
+        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+        domain = domain_specific_config_loader.load_domain()
+        
+        model = config["MODEL"]
+        
+                
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
-        if config['GEOCODING_METHOD'] == 'GoogleV3':
-            geocoder_wrapper = GoogleV3Wrapper()
-        else:
-            geocoder_wrapper = NominatimWrapper()
-
-        llm_wrapper = GPTWrapper(observers=[self])
-        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper)
+        # TEMP
+        geocoder_wrapper = GoogleV3Wrapper()
+         
+        llm_wrapper = GPTWrapper(model_name=model, observers=[self])
+        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
-            constraints_classifier = ConstraintsClassifier(llm_wrapper, constraints)
+            constraints_classifier = ConstraintsClassifier(
+                llm_wrapper, constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = ConstraintsRemover(llm_wrapper, constraints)
+                constraints_remover = ConstraintsRemover(
+                    llm_wrapper, constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
@@ -84,9 +96,11 @@ class ConvRecSystem(GPTWrapperObserver):
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
-            constraints_classifier = ConstraintsClassifier(llm_wrapper, constraints)
+            constraints_classifier = ConstraintsClassifier(
+                llm_wrapper, constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = SafeConstraintsRemover(llm_wrapper, default_keys=constraints)
+                constraints_remover = SafeConstraintsRemover(
+                    llm_wrapper, default_keys=constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
@@ -96,15 +110,17 @@ class ConvRecSystem(GPTWrapperObserver):
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         else:
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
-            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper, constraints,
-                                                            cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
-                                                            enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
+                                                            constraints_categories,
+                                                            constraints_fewshots, domain,
+                                                            user_defined_constraint_mergers)
         accepted_restaurants_extractor = AcceptedItemsExtractor(
-            llm_wrapper)
+            llm_wrapper, domain)
         rejected_restaurants_extractor = RejectedItemsExtractor(
-            llm_wrapper)
+            llm_wrapper, domain)
 
-        check_location = CheckLocation(config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
+        check_location = CheckLocation(
+            config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
         check_cuisine_type = CheckCuisineDishType()
         check_already_recommended_restaurant = CheckAlreadyRecommendedRestaurant()
         data_holder = DataHolder(config["PATH_TO_RESTAURANT_METADATA"], config["PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS"],
@@ -121,13 +137,27 @@ class ConvRecSystem(GPTWrapperObserver):
 
         default_location = config.get('DEFAULT_LOCATION') if config.get(
             'DEFAULT_LOCATION') != 'None' else None
-        user_intents = [Inquire(curr_restaurant_extractor),
+        
+
+        inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
+        accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
+        reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
+
+        user_intents = [Inquire(curr_restaurant_extractor, inquire_classification_fewshots,domain),
                         ProvidePreference(constraints_updater, curr_restaurant_extractor, geocoder_wrapper,
                                           default_location=default_location),
-                        AcceptRecommendation(accepted_restaurants_extractor, curr_restaurant_extractor),
-                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor)]
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever), ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever,
+                        AcceptRecommendation(
+                            accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
+                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
+
+        if user_interface_str == "demo":
+            self.user_interface = GradioInterface()
+        else:
+            self.user_interface = Terminal()
+
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
+                       ExplainPreference(),
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self],
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
@@ -145,10 +175,10 @@ class ConvRecSystem(GPTWrapperObserver):
             {AskForRecommendation(), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation())
         state.update("unsatisfied_goals", [
             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
-        self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
+        self.is_warning_notified = False
 
     def run(self) -> None:
         """
@@ -163,6 +193,7 @@ class ConvRecSystem(GPTWrapperObserver):
             response = self.dialogue_manager.get_response(user_input)
             self.user_interface.display_to_user(f'Recommender: {response}')
             self.is_gpt_retry_notified = False
+            self.is_warning_notified = False
 
     def notify_gpt_retry(self, retry_info: dict) -> None:
         """
@@ -173,10 +204,10 @@ class ConvRecSystem(GPTWrapperObserver):
         if not self.is_gpt_retry_notified:
             if isinstance(retry_info.get('output'), openai.error.ServiceUnavailableError) or \
                     isinstance(retry_info.get('output'), openai.error.APIConnectionError):
-                self.user_interface.display_to_user(
+                self.user_interface.display_warning(
                     "There were some issues with the OpenAI server. It might take longer than usual.")
             else:
-                self.user_interface.display_to_user(
+                self.user_interface.display_warning(
                     "OpenAI API are currently busy. It might take longer than usual.")
 
         self.is_gpt_retry_notified = True
@@ -189,11 +220,11 @@ class ConvRecSystem(GPTWrapperObserver):
         self.is_gpt_retry_notified = False
         return response
 
-
-if __name__ == '__main__':
-    warnings.simplefilter("default")
-    logging.config.fileConfig('logging.conf')
-    with open("config.yaml") as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-    conv_rec_system = ConvRecSystem(config)
-    conv_rec_system.run()
+    def notify_warning(self):
+        """
+        Notify this object about warnings.
+        """
+        if not self.is_warning_notified:
+            self.user_interface.display_warning(
+                "Sorry.. running into some difficulties, this is going to take longer than usual.")
+        self.is_warning_notified = True

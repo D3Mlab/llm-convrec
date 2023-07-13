@@ -63,3 +63,44 @@ pytest .\test\filename.py
 - **Singleuserintenttest.csv**: test files used to test multilabel user intent classifier
   - 1st column (Input): utterance from the user provided as an input
   - 2nd column (Output1): 1st expected classification of user intent
+
+# How to implement another domain
+Make a folder in domain_configs directory.In that folder, you need following files.
+- **domain_specific_config.yaml**
+  - DOMAIN: domain name
+  - followings should remain the same if you name files as in this documentation
+  - CONSTRAINTS_CATEGORIES: file name that has constraints categories
+  - CONSTRAINTS_UPDATER_FEWSHOTS: file name that has fewshots for constraints updater prompt
+  - ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: file name that has fewshots for accepted items extractor prompt
+  - REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: file name that has fewshots for rejected items extractor prompt
+  - CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE: file name that has fewshots for current items etractor prompt
+  - ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: file name that has fewshots for answer recaction's extract category prompt
+  - ANSWER_IR_FEWSHOTS_FILE: file name that has fewshots for answer recaction's ir prompt
+  - ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: file name that has fewshots for answer recaction's separate questions prompt
+  - ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: file name that has fewshots for answer recaction's verify metadata response prompt
+- **constraints_config.csv**
+- **constraints_updater_fewshots.csv**
+- **accepted_items_extractor_fewshots.csv**
+- **rejected_items_extractor_fewshots.csv**
+- **current_items_extractor_fewshots.csv**
+  - requires columns named user_input and response
+  - user_input: user input
+  - response: items extracted from the user input
+- **answer_extract_category_fewshots.csv**
+  - requires columns named input and output
+  - input: question from user
+  - output: metadata category that has the answer for the user input
+- **answer_ir_fewshots.csv**
+  - requires columns named question, information, and answer
+  - question: question from user
+  - information: reviews retrieved by information retrieval
+  - answer: answer to the question based on the information given
+- **answer_separate_questions_fewshots.csv**
+  - requires columns named question and individual_questions
+  - question: question from user
+  - individual_questions: individual questions in the user's question separated by a new line character (i.e. "\n")
+- **answer_verify_metadata_resp_fewshots.csv**
+  - requires columns named question, answer, and response
+  - question: question from user
+  - answer: answer created by the system
+  - response: "Yes." if the answer actually answer the question. "No." if the answer doesn't answer the question

@@ -1,4 +1,5 @@
-from geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+
 from state.state_manager import StateManager
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
@@ -30,12 +31,13 @@ class ProvidePreference(UserIntent):
         self._geocoder_wrapper = geocoder_wrapper
         self._default_location = default_location
 
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-    
-        env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
 
+        env = Environment(loader=FileSystemLoader(
+            config['INTENT_PROMPTS_PATH']))
+        self.template = env.get_template(
+            config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
 
     def get_name(self) -> str:
         """
@@ -67,12 +69,13 @@ class ProvidePreference(UserIntent):
         reccommended_restaurants = curr_state.get("recommended_items")
 
         if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(reccommended_restaurants, curr_state.get("conv_history"))
-            
+            curr_res = self._current_restaurants_extractor.extract(
+                reccommended_restaurants, curr_state.get("conv_history"))
+
             # If current restaurant is [] then just keep it the same
             if curr_res != []:
                 curr_state.update("curr_items", curr_res)
-                
+
         # Update constraints
         self._constraints_updater.update_constraints(curr_state)
 
@@ -88,7 +91,7 @@ class ProvidePreference(UserIntent):
             self._update_location_type(curr_state)
 
         return curr_state
-    
+
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
         Returns prompt for generating True/False representing how likely the user input matches with the user intent of provide preference
@@ -116,7 +119,8 @@ class ProvidePreference(UserIntent):
         if len(locations) == 0:
             curr_state.update('location_type', None)
             return
-        geocoded_latest_location = self._geocoder_wrapper.geocode(locations[-1])
+        geocoded_latest_location = self._geocoder_wrapper.geocode(
+            locations[-1])
         if geocoded_latest_location is None:
             curr_state.update('location_type', 'invalid')
             return
@@ -124,4 +128,3 @@ class ProvidePreference(UserIntent):
             curr_state.update('location_type', 'specific')
             return
         curr_state.update('location_type', 'valid')
-

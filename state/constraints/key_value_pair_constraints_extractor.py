@@ -15,10 +15,12 @@ class KeyValuePairConstraintsExtractor(ConstraintsExtractor):
         super().__init__(default_keys)
         self._llm_wrapper = llm_wrapper
         self._default_keys = default_keys
-        with open("config.yaml") as f:
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        env = Environment(loader=FileSystemLoader(config['CONSTRAINTS_PROMPT_PATH']))
-        self.template = env.get_template(config['CONSTRAINTS_EXTRACTOR_PROMPT_FILENAME'])
+        env = Environment(loader=FileSystemLoader(
+            config['CONSTRAINTS_PROMPT_PATH']))
+        self.template = env.get_template(
+            config['CONSTRAINTS_EXTRACTOR_PROMPT_FILENAME'])
 
     def extract(self, conv_history: list[Message]) -> dict:
         """
@@ -72,9 +74,12 @@ class KeyValuePairConstraintsExtractor(ConstraintsExtractor):
         :param conv_history: current conversation history
         :return: prompt for extracting constraints from the most recent user's input in the conversation history.
         """
-        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
+        curr_user_input = conv_history[-1].get_content() if len(
+            conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(
+            conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(
+            conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input)

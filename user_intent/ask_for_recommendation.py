@@ -3,17 +3,21 @@ from user_intent.user_intent import UserIntent
 from jinja2 import Environment, FileSystemLoader
 import yaml
 
+
 class AskForRecommendation(UserIntent):
     """
     Class representing Ask For Recommendation user intent.
     """
+
     def __init__(self):
-        
-        with open("config.yaml") as f:
+
+        with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-    
-        env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(config['ACCEPT_RECOMMENDATION_PROMPT_FILENAME'])
+
+        env = Environment(loader=FileSystemLoader(
+            config['INTENT_PROMPTS_PATH']))
+        self.template = env.get_template(
+            config['ACCEPT_RECOMMENDATION_PROMPT_FILENAME'])
 
     def get_name(self) -> str:
         """
@@ -39,7 +43,7 @@ class AskForRecommendation(UserIntent):
         :return: new updated state
         """
         return curr_state
-    
+
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
         Returns prompt for generating True/False representing how likely the user input matches with the user intent of ask for recommendation

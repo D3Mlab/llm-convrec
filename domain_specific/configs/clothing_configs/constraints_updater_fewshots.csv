@@ -1,0 +1,6 @@
+user_input,old_hard_constraints,old_soft_constraints,new_hard_constraints,new_soft_constraints
+"I want black, casual T-shirt for summer that are cheap. I want M size.",,,"category=[""T-Shirts""], design=[""Black""], occasion=[""Casual"", ""Summer""], price range=[""Cheap""], size=[""Medium""]",
+I am looking for a dress for Women from Nordstrom that are comfortable.,,,"category=[""Women"", ""Dress""], brand=[""Nordstrom""], others=[""Comfortable""]",
+What is the size?,"category=[""Men"", ""Pants""], brand=[""H&M""]","occasion=[""Formal""], design=[""Gray""]","category=[""Men"", ""Pants""], brand=[""H&M""]","occasion=[""Formal""], design=[""Gray""]"
+Is it expensive? ,"category=[""Sweaters""], design=[""Trendy""]",,"category=[""Sweaters""], design=[""Trendy""]","price range=[""Affordable""]"
+Is it made by cotton?,"category=[""Baby""], price range=[""Moderate""]",,"category=[""Baby""], price range=[""Moderate""]","material=[""Cotton""]"

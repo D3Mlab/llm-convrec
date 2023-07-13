@@ -1,0 +1,11 @@
+This is a {{ domain }} recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended {{domain}}”: User agrees, accepts, likes, or reacts positively towards a recommended {{ domain }}. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+{% for example in few_shots %}
+User input: {{ example.input }}
+Response: {{ example.response }}
+{% endfor %}
+
+Now, provide a response to the actual user input:
+User input: {{ user_input }}
+Response: 

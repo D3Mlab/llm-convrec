@@ -1,0 +1,7 @@
+user_input,old_hard_constraints,old_soft_constraints,new_hard_constraints,new_soft_constraints
+pizza and pasta,"location=[""Toronto""]",,"location=[""toronto""], cuisine type=[""italian""], dish type=[""pizza"", ""pasta""]",
+does it have a patio?,"location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]","price range=[""moderate""], others=[""free parking""]","location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]","price range=[""moderate""], others=[""free parking"", ""patio""]"
+What kind of menu does I Love Sushi offer?,"location=[""jasper avenue""], cuisine type=[""japanese""]",,"location=[""jasper avenue""], cuisine type=[""japanese""]",
+I want sushi and miso soup,,,"cuisine type=[""japanese""], dish type=[""sushi"", ""miso soup""]",
+Edmonton,"location=[""Edmonton""], cuisine type=[""italian""]",,"location=[""Edmonton""], cuisine type=[""italian""]",
+Is it expensive?,"location=[""spadina""], cuisine type=[""european""]",,"location=[""spadina""], cuisine type=[""european""]","price range=[""affordable""]"

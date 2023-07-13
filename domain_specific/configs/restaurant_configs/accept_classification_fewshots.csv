@@ -1,0 +1,11 @@
+User input,Response
+"Sure, I will go there then",True
+"That place sounds good, do i need reservation?",True
+I will try (Restaurant name). It sounds good!,True
+Thanks,True
+"(Restaurant name) sounds good, what dishes do they have?",True
+i like vegetarian food.,False
+Whats the price range?,False
+I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes,False
+"No, give me another recommendation",False
+
