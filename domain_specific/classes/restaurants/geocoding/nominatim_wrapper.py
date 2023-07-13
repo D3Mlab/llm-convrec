@@ -1,6 +1,6 @@
 from geopy import Location, Nominatim
 
-from geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 
 class NominatimWrapper(GeocoderWrapper):

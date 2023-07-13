@@ -4,8 +4,8 @@ import warnings
 import openai.error
 import yaml
 
-from geocoding.google_v3_wrapper import GoogleV3Wrapper
-from geocoding.nominatim_wrapper import NominatimWrapper
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+
 from intelligence.gpt_wrapper import GPTWrapper
 from warning_observer import WarningObserver
 from rec_action.answer import Answer
@@ -58,20 +58,22 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, user_defined_constraint_mergers: list):
         constraints = config['ALL_CONSTRAINTS']
+        
         domain_specific_config_loader = DomainSpecificConfigLoader()
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         domain = domain_specific_config_loader.load_domain()
-        model = domain_specific_config_loader.load_model()
+        
+        model = config["MODEL"]
+        
+                
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
-        if config['GEOCODING_METHOD'] == 'GoogleV3':
-            geocoder_wrapper = GoogleV3Wrapper()
-        else:
-            geocoder_wrapper = NominatimWrapper()
-
+        # TEMP
+        geocoder_wrapper = GoogleV3Wrapper()
+         
         llm_wrapper = GPTWrapper(model_name=model, observers=[self])
         curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
@@ -106,10 +108,10 @@ class ConvRecSystem(WarningObserver):
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         else:
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
-            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper, geocoder_wrapper,
+            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                             constraints_categories,
                                                             constraints_fewshots, domain,
-                                                            enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+                                                            user_defined_constraint_mergers)
         accepted_restaurants_extractor = AcceptedItemsExtractor(
             llm_wrapper, domain)
         rejected_restaurants_extractor = RejectedItemsExtractor(
@@ -213,12 +215,3 @@ class ConvRecSystem(WarningObserver):
             self.user_interface.display_warning(
                 "Sorry.. running into some difficulties, this is going to take longer than usual.")
         self.is_warning_notified = True
-
-
-if __name__ == '__main__':
-    warnings.simplefilter("default")
-    logging.config.fileConfig('logging.conf')
-    with open('system_config.yaml') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-    conv_rec_system = ConvRecSystem(config)
-    conv_rec_system.run()

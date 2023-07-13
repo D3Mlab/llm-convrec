@@ -6,7 +6,7 @@ from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDi
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.data_holder import DataHolder
-from geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 import ast
 from itertools import chain
 

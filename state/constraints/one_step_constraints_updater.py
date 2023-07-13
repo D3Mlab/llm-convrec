@@ -2,9 +2,9 @@ import re
 
 import yaml
 
-from geocoding.geocoder_wrapper import GeocoderWrapper
 from intelligence.llm_wrapper import LLMWrapper
 from state.constraints.constraints_updater import ConstraintsUpdater
+from state.constraints.constraint_merger import ConstraintMerger
 from state.state_manager import StateManager
 from jinja2 import Environment, FileSystemLoader
 
@@ -15,23 +15,21 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     Class that updates constraints based on user's input using single prompt.
 
     :param llm_wrapper: llm used to update constraints
-    :param geocoder_wrapper: wrapper used to geocode location
     :param constraints_categories: list of all possible constraint categories and its details
     :param few_shots: details including the input and ouput of the fewshot examples of the prompt
     :param domain: domain of the recommendation
-    :param enable_location_merge: whether we merge location using geocoding
     """
 
-    def __init__(self, llm_wrapper: LLMWrapper, geocoder_wrapper: GeocoderWrapper, constraints_categories: list[dict],
-                 few_shots: list[dict], domain: str, enable_location_merge: bool = True):
+    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict],
+                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger]):
         self._llm_wrapper = llm_wrapper
-        self._geocoder_wrapper = geocoder_wrapper
         self._constraints_categories = constraints_categories
-        self._constraint_keys = {
-            constraint_category['key'] for constraint_category in constraints_categories}
+        self._constraint_keys = [
+            constraint_category['key'] for constraint_category in constraints_categories]
         self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
                                              constraints_categories if constraint_category['is_cumulative']}
-        self._enable_location_merge = enable_location_merge
+        
+        self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
 
         with open("system_config.yaml") as f:
@@ -40,6 +38,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(
             config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
+        
         self._few_shots = few_shots
 
     def update_constraints(self, state_manager: StateManager) -> None:
@@ -193,44 +192,6 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                         break
         return result
 
-    def _merged_location(self, old_locations: list[str], new_locations: list[str]) -> list[str]:
-        """
-        Return locations where new_locations are merged with old_locations using geocoding.
-        New location is merged with most recently added location in old_locations if it can be merged.
-
-        location merged in old_locations will be removed.
-
-        :param old_locations: original locations
-        :param new_locations: new locations that's added
-        :return merged locations
-        """
-        merged_locations = []
-        for new_location in new_locations:
-            if new_location in old_locations:
-                continue
-            location_merged = False
-            for i in range(len(old_locations) - 1, -1, -1):
-                old_location = old_locations[i]
-                if old_location in new_location:
-                    old_locations.pop(i)
-                    merged_locations.append(new_location)
-                    location_merged = True
-                    break
-                else:
-                    merged_location = self._geocoder_wrapper.merge_location_query(
-                        new_location, old_location)
-                    if merged_location is not None:
-                        old_locations.pop(i)
-                        merged_locations.append(merged_location)
-                        location_merged = True
-                        break
-            if not location_merged:
-                merged_locations.append(new_location)
-        if 'location' in self._cumulative_constraints_keys:
-            return old_locations + merged_locations
-        else:
-            return merged_locations
-
     def _merge_constraints(self, old_constraints: dict, new_constraints: dict, updated_keys: dict) -> None:
         """
         Merge the given old_constraint to new_constraints.
@@ -239,16 +200,15 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :param new_constraints: new hard or soft constraints
         :param updated_keys: updated keys in this constraints
         """
-        if self._enable_location_merge and 'location' in updated_keys and 'location' in new_constraints \
-                and old_constraints.get('location') is not None:
-            new_constraints['location'] = self._merged_location(
-                old_constraints.get('location'),
-                new_constraints.get('location')
-            )
-
+        for constraint_merger in self._user_defined_constraint_mergers:
+            if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
+                new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
+                    old_constraints.get(constraint_merger.get_constraint()),
+                    new_constraints.get(constraint_merger.get_constraint())
+                )
+        
         for key in new_constraints:
-            if key not in self._cumulative_constraints_keys and key in updated_keys and \
-                    (key != 'location' or self._enable_location_merge) and key in old_constraints:
+            if key not in self._cumulative_constraints_keys and key in updated_keys and key in old_constraints:
                 # remove all constraints in old_constraints from new_constraints
                 for item in old_constraints[key]:
                     if item in new_constraints[key]:
