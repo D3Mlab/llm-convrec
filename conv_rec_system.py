@@ -171,6 +171,7 @@ class ConvRecSystem(WarningObserver):
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
+        self.is_warning_notified = False
 
     def run(self) -> None:
         """
@@ -185,6 +186,7 @@ class ConvRecSystem(WarningObserver):
             response = self.dialogue_manager.get_response(user_input)
             self.user_interface.display_to_user(f'Recommender: {response}')
             self.is_gpt_retry_notified = False
+            self.is_warning_notified = False
 
     def notify_gpt_retry(self, retry_info: dict) -> None:
         """
@@ -203,13 +205,14 @@ class ConvRecSystem(WarningObserver):
 
         self.is_gpt_retry_notified = True
 
-    def notify_warning(self, warning_msg: str):
+    def notify_warning(self):
         """
         Notify this object about warnings.
-
-        :param warning_msg: warning message to be displayed
         """
-        self.user_interface.display_warning(warning_msg)
+        if not self.is_warning_notified:
+            self.user_interface.display_warning(
+                "Sorry.. running into some difficulties, this is going to take longer than usual.")
+        self.is_warning_notified = True
 
 
 if __name__ == '__main__':

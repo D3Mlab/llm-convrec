@@ -706,8 +706,7 @@ class Answer(RecAction):
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
-            self._notify_observers(
-                'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+            self._notify_observers()
 
             logger.debug("Reviews are too long, summarizing...")
 
@@ -726,9 +725,12 @@ class Answer(RecAction):
 
         return resp
 
-    def _notify_observers(self, warning_msg: str) -> None:
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
         for observer in self._observers:
-            observer.notify_warning(warning_msg)
+            observer.notify_warning()
 
     def is_response_hard_coded(self) -> bool:
         """

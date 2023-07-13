@@ -11,10 +11,8 @@ class WarningObserver:
         """
         raise NotImplementedError()
 
-    def notify_warning(self, warning_msg: str):
+    def notify_warning(self):
         """
         Notify this object about warnings.
-
-        :param warning_msg: warning message to be displayed
         """
         raise NotImplementedError()

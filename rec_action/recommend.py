@@ -219,8 +219,7 @@ class Recommend(RecAction):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                self._notify_observers(
-                    'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+                self._notify_observers()
 
                 logger.debug("Reviews are too long, summarizing...")
 
@@ -243,9 +242,12 @@ class Recommend(RecAction):
 
         return explanation
 
-    def _notify_observers(self, warning_msg: str) -> None:
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
         for observer in self._observers:
-            observer.notify_warning(warning_msg)
+            observer.notify_warning()
 
     def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:
