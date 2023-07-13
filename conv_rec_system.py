@@ -7,7 +7,7 @@ import yaml
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 
 from intelligence.gpt_wrapper import GPTWrapper
-from intelligence.gpt_wrapper_observer import GPTWrapperObserver
+from warning_observer import WarningObserver
 from rec_action.answer import Answer
 from rec_action.explain_preference import ExplainPreference
 from rec_action.recommend import Recommend
@@ -47,7 +47,7 @@ from state.constraints.three_steps_constraints_updater import ThreeStepsConstrai
 from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
-class ConvRecSystem(GPTWrapperObserver):
+class ConvRecSystem(WarningObserver):
     """
     Class responsible for setting up and running the conversational recommendation system.
 
@@ -147,9 +147,12 @@ class ConvRecSystem(GPTWrapperObserver):
                         AcceptRecommendation(
                             accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
+
+        self.user_interface = Terminal()
+
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain,
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self],
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
@@ -167,10 +170,10 @@ class ConvRecSystem(GPTWrapperObserver):
             {AskForRecommendation(), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation())
         state.update("unsatisfied_goals", [
             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
-        self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
+        self.is_warning_notified = False
 
     def run(self) -> None:
         """
@@ -185,6 +188,7 @@ class ConvRecSystem(GPTWrapperObserver):
             response = self.dialogue_manager.get_response(user_input)
             self.user_interface.display_to_user(f'Recommender: {response}')
             self.is_gpt_retry_notified = False
+            self.is_warning_notified = False
 
     def notify_gpt_retry(self, retry_info: dict) -> None:
         """
@@ -195,10 +199,19 @@ class ConvRecSystem(GPTWrapperObserver):
         if not self.is_gpt_retry_notified:
             if isinstance(retry_info.get('output'), openai.error.ServiceUnavailableError) or \
                     isinstance(retry_info.get('output'), openai.error.APIConnectionError):
-                self.user_interface.display_to_user(
+                self.user_interface.display_warning(
                     "There were some issues with the OpenAI server. It might take longer than usual.")
             else:
-                self.user_interface.display_to_user(
+                self.user_interface.display_warning(
                     "OpenAI API are currently busy. It might take longer than usual.")
 
         self.is_gpt_retry_notified = True
+
+    def notify_warning(self):
+        """
+        Notify this object about warnings.
+        """
+        if not self.is_warning_notified:
+            self.user_interface.display_warning(
+                "Sorry.. running into some difficulties, this is going to take longer than usual.")
+        self.is_warning_notified = True
