@@ -22,4 +22,7 @@ can you suggest some nice scarf,,,0
 sure I will buy that one,AcceptRecommendation,,1
 ok I want to buy this,AcceptRecommendation,,1
 ok I will buy the first one,AcceptRecommendation,,1
-I donï¿½t like that color,RejectRecommendation,,1
+I don’t like that color,RejectRecommendation,,1
+This is exactly what I need for my upcoming trip,AcceptRecommendation,,1
+I'm in need of some casual outfits for everyday wear,,,0
+are they good for high school boys,Inquire,,1
