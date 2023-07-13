@@ -21,9 +21,6 @@ class DomainSpecificConfigLoader:
     def load_domain(self) -> str:
         return self.load_domain_specific_config()['DOMAIN']
 
-    def load_model(self) -> str:
-        return self.system_config['MODEL']
-
     def load_constraints_categories(self) -> list[dict]:
         constraints_category_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_CATEGORIES']

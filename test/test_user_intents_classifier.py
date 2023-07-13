@@ -14,7 +14,7 @@ import time
 from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
-class TestThresholdUserIntentsClassifier:
+class TestUserIntentsClassifier:
     """
     A test suite for the MultilabelUserIntentsClassifier, designed to verify its functionality using the pytest framework.
 
@@ -22,7 +22,7 @@ class TestThresholdUserIntentsClassifier:
     The test checks whether the length of the returned result matches the expected length, and whether the returned intents match the expected intents.
     """
     @pytest.mark.parametrize("input_message, expected_intent_1, expected_intent_2, leng",
-                             [(row['Input'], row['Output1'], row['Output2'], row['leng']) for index, row in pd.read_csv('test/Threshold_User_Intent_Test.csv', encoding='ISO-8859-1').iterrows()])
+                             [(row['Input'], row['Output1'], row['Output2'], row['leng']) for index, row in pd.read_csv('test/Clothing_User_Intent_Test.csv', encoding='ISO-8859-1').iterrows()])
     def test_multilabel_user_intents_classifier(self, input_message, expected_intent_1, expected_intent_2, leng):
         gpt_wrapper = GPTWrapper()
         

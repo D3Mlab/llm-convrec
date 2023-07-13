@@ -1,0 +1,9 @@
+User input,Response
+I don't like (clothing brand or item),True
+"I have already got something similar to (clothing item), so I won't buy it",True
+Can you suggest me something to wear for a party?,False
+I prefer cotton clothes.,False
+What material is this made of?,False
+I'm looking for a dress for a summer wedding.,False
+"Sure, I will buy it then.",False
+That piece looks good!,False
