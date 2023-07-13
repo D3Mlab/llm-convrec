@@ -1,12 +1,9 @@
-import os
 import logging
 
 from intelligence.llm_wrapper import LLMWrapper
-from dotenv import load_dotenv
 
 from gradio_client import Client
 
-load_dotenv()
 logger = logging.getLogger('alpaca_lora_wrapper')
 
 
@@ -15,8 +12,8 @@ class AlpacaLoraWrapper(LLMWrapper):
     Class for wrapping around the Alpaca Lora LLM.
     """
 
-    def __init__(self):
-        self._client = Client(os.environ["GRADIO_URL"])
+    def __init__(self, gradio_url: str):
+        self._client = Client(gradio_url)
         self._client.view_api()
 
     def make_request(self, message: str) -> str:

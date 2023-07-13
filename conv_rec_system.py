@@ -7,6 +7,7 @@ import yaml
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 
 from intelligence.gpt_wrapper import GPTWrapper
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 from warning_observer import WarningObserver
 from rec_action.answer import Answer
 from rec_action.explain_preference import ExplainPreference
@@ -59,7 +60,8 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list,
+    def __init__(self, config: dict, user_defined_constraint_mergers: list, llm: str,
+                 openai_api_key_or_gradio_url: str,
                  user_interface_str: str=None):
         constraints = config['ALL_CONSTRAINTS']
         
@@ -75,8 +77,14 @@ class ConvRecSystem(WarningObserver):
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
         # TEMP
         geocoder_wrapper = GoogleV3Wrapper()
-         
-        llm_wrapper = GPTWrapper(model_name=model, observers=[self])
+
+        if not isinstance(openai_api_key_or_gradio_url, str):
+            raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
+
+        if llm == "Alpaca Lora":
+            llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
+        else:
+            llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
         curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
@@ -109,7 +117,12 @@ class ConvRecSystem(WarningObserver):
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         else:
-            temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
+            if llm == "alpaca lora":
+                temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
+            else:
+                temperature_zero_llm_wrapper = GPTWrapper(
+                    openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
+
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                             constraints_categories,
                                                             constraints_fewshots, domain,

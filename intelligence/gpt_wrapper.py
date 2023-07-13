@@ -41,12 +41,12 @@ class GPTWrapper(LLMWrapper):
     _max_sleep: int
     _timeout: float | None
 
-    def __init__(self, model_name: str = "gpt-3.5-turbo", temperature: Optional[float] = None,
+    def __init__(self, openai_api_key: str, model_name: str = "gpt-3.5-turbo",
+                 temperature: Optional[float] = None,
                  observers=None, max_attempt=5, min_sleep=3, max_sleep=60, timeout=15):
         super().__init__()
         if observers is None:
             observers = []
-        self.api_key = os.environ['OPENAI_API_KEY']
         self._model_name = model_name
         self._temperature = temperature
         self._observers = observers
@@ -54,7 +54,7 @@ class GPTWrapper(LLMWrapper):
         self._min_sleep = min_sleep
         self._max_sleep = max_sleep
         self._timeout = timeout
-        openai.api_key = self.api_key
+        openai.api_key = openai_api_key
 
     def make_request(self, message: str) -> str:
         """
