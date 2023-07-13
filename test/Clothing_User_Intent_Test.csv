@@ -1,7 +1,5 @@
 Input,Output1,Output2,leng
 I want a dress with colored stripes,,,0
-do they have fast shipping,Inquire,,1
-do they allow return,Inquire,,1
 can you tell me which one is better,Inquire,,1
 compare the two of them,Inquire,,1
 list the pros and cons of both,Inquire,,1
@@ -16,8 +14,6 @@ do they usually fit bigger,Inquire,,1
 are they true to size,Inquire,,1
 are these pants too tight,Inquire,,1
 are they good for formal occasion?,Inquire,,1
-free return?,Inquire,,1
-blue?,Inquire,,1
 I want a blue pair of pants,,,0
 I want some shorts to wear on the beach,,,0
 I want some sunglasses,,,0

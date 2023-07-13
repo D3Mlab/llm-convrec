@@ -45,7 +45,7 @@ class TestUserIntentsClassifier:
         state = CommonStateManager(possible_goals)
         state.update_conv_history(message)
         result = classifier.classify(state)
-        time.sleep(2)
+        #time.sleep(2)
         assert len(result) == leng
         
         if leng == 1:
