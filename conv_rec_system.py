@@ -180,6 +180,14 @@ class ConvRecSystem(GPTWrapperObserver):
                     "OpenAI API are currently busy. It might take longer than usual.")
 
         self.is_gpt_retry_notified = True
+        
+    def get_response(self, user_input: str) -> str:
+        """
+        Respond to the user input
+        """
+        response = self.dialogue_manager.get_response(user_input)
+        self.is_gpt_retry_notified = False
+        return response
 
 
 if __name__ == '__main__':
