@@ -18,7 +18,8 @@ class Terminal(UserInterface):
         """
         return input(message)
 
-    def display_to_user(self, message: str):
+    def display_to_user(self, message: str = f'Recommender: Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. Thanks!'
+):
         """
         Display the given text to the user in the terminal.
 

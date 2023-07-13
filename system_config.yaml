@@ -1,6 +1,6 @@
 TOPK_RESTAURANTS: 2
 TOPK_REVIEWS: 3
-BERT_MODEL_NAME: "TASB"
+IR_BERT_MODEL_NAME: "TASB"
 USER_INTENTS_CLASSIFIER: "MultilabelUserIntentsClassifier"
 PATH_TO_RESTAURANT_METADATA: "information_retrievers/data/All-Edmonton-Restaurants/top_all_restaurants_sorted.csv"
 PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS: "information_retrievers/data/All-Edmonton-Restaurants/large_files/top_all_restaurants_review_embedding_sorted.csv"

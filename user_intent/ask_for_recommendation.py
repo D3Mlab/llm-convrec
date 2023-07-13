@@ -9,10 +9,7 @@ class AskForRecommendation(UserIntent):
     Class representing Ask For Recommendation user intent.
     """
 
-    def __init__(self):
-
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+    def __init__(self, config):
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))

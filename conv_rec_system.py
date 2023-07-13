@@ -58,24 +58,24 @@ class ConvRecSystem(GPTWrapperObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list):
-        constraints = config['ALL_CONSTRAINTS']
-        
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        constraints_categories = domain_specific_config_loader.load_constraints_categories()
-        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+    def __init__(self, config: dict, user_defined_constraint_mergers: list, user_constraint_status_objects: list):
+        domain_specific_config_loader = DomainSpecificConfigLoader()        
         domain = domain_specific_config_loader.load_domain()
         
-        model = config["MODEL"]
-        
-                
+        # TEMP
+        constraints = config['ALL_CONSTRAINTS']
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
-        # TEMP
         geocoder_wrapper = GoogleV3Wrapper()
-         
+        
+        model = config["MODEL"]
         llm_wrapper = GPTWrapper(model_name=model, observers=[self])
-        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
+        
+        # Constraints
+        constraints_categories = domain_specific_config_loader.load_constraints_categories()
+        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+        
+        #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
@@ -91,6 +91,7 @@ class ConvRecSystem(GPTWrapperObserver):
                 constraints_remover=constraints_remover,
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+        #TODO: generalize
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
@@ -106,17 +107,26 @@ class ConvRecSystem(GPTWrapperObserver):
                 constraints_remover=constraints_remover,
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+       
         else:
             temperature_zero_llm_wrapper = GPTWrapper(temperature=0)
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                             constraints_categories,
                                                             constraints_fewshots, domain,
                                                             user_defined_constraint_mergers)
-        accepted_restaurants_extractor = AcceptedItemsExtractor(
-            llm_wrapper, domain)
-        rejected_restaurants_extractor = RejectedItemsExtractor(
-            llm_wrapper, domain)
+        # Initialize Extractors
+        accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
+        rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        curr_items_fewshots = domain_specific_config_loader.load_current_items_fewshots()
+        
+        accepted_items_extractor = AcceptedItemsExtractor(
+            llm_wrapper, domain, accepted_items_fewshots, config)
+        rejected_items_extractor = RejectedItemsExtractor(
+            llm_wrapper, domain, rejected_items_fewshots, config)
+        curr_items_extractor = CurrentItemsExtractor(llm_wrapper, domain, curr_items_fewshots, config)
 
+
+        # Initialize Filters
         check_location = CheckLocation(
             config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
         check_cuisine_type = CheckCuisineDishType()
@@ -126,27 +136,40 @@ class ConvRecSystem(GPTWrapperObserver):
                                  config["PATH_TO_NUM_OF_REVIEWS_PER_RESTAURANT"])
         filter_restaurant = FilterRestaurants(geocoder_wrapper, check_location, check_cuisine_type, check_already_recommended_restaurant,
                                               data_holder, config["FILTER_CONSTRAINTS"])
-        BERT_name = config["BERT_MODEL_NAME"]
+
+        #Initialize IR
+        BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
         engine = NeuralSearchEngine(embedder)
         information_retriever = NeuralInformationRetriever(engine, data_holder)
-
-        default_location = config.get('DEFAULT_LOCATION') if config.get(
-            'DEFAULT_LOCATION') != 'None' else None
         
-
+        # Initialize User Intent
         inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
         accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
         reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
-        user_intents = [Inquire(curr_restaurant_extractor, inquire_classification_fewshots,domain),
-                        ProvidePreference(constraints_updater, curr_restaurant_extractor, geocoder_wrapper,
-                                          default_location=default_location),
+        user_intents = [Inquire(curr_items_extractor, inquire_classification_fewshots,domain, config),
+                        ProvidePreference(constraints_updater, curr_items_extractor, user_constraint_status_objects, config),
                         AcceptRecommendation(
-                            accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
-                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
+                            accepted_items_extractor, curr_items_extractor, accept_classification_fewshots, domain, config),
+                        RejectRecommendation(rejected_items_extractor, curr_items_extractor, reject_classification_fewshots, domain, config)]
+        
+        if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
+            user_intents_classifier = MultilabelUserIntentsClassifier(
+                user_intents, llm_wrapper, True)
+        else:
+            user_intents_classifier = PromptBasedUserIntentsClassifier(
+                user_intents, llm_wrapper)
+        
+        # Initialize State
+        state = CommonStateManager(
+            {AskForRecommendation(config), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation(config))
+        state.update("unsatisfied_goals", [
+            {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
+        
+        # Initialize Rec Action
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
                        Recommend(llm_wrapper, filter_restaurant, information_retriever, domain,
@@ -155,29 +178,23 @@ class ConvRecSystem(GPTWrapperObserver):
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                           specific_location_required=specific_location_required), PostRejectionAction(),
                        PostAcceptanceAction()]
-        if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
-            user_intents_classifier = MultilabelUserIntentsClassifier(
-                user_intents, llm_wrapper, True)
-        else:
-            user_intents_classifier = PromptBasedUserIntentsClassifier(
-                user_intents, llm_wrapper)
+        
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
-        state = CommonStateManager(
-            {AskForRecommendation(), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation())
-        state.update("unsatisfied_goals", [
-            {"user_intent": AskForRecommendation(), "utterance_index": 0}])
+        
+        # Initialize system
         self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
+        
+        
 
     def run(self) -> None:
         """
         Run the conv rec system.
         """
-        init_msg = f'Recommender: Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
-        self.user_interface.display_to_user(init_msg)
+        self.user_interface.display_to_user()
         while True:
             user_input = self.user_interface.get_user_input("User: ")
             if user_input == 'quit' or user_input == 'q':

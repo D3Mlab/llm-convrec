@@ -1,5 +1,3 @@
-import re
-
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
@@ -79,10 +77,9 @@ class RequestInformation(RecAction):
                 return f"Can you provide the {formatted_constraints}?"
             elif 'location' in constraints and state_manager.get('location_type') == 'invalid':
                 return "I am sorry, I don't know the given location. Can you provide different location?"
-            elif 'location' in constraints and not state_manager.get("specific_location_asked") and \
+            elif 'location' in constraints and \
                     self._specific_location_required and \
                     not state_manager.get('location_type') == 'specific':
-                state_manager.update("specific_location_asked", True)
                 return f'Could you provide a more specific location, such as the name of the street, avenue, or intersection?'
 
         return "Are there any additional preferences, requirements, or specific features you would like the restaurant to have?"
