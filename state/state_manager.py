@@ -67,3 +67,9 @@ class StateManager:
         :return: dictionary representation of the state
         """
         raise NotImplementedError()
+
+    def reset_state(self) -> None:
+        """
+        Reset state.
+        """
+        raise NotImplementedError()

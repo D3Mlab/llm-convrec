@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 import yaml
 from rec_action.rec_action import RecAction
@@ -12,6 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 import logging
 import jinja2
 from jinja2 import Environment, FileSystemLoader
+from warning_observer import WarningObserver
 
 logger = logging.getLogger('recommend')
 
@@ -39,10 +40,11 @@ class Recommend(RecAction):
     _format_recommendation_prompt: jinja2.Template
     _no_matching_restaurant_prompt: jinja2.Template
     _summarize_review_prompt: jinja2.Template
+    _observers: list[WarningObserver]
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
                  information_retriever: InformationRetriever, domain: str,
-                 mandatory_constraints: str = None,
+                 observers=None, mandatory_constraints: str = None,
                  priority_score_range=(1, 10), specific_location_required: bool = True):
         super().__init__(priority_score_range)
         if mandatory_constraints is None:
@@ -54,6 +56,7 @@ class Recommend(RecAction):
         self._specific_location_required = specific_location_required
         self._llm_wrapper = llm_wrapper
         self._domain = domain
+        self._observers = observers
 
         with open("system_config.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -216,8 +219,7 @@ class Recommend(RecAction):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                print(
-                    'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+                self._notify_observers()
 
                 logger.debug("Reviews are too long, summarizing...")
 
@@ -239,6 +241,13 @@ class Recommend(RecAction):
                     prompt)
 
         return explanation
+
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
+        for observer in self._observers:
+            observer.notify_warning()
 
     def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:
