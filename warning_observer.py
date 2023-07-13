@@ -1,5 +1,5 @@
 
-class GPTWrapperObserver:
+class WarningObserver:
     """
     Observer for GPTWRapper that gets notified when GPTWrapper re-requests to GPT due to Rate limit error.
     """

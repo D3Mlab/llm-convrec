@@ -1,6 +1,6 @@
 from typing import Optional
 
-from intelligence.gpt_wrapper_observer import GPTWrapperObserver
+from warning_observer import WarningObserver
 from intelligence.llm_wrapper import LLMWrapper
 import os
 import logging
@@ -35,7 +35,7 @@ class GPTWrapper(LLMWrapper):
     _model_name: str
     _temperature: Optional[float]
     api_key: str
-    _observers: list[GPTWrapperObserver]
+    _observers: list[WarningObserver]
     _max_attempt: int
     _min_sleep: int
     _max_sleep: int

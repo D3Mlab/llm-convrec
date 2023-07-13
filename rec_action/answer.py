@@ -12,7 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 import yaml
-from intelligence.gpt_wrapper_observer import GPTWrapperObserver
+from warning_observer import WarningObserver
 
 logger = logging.getLogger('answer')
 
@@ -31,7 +31,7 @@ class Answer(RecAction):
     _information_retriever: InformationRetriever
     _llm_wrapper: LLMWrapper
     _prompt: str
-    _observers: list[GPTWrapperObserver]
+    _observers: list[WarningObserver]
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
                  information_retriever: InformationRetriever, domain: str,

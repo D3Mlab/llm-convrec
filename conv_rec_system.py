@@ -7,7 +7,7 @@ import yaml
 from geocoding.google_v3_wrapper import GoogleV3Wrapper
 from geocoding.nominatim_wrapper import NominatimWrapper
 from intelligence.gpt_wrapper import GPTWrapper
-from intelligence.gpt_wrapper_observer import GPTWrapperObserver
+from warning_observer import WarningObserver
 from rec_action.answer import Answer
 from rec_action.explain_preference import ExplainPreference
 from rec_action.recommend import Recommend
@@ -47,7 +47,7 @@ from state.constraints.three_steps_constraints_updater import ThreeStepsConstrai
 from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
-class ConvRecSystem(GPTWrapperObserver):
+class ConvRecSystem(WarningObserver):
     """
     Class responsible for setting up and running the conversational recommendation system.
 
