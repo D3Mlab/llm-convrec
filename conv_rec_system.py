@@ -1,8 +1,4 @@
-import logging.config
-import warnings
-
 import openai.error
-import yaml
 
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 
@@ -60,7 +56,7 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list, llm: str,
+    def __init__(self, config: dict, user_defined_constraint_mergers: list,
                  openai_api_key_or_gradio_url: str,
                  user_interface_str: str=None):
         constraints = config['ALL_CONSTRAINTS']
@@ -81,7 +77,7 @@ class ConvRecSystem(WarningObserver):
         if not isinstance(openai_api_key_or_gradio_url, str):
             raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
 
-        if llm == "Alpaca Lora":
+        if config['LLM'] == "Alpaca Lora":
             llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
@@ -117,8 +113,8 @@ class ConvRecSystem(WarningObserver):
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         else:
-            if llm == "alpaca lora":
-                temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
+            if config['LLM'] == "alpaca lora":
+                temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
             else:
                 temperature_zero_llm_wrapper = GPTWrapper(
                     openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])

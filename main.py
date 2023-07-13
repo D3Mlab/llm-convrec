@@ -23,6 +23,6 @@ else:
     openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 
 conv_rec_system = ConvRecSystem(
-        config, user_merge_constraint_objects, config['LLM'], openai_api_key_or_gradio_url)
+        config, user_merge_constraint_objects, openai_api_key_or_gradio_url)
 
 conv_rec_system.run()
