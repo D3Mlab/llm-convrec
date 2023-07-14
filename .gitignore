@@ -4,3 +4,5 @@ __pycache__/
 logs/*
 .idea/
 information_retrievers/data/All-Edmonton-Restaurants/large_files/
+information_retrievers/data/all-edmonton-restaurant-faiss/review.npy
+information_retrievers/data/all-edmonton-restaurant-faiss/vector_database.faiss
