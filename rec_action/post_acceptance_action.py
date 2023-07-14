@@ -28,7 +28,7 @@ class PostAcceptanceAction(RecAction):
 
         :return: description of this recommender action
         """
-        return "Recommender responds to the user after user accepts a recommended restaurant"
+        return "Recommender responds to the user after user accepts a recommended item"
 
     def get_response_info(self, state_manager: StateManager) -> dict:
         """
@@ -70,7 +70,7 @@ class PostAcceptanceAction(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        return "Great! Enjoy your meal! If you need any more assistance, feel free to ask."
+        return "Great! If you need any more assistance, feel free to ask."
 
     def is_response_hard_coded(self) -> bool:
         """
