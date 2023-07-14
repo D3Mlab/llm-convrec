@@ -23,7 +23,7 @@ class VectorDataBase:
         self._metadata_storage = np.load(metadata_storage_file_path, allow_pickle=True)
         self._ntotal = self._storage.ntotal
 
-    def search(self, query: np.ndarray, k: int):
+    def search_for_index(self, query: np.ndarray, k: int):
         """
         Search the database
 
@@ -165,6 +165,7 @@ class VectorDataBase:
         return selected_index
 
     def find_similarity_vector(self, query: np.ndarray) -> np.ndarray:
+        query = query.reshape(-1, self._storage.d)
         D, I = self._storage.search(query, self._storage.ntotal)
         D = D[0]
         I = I[0] #For some reason FAISS return a numpy within a numpy that contains all the answer.
