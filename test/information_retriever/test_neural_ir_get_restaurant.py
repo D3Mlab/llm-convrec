@@ -3,9 +3,9 @@ from state.common_state_manager import CommonStateManager
 from information_retrievers.filter.check_location import CheckLocation
 from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.neural_ir.neural_embedder import BERT_model
-from information_retrievers.neural_ir.statics import *
-from information_retrievers.neural_ir.neural_search_engine import NeuralSearchEngine
+from information_retrievers.ir.embedder import BERT_model
+from information_retrievers.ir.statics import *
+from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.neural_information_retriever import NeuralInformationRetriever
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant

@@ -1,6 +1,6 @@
 import torch
 import pandas as pd
-from information_retrievers.neural_ir.neural_search_engine import NeuralSearchEngine
+from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 
 class InformationRetrievalRankCSV():
     def __init__(self, information_retrieval:NeuralSearchEngine):
