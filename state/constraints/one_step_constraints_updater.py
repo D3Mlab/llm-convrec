@@ -21,7 +21,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     """
 
     def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict],
-                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger]):
+                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger], config: dict):
         self._llm_wrapper = llm_wrapper
         self._constraints_categories = constraints_categories
         self._constraint_keys = [
@@ -33,8 +33,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
 
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(
