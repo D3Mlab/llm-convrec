@@ -188,21 +188,19 @@ class ConvRecSystem(WarningObserver):
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
+        self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
 
     def run(self) -> None:
         """
         Run the conv rec system.
         """
-        init_msg = f'Recommender: Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
-        self.user_interface.display_to_user(init_msg)
+        self.user_interface.display_to_user("Recommender: " + self.init_msg)
         while True:
             user_input = self.user_interface.get_user_input("User: ")
             if user_input == 'quit' or user_input == 'q':
                 break
-            response = self.dialogue_manager.get_response(user_input)
+            response = self.get_response(user_input)
             self.user_interface.display_to_user(f'Recommender: {response}')
-            self.is_gpt_retry_notified = False
-            self.is_warning_notified = False
 
     def notify_gpt_retry(self, retry_info: dict) -> None:
         """
@@ -225,9 +223,9 @@ class ConvRecSystem(WarningObserver):
         """
         Respond to the user input
         """
-        response = self.dialogue_manager.get_response(user_input)
         self.is_gpt_retry_notified = False
-        return response
+        self.is_warning_notified = False
+        return self.dialogue_manager.get_response(user_input)
 
     def notify_warning(self):
         """

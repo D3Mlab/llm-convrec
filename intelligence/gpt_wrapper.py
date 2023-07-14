@@ -144,7 +144,10 @@ class GPTWrapper(LLMWrapper):
         Wrapper for openai.ChatCompletion.create that retries when RateLimitError have occurred or if it takes
         too long to get the response.
         """
-        return openai.ChatCompletion.create(*args, **{**kwargs, **{'request_timeout': self._timeout}})
+        try:
+            return openai.ChatCompletion.create(*args, **{**kwargs, **{'request_timeout': self._timeout}})
+        except:
+            raise Exception("The provided OpenAI API Key is invalid. Please input a correct key and retry.")
 
 
 

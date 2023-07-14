@@ -13,7 +13,10 @@ class AlpacaLoraWrapper(LLMWrapper):
     """
 
     def __init__(self, gradio_url: str, temperature: float=0.1):
-        self._client = Client(gradio_url)
+        try:
+            self._client = Client(gradio_url)
+        except:
+            raise Exception("The provided Gradio URL is invalid. Please input a correct url and retry.")
         self._client.view_api()
         self._temperature = temperature
 
