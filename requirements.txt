@@ -10,8 +10,7 @@ pyyaml
 pytest
 geopy
 Nominatim
-re
-ast
 tenacity
 jinja2
 gradio
+faiss-cpu==1.7.4
