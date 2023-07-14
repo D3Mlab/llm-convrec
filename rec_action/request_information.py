@@ -1,5 +1,6 @@
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
+from state.status import Status
 from user_intent.ask_for_recommendation import AskForRecommendation
 from state.message import Message
 
@@ -11,14 +12,15 @@ class RequestInformation(RecAction):
     :param mandatory_constraints: set of constraints that are mandatory to recommend
     """
     _mandatory_constraints: list[list[str]]
+    _constraint_statuses: list[Status]
 
-    def __init__(self, priority_score_range: tuple[float, float] = (1, 10), mandatory_constraints: str = None,
-                 specific_location_required: bool = True) -> None:
+
+    def __init__(self, constraint_statuses: list[Status], constraints_categories: list, priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
-        if mandatory_constraints is None:
-            mandatory_constraints = [['location']]
-        self._mandatory_constraints = mandatory_constraints
-        self._specific_location_required = specific_location_required
+        self._constraint_statuses = constraint_statuses
+        
+        self._mandatory_constraints = [constraint_category['key'] for constraint_category in
+                                             constraints_categories if constraint_category['is_mandatory']]
 
     def get_name(self):
         """
@@ -75,14 +77,12 @@ class RequestInformation(RecAction):
             if hard_constraints is None or all(hard_constraints.get(constraint) is None or
                                                hard_constraints.get(constraint) == [] for constraint in constraints):
                 return f"Can you provide the {formatted_constraints}?"
-            elif 'location' in constraints and state_manager.get('location_type') == 'invalid':
-                return "I am sorry, I don't know the given location. Can you provide different location?"
-            elif 'location' in constraints and \
-                    self._specific_location_required and \
-                    not state_manager.get('location_type') == 'specific':
-                return f'Could you provide a more specific location, such as the name of the street, avenue, or intersection?'
 
-        return "Are there any additional preferences, requirements, or specific features you would like the restaurant to have?"
+            for constraint in self._constraint_statuses:
+                if constraint.get_status() == 'invalid':
+                    return f"I'm sorry, can you provide a different {constraint.get_constraint_name()}"
+
+        return "Are there any additional preferences, requirements, or specific features you would like to have?"
 
     def is_response_hard_coded(self) -> bool:
         """
@@ -102,11 +102,10 @@ class RequestInformation(RecAction):
         is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
                                                             hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
-
-        if state_manager.get('location_type') is None or state_manager.get('location_type') == 'invalid' or \
-                state_manager.get('location_type') == 'valid' and self._specific_location_required and \
-                not state_manager.get("specific_location_asked"):
-            is_ready = False
+        
+        for constraint in self._constraint_statuses:
+            if constraint.get_status() is None or constraint.get_status() == 'invalid':
+                is_ready = False
 
         if state_manager.get("unsatisfied_goals") is not None:
             for goal in state_manager.get("unsatisfied_goals"):

@@ -65,7 +65,6 @@ class ConvRecSystem(GPTWrapperObserver):
         # TEMP
         constraints = config['ALL_CONSTRAINTS']
         self._constraints = constraints
-        specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
         geocoder_wrapper = GoogleV3Wrapper()
         
         model = config["MODEL"]
@@ -113,7 +112,7 @@ class ConvRecSystem(GPTWrapperObserver):
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                             constraints_categories,
                                                             constraints_fewshots, domain,
-                                                            user_defined_constraint_mergers)
+                                                            user_defined_constraint_mergers, config)
         # Initialize Extractors
         accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
         rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
@@ -172,11 +171,9 @@ class ConvRecSystem(GPTWrapperObserver):
         # Initialize Rec Action
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain,
-                                 mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
-                                 specific_location_required=specific_location_required),
-                       RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
-                                          specific_location_required=specific_location_required), PostRejectionAction(),
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, user_constraint_status_objects,
+                                 config, constraints_categories),
+                       RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
                        PostAcceptanceAction()]
         
 
