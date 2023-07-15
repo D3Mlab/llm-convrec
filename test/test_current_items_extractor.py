@@ -37,7 +37,7 @@ for col in test_df.to_dict("records"):
                                "attributes": {},
                                "categories": [],
                                "hours": {}}
-            recommended_restaurant = RecommendedItem(Item("business_id", dictionary_info), "", [])
+            recommended_restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
             one_turn_reccommended_restaurants.append(recommended_restaurant)
 
         row.append(one_turn_reccommended_restaurants)

@@ -34,7 +34,7 @@ class TestAcceptedRestaurantsExtractorTest:
 
         _recently_mentioned_restaurant_names = set(recently_mentioned_restaurant_names)
         _accepted_restaurant_names = set(accepted_restaurant_names)
-        all_mentioned_restaurants = [RecommendedItem(Item("business_id", {"name": name}), "", []) for name in all_mentioned_restaurant_names]
+        all_mentioned_restaurants = [RecommendedItem(Item("item_id", {"name": name}), "", []) for name in all_mentioned_restaurant_names]
         recently_mentioned_restaurants = [restaurant for restaurant in all_mentioned_restaurants if restaurant.get_name() in _recently_mentioned_restaurant_names]
         accepted_restaurants = [restaurant.get_name() for restaurant in all_mentioned_restaurants if restaurant.get_name() in _accepted_restaurant_names]
 

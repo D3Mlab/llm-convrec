@@ -89,19 +89,19 @@ class NeuralInformationRetriever(InformationRetriever):
         """
         recommended_items = []
         for index in range(len(item_id)):
-            item_dict = items_gen_info.loc[items_gen_info['business_id'] == item_id[index]].to_dict(orient="records")[0]
+            item_dict = items_gen_info.loc[items_gen_info['item_id'] == item_id[index]].to_dict(orient="records")[0]
             recommended_item = self._item_loader.create_recommended_item(query, item_dict,
                                                                          items_most_relevant_reviews[index])
             recommended_items.append(recommended_item)
         return recommended_items
 
-    def _create_item_from_business_id(self, items_gen_info: pd.DataFrame, business_id: str) -> Item:
+    def _create_item_from_business_id(self, items_gen_info: pd.DataFrame, item_id: str) -> Item:
         """
         Construct Item object from Item's business id
 
         :param items_gen_info: metadata of Items
-        :param business_id: Item's id
-        :return: Item objects whose id is business_id
+        :param item_id: Item's id
+        :return: Item objects whose id is item_id
         """
-        item_dict = items_gen_info.loc[items_gen_info['business_id'] == business_id].to_dict(orient="records")[0]
+        item_dict = items_gen_info.loc[items_gen_info['item_id'] == item_id].to_dict(orient="records")[0]
         return self._item_loader.create_item(item_dict)

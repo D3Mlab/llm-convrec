@@ -42,7 +42,7 @@ class TestAnswer:
                            "attributes": restaurant_attributes,
                            "categories": [],
                            "hours": {}}
-        restaurant = RecommendedItem(Item("business_id", dictionary_info), "", [])
+        restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
 
         actual = answer._extract_category_from_input(utterance, restaurant)
         assert actual == category

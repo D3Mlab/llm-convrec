@@ -148,7 +148,7 @@ class FilterRestaurants:
              related_restaurant_meta_data = restaurants_meta_data[restaurants_meta_data.name.apply(str.lower) == name.casefold()]
              related_restaurants_meta_data = pd.concat([related_restaurants_meta_data, related_restaurant_meta_data])
 
-        business_ids = related_restaurants_meta_data["business_id"].unique()
+        business_ids = related_restaurants_meta_data["item_id"].unique()
         num_of_reviews_per_restaurant = []
         restaurants_review_embeddings = self._data_holder.get_item_reviews_embedding()
         restaurant_review_embeddings = pd.DataFrame()
@@ -156,7 +156,7 @@ class FilterRestaurants:
 
         for business_id in business_ids:
             restaurant_review_embedding = \
-                     restaurants_review_embeddings[restaurants_review_embeddings.Business_ID == business_id]
+                     restaurants_review_embeddings[restaurants_review_embeddings.item_id == business_id]
             restaurant_review_embeddings = pd.concat([restaurant_review_embeddings, restaurant_review_embedding])
             num_of_reviews_per_restaurant.append(torch.tensor(restaurant_review_embedding.shape[0]))
             embedded_reviews = restaurant_review_embedding["Embedding"]

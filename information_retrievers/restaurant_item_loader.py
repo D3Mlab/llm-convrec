@@ -19,5 +19,5 @@ class RestaurantItemLoader(ItemLoader):
             "categories": list(item_dict['categories'].split(",")),
             "hours": ast.literal_eval(item_dict['hours']),
         }
-        return Item(item_dict['business_id'], item_dict['name'],
+        return Item(item_dict['item_id'], item_dict['name'],
                     item_info, ast.literal_eval(item_dict['attributes']))

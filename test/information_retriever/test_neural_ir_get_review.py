@@ -114,8 +114,8 @@ class TestGetBestMatchingReviewsOfRestaurant:
 
     def _create_restaurant_obj_from_meta_data(self, index_of_restaurant: int,
                                               restaurant_meta_data: pd.DataFrame) -> Item:
-        business_id = restaurant_meta_data.iloc[index_of_restaurant]["business_id"]
-        item_info = restaurant_meta_data.loc[restaurant_meta_data['business_id']
+        business_id = restaurant_meta_data.iloc[index_of_restaurant]["item_id"]
+        item_info = restaurant_meta_data.loc[restaurant_meta_data['item_id']
                                                    == business_id].iloc[0]
         dictionary_info = {"name": item_info[1],
                            "address": item_info[2],
