@@ -132,7 +132,7 @@ class NeuralSearchEngine:
         :return: A list of business id of the most similar items. Beginning from the most
             similar to the least.
         """
-        unique_values = df["Business_ID"].unique()
+        unique_values = df["item_id"].unique()
         list_of_business_id = []
         most_similar_item_index = most_similar_item_index.tolist()
         for i in most_similar_item_index:

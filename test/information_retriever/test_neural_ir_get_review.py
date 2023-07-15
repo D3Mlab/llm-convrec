@@ -91,9 +91,9 @@ class TestGetBestMatchingReviewsOfRestaurant:
             question, recommended_restaurant)
         filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant, \
             filtered_restaurants_review_embeddings = \
-            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get("name")])
+            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get_name()])
         retrieved_review = information_retriever.get_best_matching_reviews_of_item(
-            query, [recommended_restaurant.get("name")], num_of_reviews_to_return,
+            query, [recommended_restaurant.get_name()], num_of_reviews_to_return,
             filtered_restaurants_review_embeddings,
             filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant)
 
@@ -113,8 +113,8 @@ class TestGetBestMatchingReviewsOfRestaurant:
 
     def _create_restaurant_obj_from_meta_data(self, index_of_restaurant: int,
                                               restaurant_meta_data: pd.DataFrame) -> Item:
-        business_id = restaurant_meta_data.iloc[index_of_restaurant]["business_id"]
-        item_info = restaurant_meta_data.loc[restaurant_meta_data['business_id']
+        business_id = restaurant_meta_data.iloc[index_of_restaurant]["item_id"]
+        item_info = restaurant_meta_data.loc[restaurant_meta_data['item_id']
                                                    == business_id].iloc[0]
         dictionary_info = {"name": item_info[1],
                            "address": item_info[2],

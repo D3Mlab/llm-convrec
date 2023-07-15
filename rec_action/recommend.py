@@ -185,7 +185,7 @@ class Recommend(RecAction):
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
-            [f'{rec_restaurant.get("name")}' for rec_restaurant in self._current_recommended_restaurants])
+            [f'{rec_restaurant.get_name()}' for rec_restaurant in self._current_recommended_restaurants])
         explanation_str = ', '.join(
             [f'{key}: {val}' for key, val in explanation.items()])
         return self._format_recommendation_prompt.render(
@@ -199,7 +199,7 @@ class Recommend(RecAction):
         """
         explanation = {}
         for rec_restaurant in self._current_recommended_restaurants:
-            restaurant_name = rec_restaurant.get("name")
+            restaurant_name = rec_restaurant.get_name()
             hard_constraints = state_manager.get('hard_constraints').copy()
             if "location" in hard_constraints:
                 hard_constraints['location'] = []
@@ -343,7 +343,7 @@ class Recommend(RecAction):
 
         recomm_resp = "How about "
         for restaurant in recommended_restaurants:
-            recomm_resp += f'{restaurant.get("name")} at {restaurant.get("address")}, {restaurant.get("city")} with {restaurant.get("stars")} stars out of {restaurant.get("review_count")} reviews or '
+            recomm_resp += f'{restaurant.get_name()} at {restaurant.get("address")}, {restaurant.get("city")} with {restaurant.get("stars")} stars out of {restaurant.get("review_count")} reviews or '
 
         return f'{recomm_resp[:-4]}?'
 

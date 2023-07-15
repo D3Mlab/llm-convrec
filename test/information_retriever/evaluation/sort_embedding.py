@@ -6,7 +6,7 @@ class SortEmbedding():
         df = pd.read_csv(source_file)
 
         # sort the dataframe by the column of interest
-        df = df.sort_values(by='business_id')
+        df = df.sort_values(by='item_id')
 
         # save your data back to csv
         df.to_csv(destination_file, index=False)

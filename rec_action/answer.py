@@ -177,7 +177,7 @@ class Answer(RecAction):
 
                 for curr_mentioned_restaurant in curr_mentioned_restaurants:
                     logger.debug(
-                        f'The recommended restaurant is {curr_mentioned_restaurant.get("name")}')
+                        f'The recommended restaurant is {curr_mentioned_restaurant.get_name()}')
                     category = self._extract_category_from_input(
                         question, curr_mentioned_restaurant)
 
@@ -192,7 +192,7 @@ class Answer(RecAction):
                         metadata_resp = (self._create_resp_from_metadata(
                             question, category, curr_mentioned_restaurant))
 
-                        answer_one_q[curr_mentioned_restaurant.get("name")
+                        answer_one_q[curr_mentioned_restaurant.get_name()
                                      ] = metadata_resp
 
                     if not self._is_category_valid(category, curr_mentioned_restaurant) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
@@ -202,7 +202,7 @@ class Answer(RecAction):
                         ir_resp = self._create_resp_from_ir(
                             question, curr_mentioned_restaurant)
 
-                        answer_one_q[curr_mentioned_restaurant.get("name")
+                        answer_one_q[curr_mentioned_restaurant.get_name()
                                      ] = ir_resp
 
                         if "I do not know" in ir_resp:
@@ -215,7 +215,7 @@ class Answer(RecAction):
                             llm_resp = self._llm_wrapper.make_request(
                                 prompt)
 
-                            answer_one_q[curr_mentioned_restaurant.get("name")
+                            answer_one_q[curr_mentioned_restaurant.get_name()
                                          ] = llm_resp
 
                 mult_rest_resp = self._format_multiple_restaurant_resp(
@@ -267,10 +267,9 @@ class Answer(RecAction):
         filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant, \
             filtered_restaurants_review_embeddings = \
             self._filter_restaurants.filter_by_restaurant_name(
-                [curr_mentioned_restaurant.get("name")])
+                [curr_mentioned_restaurant.get_name()])
         reviews = self._information_retriever.get_best_matching_reviews_of_item(
-            query, [curr_mentioned_restaurant.get("name"
-                                                  )], self._num_of_reviews_to_return,
+            query, [curr_mentioned_restaurant.get_name()], self._num_of_reviews_to_return,
             filtered_restaurants_review_embeddings,
             filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant)[0]
 
@@ -288,7 +287,7 @@ class Answer(RecAction):
         valid_categories = ["address", "city", "state",
                             "postal_code", "stars", "review_count", "hours"]
 
-        for key in recommended_restaurant.get("attributes"):
+        for key in recommended_restaurant.get_optional_data():
             valid_categories.append(key)
 
         for valid_category in valid_categories:
@@ -358,8 +357,8 @@ class Answer(RecAction):
         """
         resp = ""
 
-        curr_ment_res_names = [current_mentioned_restaurant.get('name'
-                                                                ) for current_mentioned_restaurant in current_mentioned_restaurants]
+        curr_ment_res_names = [current_mentioned_restaurant.get_name()
+                               for current_mentioned_restaurant in current_mentioned_restaurants]
 
         curr_ment_res_names_str = ", ".join(curr_ment_res_names)
 
@@ -401,7 +400,7 @@ class Answer(RecAction):
 
         categories = "address, city, state, postal_code, stars, review_count, hours,"
 
-        for key in curr_restaurant.get("attributes"):
+        for key in curr_restaurant.get_optional_data():
             if key == 'GoodForMeal':
                 categories += f" best meals,"
             else:
@@ -427,28 +426,28 @@ class Answer(RecAction):
         resp = ""
 
         if "address" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')} is located at {recommended_restaurant.get('address')} in {recommended_restaurant.get('city')}, {recommended_restaurant.get('state')}."
+            resp = f"{recommended_restaurant.get_name()} is located at {recommended_restaurant.get('address')} in {recommended_restaurant.get('city')}, {recommended_restaurant.get('state')}."
 
         elif "city" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')} is in {recommended_restaurant.get('city')}."
+            resp = f"{recommended_restaurant.get_name()} is in {recommended_restaurant.get('city')}."
 
         elif 'state' in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')} is in {recommended_restaurant.get('state')}."
+            resp = f"{recommended_restaurant.get_name()} is in {recommended_restaurant.get('state')}."
 
         elif self._remove_punct_string('postal_code') in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')}'s postal code is {recommended_restaurant.get('postal_code')}."
+            resp = f"{recommended_restaurant.get_name()}'s postal code is {recommended_restaurant.get('postal_code')}."
 
         elif "stars" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')} has a rating of {recommended_restaurant.get('stars')} / 5."
+            resp = f"{recommended_restaurant.get_name()} has a rating of {recommended_restaurant.get('stars')} / 5."
 
         elif self._remove_punct_string('review_count') in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get('name')} has {recommended_restaurant.get('review_count')} reviews."
+            resp = f"{recommended_restaurant.get_name()} has {recommended_restaurant.get('review_count')} reviews."
 
         elif 'hours' in self._remove_punct_string(category):
 
             hours = recommended_restaurant.get('hours')
 
-            resp = f"{recommended_restaurant.get('name')} is "
+            resp = f"{recommended_restaurant.get_name()} is "
 
             for key, val in hours.items():
                 if val == '0:0-0:0':
@@ -473,14 +472,14 @@ class Answer(RecAction):
             resp = f'{resp[:-2]}.'
 
         else:
-            for key, val in recommended_restaurant.get("attributes").items():
+            for key, val in recommended_restaurant.get_optional_data().items():
                 if self._remove_punct_string(key) in self._remove_punct_string(category):
 
                     prompt = self.attr_template.render(
                         question=question, key=key, val=val)
 
                     resp = self._get_resp_from_attr(
-                        key, val, recommended_restaurant.get('name'), prompt)
+                        key, val, recommended_restaurant.get_name(), prompt)
 
         return resp
 

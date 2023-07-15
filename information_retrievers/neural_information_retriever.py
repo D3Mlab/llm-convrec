@@ -1,5 +1,6 @@
 from information_retrievers.information_retriever import InformationRetriever
 from information_retrievers.item import Item
+from information_retrievers.item_loader import ItemLoader
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
@@ -16,13 +17,16 @@ class NeuralInformationRetriever(InformationRetriever):
 
     :param engine: searches for relevant items and reviews
     :param data_holder: holds all data needed for information retrieval
+    :param item_loader: used to load metadata to Item object
     """
     _engine: NeuralSearchEngine
     _data_holder: DataHolder
+    _item_loader: ItemLoader
 
-    def __init__(self, engine: NeuralSearchEngine, data_holder: DataHolder):
+    def __init__(self, engine: NeuralSearchEngine, data_holder: DataHolder, item_loader: ItemLoader):
         self._engine = engine
         self._data_holder = data_holder
+        self._item_loader = item_loader
 
     def get_best_matching_items(self, query: str, topk_items: int, topk_reviews: int,
                                 filtered_embedding_matrix: torch.Tensor) -> list[RecommendedItem]:
@@ -85,54 +89,19 @@ class NeuralInformationRetriever(InformationRetriever):
         """
         recommended_items = []
         for index in range(len(item_id)):
-            item_object = self._create_item_from_business_id(items_gen_info,
-                                                                   item_id[index])
-            recommended_item_object = RecommendedItem(item_object, query,
-                                                            items_most_relevant_reviews[index])
-            recommended_items.append(recommended_item_object)
-
+            item_dict = items_gen_info.loc[items_gen_info['item_id'] == item_id[index]].to_dict(orient="records")[0]
+            recommended_item = self._item_loader.create_recommended_item(query, item_dict,
+                                                                         items_most_relevant_reviews[index])
+            recommended_items.append(recommended_item)
         return recommended_items
 
-    @staticmethod
-    def _create_item_from_business_id(items_gen_info: pd.DataFrame, business_id: str) -> Item:
+    def _create_item_from_business_id(self, items_gen_info: pd.DataFrame, item_id: str) -> Item:
         """
         Construct Item object from Item's business id
 
         :param items_gen_info: metadata of Items
-        :param business_id: Item's id
-        :return: Item objects whose id is business_id
+        :param item_id: Item's id
+        :return: Item objects whose id is item_id
         """
-        item_info = items_gen_info.loc[items_gen_info['business_id'] == business_id].iloc[0]
-        """
-        Item's business id is in the 1st column
-        Item's name is in the 2nd column
-        Item's address is in the 3rd column
-        Item's city is in the 4th column
-        Item's state is in the 5th column
-        Item's postal code is in the 6th column
-        Item's latitude is in the 7th column
-        Item's longitude is in the 8th column
-        Item's stars is in the 9th column
-        Item's review count is in the 10th column
-        Item's is open info is in the 11th column
-        Item's attributes is in the 12th column
-        Item's categories is in the 13th column
-        Item's hours is in the 14th column
-        """
-        business_id = item_info[0]
-        dictionary_info = {"name": item_info[1],
-                           "address": item_info[2],
-                           "city": item_info[3],
-                           "state": item_info[4],
-                           "postal_code": item_info[5],
-                           "latitude": float(item_info[6]),
-                           "longitude": float(item_info[7]),
-                           "stars": float(item_info[8]),
-                           "review_count": int(item_info[9]),
-                           "is_open": bool(item_info[10]),
-                           "attributes": ast.literal_eval(item_info[11]),
-                           "categories": list(item_info[12].split(",")),
-                           "hours": ast.literal_eval(item_info[13])}
-
-        item_object = Item(business_id, dictionary_info)
-        return item_object
+        item_dict = items_gen_info.loc[items_gen_info['item_id'] == item_id].to_dict(orient="records")[0]
+        return self._item_loader.create_item(item_dict)

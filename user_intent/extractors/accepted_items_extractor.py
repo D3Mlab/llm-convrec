@@ -46,7 +46,7 @@ class AcceptedItemsExtractor:
                             for restaurant in llm_response.split(',')}
         result = []
         for restaurant in all_mentioned_restaurants:
-            if restaurant.get("name").casefold() in restaurant_names:
+            if restaurant.get_name().casefold() in restaurant_names:
                 result.append(restaurant)
         return result
 
@@ -60,9 +60,9 @@ class AcceptedItemsExtractor:
         """
         curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
         return self.template.render(user_input=curr_user_input,
-                                    recently_mentioned_items=[restaurant.get("name") for restaurant in
+                                    recently_mentioned_items=[restaurant.get_name() for restaurant in
                                                                    recently_mentioned_restaurants],
-                                    all_mentioned_items=[restaurant.get("name") for restaurant in
+                                    all_mentioned_items=[restaurant.get_name() for restaurant in
                                                               all_mentioned_restaurants],
                                     few_shots=self._fewshots,
                                     domain=self._domain)

@@ -7,7 +7,7 @@ class CreateItemSeperation():
         df = pd.read_csv(source_file_path)
 
         # Group by the specified column and count the number of rows in each group
-        value_counts = df.groupby('business_id').size()
+        value_counts = df.groupby('item_id').size()
 
         #Convert it into a list
         value_counts = value_counts.to_list()

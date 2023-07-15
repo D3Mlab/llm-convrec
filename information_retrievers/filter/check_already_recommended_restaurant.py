@@ -19,7 +19,7 @@ class CheckAlreadyRecommendedRestaurant:
             return True
 
         for rec_restaurant in already_recommended_restaurant:
-            if restaurant_name == rec_restaurant.get("name").lower().strip().replace(" ", ""):
+            if restaurant_name == rec_restaurant.get_name().lower().strip().replace(" ", ""):
                 return False
 
         return True
