@@ -1,4 +1,5 @@
 from information_retrievers.checker.checker import Checker
+from state.state_manager import StateManager
 
 class ValueRangeChecker(Checker):
     """
@@ -6,7 +7,7 @@ class ValueRangeChecker(Checker):
     whether the value in the specified metadata field is within the value range of the constraint.
     """
 
-    def check(self, **kwargs):
+    def check(self, state_manager: StateManager, item_metadata: dict):
         """
         Return true if the item match the constraint, false otherwise.
         """

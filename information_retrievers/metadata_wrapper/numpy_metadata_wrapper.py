@@ -1,20 +1,19 @@
 import numpy as np
-import pandas as pd
 from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
 from information_retrievers.checker.checker import Checker
 from state.state_manager import StateManager
 
-class PDMetadataWrapper(MetadataWrapper):
+class NumpyMetadataWrapper(MetadataWrapper):
     """
-    Pandas dataframe metadata wrapper that is responsible to do filter and get item metadata as dictionary.
+    Numpy metadata wrapper that is responsible to do filter and get item metadata as dictionary.
 
     :param path_to_items_metadata: path to items metadata file
     """
 
-    _items_metadata: pd.DataFrame
+    _items_metadata: np.ndarray
 
     def __init__(self, path_to_items_metadata: str):
-        self._items_metadata = pd.read_csv(path_to_items_metadata)
+        self._items_metadata = np.load(path_to_items_metadata)
 
     def filter(self, checkers: list[Checker], state_manager: StateManager) -> np.ndarray:
         """
@@ -23,7 +22,7 @@ class PDMetadataWrapper(MetadataWrapper):
         num_item = self._items_metadata.shape[0]
         item_id_to_keep = []
         for index in range(num_item):
-            item_metadata_dict = self._items_metadata.iloc[index].to_dict(orient='records')
+            item_metadata_dict = self._items_metadata[index]
 
             if self.should_keep_item(checkers, state_manager, item_metadata_dict):
                 item_id_to_keep.append(item_metadata_dict['item_id'])
@@ -34,5 +33,9 @@ class PDMetadataWrapper(MetadataWrapper):
         """
         Return item metadata as a dictionary from item id.
         """
-        item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
-        return item_metadata.to_dict(orient='records')
+        num_item = self._items_metadata.shape[0]
+        for index in range(num_item):
+            item_metadata_dict = self._items_metadata[index]
+
+            if item_metadata_dict['item_id'] == item_id:
+                return item_metadata_dict

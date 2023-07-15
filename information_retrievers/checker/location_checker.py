@@ -1,4 +1,5 @@
 from information_retrievers.checker.checker import Checker
+from state.state_manager import StateManager
 
 class LocationChecker(Checker):
     """
@@ -7,7 +8,7 @@ class LocationChecker(Checker):
     specified by the user
     """
 
-    def check(self, **kwargs):
+    def check(self, state_manager: StateManager, item_metadata: dict):
         """
         Return true if the item match the constraint, false otherwise.
         """
