@@ -12,13 +12,17 @@ class Item:
     _mandatory: dict[str, Any]
     _optional: dict[str, Any]
 
-    def __init__(self, id_input: str, name: str, mandatory: dict[str, Any], optional: dict[str, Any] = None):
+    def __init__(self, id_input: str, name: str, mandatory: dict[str, Any], optional: dict[str, Any] = None,
+                 images: list[str] = None):
         if optional is None:
             optional = {}
+        if images is None:
+            images = []
         self._id = id_input
         self._name = name
         self._mandatory = mandatory
         self._optional = optional
+        self._images = images
 
     def get_id(self):
         """
@@ -39,3 +43,6 @@ class Item:
 
     def get(self, key):
         return self._mandatory[key]
+
+    def get_images(self) -> list[str]:
+        return self._images

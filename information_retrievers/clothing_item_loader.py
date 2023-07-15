@@ -16,4 +16,5 @@ class ClothingItemLoader(ItemLoader):
             'rank': item_dict['rank'],
         }
 
-        return Item(item_dict['item_id'], item_dict['name'], item_info, ast.literal_eval(item_dict['optional']))
+        return Item(item_dict['item_id'], item_dict['name'], item_info, ast.literal_eval(item_dict['optional']),
+                    ast.literal_eval('imageURLs'))
