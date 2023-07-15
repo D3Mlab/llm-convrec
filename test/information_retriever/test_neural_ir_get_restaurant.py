@@ -125,5 +125,5 @@ class TestGetBestMatchingRestaurants:
         """
         restaurant_names = []
         for rec_restaurant in recommended_restaurants:
-            restaurant_names.append(rec_restaurant.get("name"))
+            restaurant_names.append(rec_restaurant.get_name())
         return restaurant_names

@@ -14,7 +14,7 @@ class RecommendedItem(Item):
     _most_relevant_reviews: list[str]
 
     def __init__(self, item: Item, query: str, most_relevant_reviews: list[str]):
-        super().__init__(item.get_id(), item.get_storage())
+        super().__init__(item.get_id(), item.get_name(), item.get_mandatory_data(), item.get_optional_data())
         self._query = query
         self._most_relevant_reviews = most_relevant_reviews
 

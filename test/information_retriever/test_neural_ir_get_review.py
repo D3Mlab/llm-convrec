@@ -92,9 +92,9 @@ class TestGetBestMatchingReviewsOfRestaurant:
             question, recommended_restaurant)
         filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant, \
             filtered_restaurants_review_embeddings = \
-            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get("name")])
+            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get_name()])
         retrieved_review = information_retriever.get_best_matching_reviews_of_item(
-            query, [recommended_restaurant.get("name")], num_of_reviews_to_return,
+            query, [recommended_restaurant.get_name()], num_of_reviews_to_return,
             filtered_restaurants_review_embeddings,
             filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant)
 

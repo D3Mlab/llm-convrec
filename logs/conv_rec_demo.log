@@ -1,5 +1,5 @@
-2023-07-11 11:28:29,888 - dialogue_manager - DEBUG - user_input="hi i want a recommendation"
-2023-07-11 11:28:29,888 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
+2023-07-14 23:06:57,071 - dialogue_manager - DEBUG - user_input=" I want italian restaurants with good pizza in jasper avenue"
+2023-07-14 23:06:57,072 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
 
 For example:
 
@@ -47,29 +47,80 @@ Response: False
 
 
 Now, provide a response to the actual user input:
-User input: hi i want a recommendation
+User input:  I want italian restaurants with good pizza in jasper avenue
 Response: "
-2023-07-11 11:28:30,609 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:30,609 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
+2023-07-14 23:06:57,378 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:06:57,378 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
 
 For example:
 
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
 
 Now, provide a response to the actual user input:
-User input: hi i want a recommendation
+User input:  I want italian restaurants with good pizza in jasper avenue
 Response: "
-2023-07-11 11:28:31,007 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:31,007 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
+2023-07-14 23:06:57,699 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:06:57,699 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
 
 For example:
 
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
 
 Now, provide a response to the actual user input:
-User input: hi i want a recommendation
+User input:  I want italian restaurants with good pizza in jasper avenue
 Response: "
-2023-07-11 11:28:31,387 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:31,387 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 11:28:31,388 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+2023-07-14 23:06:57,975 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:06:57,975 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x00000178CA57BEB0>]
+2023-07-14 23:06:57,975 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
 
 Here are the descriptions of each constraint categories that you have to extract:
 - location: The desired location of the restaurants.
@@ -163,389 +214,43 @@ Old Hard Constraints:
 None
 Old Soft Constraints:
 None
-User’s Current Input: "hi i want a recommendation""
-2023-07-11 11:28:31,972 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-None
-New Soft Constraints:
-None"
-2023-07-11 11:28:31,973 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x0000019D30C00C10>]
-2023-07-11 11:28:31,973 - dialogue_manager - DEBUG - rec_response="Can you provide the location?"
-2023-07-11 11:28:31,973 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}], 'updated_keys': {}, 'hard_constraints': None, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x0000019D30C00C10>]}
-2023-07-11 11:28:39,309 - dialogue_manager - DEBUG - user_input="i live on jasper avenue in edmonton"
-2023-07-11 11:28:39,310 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
-
-For example:
-
-User input: Is there patio
-Response: True
-
-User input: Whats the price range?
-Response: True
-
-User input: Is it nearby? Is it in Toronto?
-Response: True
-
-User input: can you please recommend some menu items 
-Response: True
-
-User input: compare them, list the pros and cons of them
-Response: True
-
-User input: Do they have pizza?
-Response: True
-
-User input: Boulevard, Edmonton
-Response: False
-
-User input: Can you tell me somewhere to eat?
-Response: False
-
-User input: i would like some vegetarian food.
-Response: False
-
-User input: I am allergic to seafood, i want to find a restaurant.
-Response: False
-
-User input: Can you give me a recommendation?
-Response: False
-
-User input: i want a restaurant in (location)
-Response: False
-
-User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
-Response: False
-
-User input: i want kid's menu
-Response: False
-
-
-Now, provide a response to the actual user input:
-User input: i live on jasper avenue in edmonton
-Response: "
-2023-07-11 11:28:40,017 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:40,017 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: i live on jasper avenue in edmonton
-Response: "
-2023-07-11 11:28:40,631 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:40,632 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: i live on jasper avenue in edmonton
-Response: "
-2023-07-11 11:28:41,044 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:41,044 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 11:28:41,045 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
-
-Here are the descriptions of each constraint categories that you have to extract:
-- location: The desired location of the restaurants.
-- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
-- dish type: The desired menu item or dish in the restaurant that user shows interests.
-- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
-- price range: The preferred range of prices for the restaurants specified by the user.
-- wait times: The acceptable wait time for the user when dining at the restaurants.
-- atmosphere: The preferred atmosphere or ambience of the restaurants.
-- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
-- others: Any additional constraints or preferred features.
-
-For example:
-
-Old Hard Constraints:
-- location: "toronto"
-Old Soft Constraints:
-None
-User’s Current Input: "pizza and pasta"
-New Hard Constraints:
-- location: "toronto"
+User’s Current Input: " I want italian restaurants with good pizza in jasper avenue""
+2023-07-14 23:06:59,216 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
 - cuisine type: "italian"
-- dish type: "pizza", "pasta"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-Old Soft Constraints:
-- price range: "moderate"
-- others: "free parking"
-User’s Current Input: "does it have a patio?"
-New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-New Soft Constraints:
-- price range: "moderate"
-- others: "free parking", "patio"
-
-Old Hard Constraints:
+- dish type: "pizza"
 - location: "jasper avenue"
-- cuisine type: "japanese"
-Old Soft Constraints:
-None
-User’s Current Input: "What kind of menu does I Love Sushi offer?"
-New Hard Constraints:
-- location: "jasper avenue"
-- cuisine type: "japanese"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-None
-Old Soft Constraints:
-None
-User’s Current Input: "I want sushi and miso soup"
-New Hard Constraints:
-- cuisine type: "japanese"
-- dish type: "sushi", "miso soup"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-Old Soft Constraints:
-None
-User’s Current Input: "Edmonton"
-New Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-Old Soft Constraints:
-None
-User’s Current Input: "Is it expensive?"
-New Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-New Soft Constraints:
-- price range: "affordable"
-
-Now use the following input to solve the task:
-
-Old Hard Constraints:
-None
-Old Soft Constraints:
-None
-User’s Current Input: "i live on jasper avenue in edmonton""
-2023-07-11 11:28:41,762 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- location: "jasper avenue, edmonton"
 
 New Soft Constraints:
 None"
-2023-07-11 11:28:42,065 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x0000019D30C00C10>]
-2023-07-11 11:28:42,065 - dialogue_manager - DEBUG - rec_response="Can you provide the cuisine type or dish type?"
-2023-07-11 11:28:42,066 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>, <state.message.Message object at 0x0000019D335C8150>, <state.message.Message object at 0x0000019D33607A50>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'location': True}}, 'hard_constraints': {'location': ['jasper avenue, edmonton']}, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x0000019D30C00C10>], 'location_type': 'specific'}
-2023-07-11 11:28:50,006 - dialogue_manager - DEBUG - user_input="i want some sushi"
-2023-07-11 11:28:50,006 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
-
-For example:
-
-User input: Is there patio
-Response: True
-
-User input: Whats the price range?
-Response: True
-
-User input: Is it nearby? Is it in Toronto?
-Response: True
-
-User input: can you please recommend some menu items 
-Response: True
-
-User input: compare them, list the pros and cons of them
-Response: True
-
-User input: Do they have pizza?
-Response: True
-
-User input: Boulevard, Edmonton
-Response: False
-
-User input: Can you tell me somewhere to eat?
-Response: False
-
-User input: i would like some vegetarian food.
-Response: False
-
-User input: I am allergic to seafood, i want to find a restaurant.
-Response: False
-
-User input: Can you give me a recommendation?
-Response: False
-
-User input: i want a restaurant in (location)
-Response: False
-
-User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
-Response: False
-
-User input: i want kid's menu
-Response: False
-
-
-Now, provide a response to the actual user input:
-User input: i want some sushi
-Response: "
-2023-07-11 11:28:50,465 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:50,465 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: i want some sushi
-Response: "
-2023-07-11 11:28:50,872 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:50,873 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: i want some sushi
-Response: "
-2023-07-11 11:28:51,296 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:28:51,296 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 11:28:51,297 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
-
-Here are the descriptions of each constraint categories that you have to extract:
-- location: The desired location of the restaurants.
-- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
-- dish type: The desired menu item or dish in the restaurant that user shows interests.
-- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
-- price range: The preferred range of prices for the restaurants specified by the user.
-- wait times: The acceptable wait time for the user when dining at the restaurants.
-- atmosphere: The preferred atmosphere or ambience of the restaurants.
-- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
-- others: Any additional constraints or preferred features.
-
-For example:
-
-Old Hard Constraints:
-- location: "toronto"
-Old Soft Constraints:
-None
-User’s Current Input: "pizza and pasta"
-New Hard Constraints:
-- location: "toronto"
-- cuisine type: "italian"
-- dish type: "pizza", "pasta"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-Old Soft Constraints:
-- price range: "moderate"
-- others: "free parking"
-User’s Current Input: "does it have a patio?"
-New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-New Soft Constraints:
-- price range: "moderate"
-- others: "free parking", "patio"
-
-Old Hard Constraints:
-- location: "jasper avenue"
-- cuisine type: "japanese"
-Old Soft Constraints:
-None
-User’s Current Input: "What kind of menu does I Love Sushi offer?"
-New Hard Constraints:
-- location: "jasper avenue"
-- cuisine type: "japanese"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-None
-Old Soft Constraints:
-None
-User’s Current Input: "I want sushi and miso soup"
-New Hard Constraints:
-- cuisine type: "japanese"
-- dish type: "sushi", "miso soup"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-Old Soft Constraints:
-None
-User’s Current Input: "Edmonton"
-New Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-Old Soft Constraints:
-None
-User’s Current Input: "Is it expensive?"
-New Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-New Soft Constraints:
-- price range: "affordable"
-
-Now use the following input to solve the task:
-
-Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-Old Soft Constraints:
-None
-User’s Current Input: "i want some sushi""
-2023-07-11 11:28:52,511 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
-New Soft Constraints:
-None"
-2023-07-11 11:28:52,511 - dialogue_manager - DEBUG - rec_actions=[<rec_action.recommend.Recommend object at 0x0000019D335C7F50>]
-2023-07-11 11:28:52,512 - gpt_wrapper - DEBUG - gpt_input="Convert the following constraints for restaurants into a natural English search query that sounds like a review using past tense and only output the query.
-Hard constraints:{'location': ['jasper avenue, edmonton'], 'cuisine type': ['japanese'], 'dish type': ['sushi']}
+2023-07-14 23:06:59,316 - dialogue_manager - DEBUG - rec_actions=[<rec_action.recommend.Recommend object at 0x00000178CA606DD0>]
+2023-07-14 23:06:59,316 - gpt_wrapper - DEBUG - gpt_input="Convert the following constraints for restaurants into a natural English search query that sounds like a review using past tense and only output the query.
+Hard constraints:{'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': ['jasper avenue']}
 Soft preferences:None"
-2023-07-11 11:28:53,586 - gpt_wrapper - DEBUG - gpt_output="I tried a restaurant on Jasper Avenue in Edmonton that specialized in Japanese cuisine and served mostly sushi dishes."
-2023-07-11 11:28:53,587 - recommend - DEBUG - Query: I tried a restaurant on Jasper Avenue in Edmonton that specialized in Japanese cuisine and served mostly sushi dishes.
-2023-07-11 11:28:56,506 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Tanuki Kyoto Japanese Cuisine that has the following features and information.
-Features: location: at 10128 109 Street NW, Ambience: {romantic: False, intimate: False, classy: False, hipster: False, divey: False, touristy: False, trendy: False, upscale: False, casual: True}, Alcohol: beer_and_wine, BusinessParking: {garage: False, street: False, validated: False, lot: True, valet: False}, OutdoorSeating: False, NoiseLevel: average, GoodForKids: True, WiFi: no, GoodForMeal: {dessert: False, latenight: False, lunch: True, dinner: True, brunch: False, breakfast: False}, HasTV: True, Caters: False, BikeParking: True, Attire: casual, PriceRange: 2, HasReservations: True, HasTakeOut: True, GoodForGroups: True, HasDelivery: True, MustMakeReservation: False
-Information: ['Best sushi in Edmonton that is affordable. If you like Mikado try this once and you will never turn back. I prefer this location to the Jasper Ave location as there are lots of booths and private rooms. Try it once and you will be hooked trust me!', "I live a couple of blocks from Kyoto, so I frequent it a lot.\n\nIt's really a great little place for sushi. The prices are decent, and their sushi is good (much better that Mikado). Obviously this is no Japan-grade sushi. But it's Edmonton people! Nowhere in the prairies is like that, and I've been to my fair share of sushi restaurants in Alberta, and across Japan.\n\nIf you're a big eater, the bento boxes are for you. You get your choice of fillings, and sometimes they can substitute for you as well.\n\nMy fiance always gets the Assorted Sushi platter, and has never been disappointed. I usually get a half-order of salmon or toro sashimi and some maki. It always tastes fresh, and the portions are excellent.\n\nThe staff is amazing here. Probably some of the best service in Edmonton, hard to come by, even when they are busy.", "This is my favorite sushi spot in Edmonton.\n\nThe restaurant itself is pretty big and nicely decorated, like most Japanese places. The best part though, is the sushi of course. It's fresh, filled with flavor and surprisingly cheap. Only 3 of us went to eat and we ordered a bunch of rolls and the bill came to about $20. I had to look it over a few times because I could not believe that they charged so little compared to places like Mikado, which isn't nearly as good as Kyoto, and double the price."]
-Using a few concise sentences, tell me whether Tanuki Kyoto Japanese Cuisine is good for the following context. If the Tanuki Kyoto Japanese Cuisine are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
-Hard constraints: {'location': [], 'cuisine type': ['japanese'], 'dish type': ['sushi']}
+2023-07-14 23:07:00,103 - gpt_wrapper - DEBUG - gpt_output="Did I enjoy an Italian restaurant on Jasper Avenue that served delicious pizza in the past?"
+2023-07-14 23:07:00,103 - recommend - DEBUG - Query: Did I enjoy an Italian restaurant on Jasper Avenue that served delicious pizza in the past?
+2023-07-14 23:07:02,033 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Famoso Neapolitan Pizzeria that has the following features and information.
+Features: address: 10421 Whyte Avenue, city: Edmonton, state: AB, postal_code: T6E 2A1, latitude: 53.5179458, longitude: -113.4985697, stars: 3.5, review_count: 55, is_open: True, categories: ['Restaurants', ' Pizza'], hours: {'Monday': '11:30-21:0', 'Tuesday': '11:30-21:0', 'Wednesday': '11:30-21:0', 'Thursday': '11:30-21:0', 'Friday': '11:30-22:0', 'Saturday': '11:30-22:0', 'Sunday': '11:30-21:0'}, NoiseLevel: average, OutdoorSeating: True, WiFi: free, Alcohol: full_bar, HasTV: True, Ambience: {romantic: False, intimate: False, classy: False, hipster: False, divey: False, touristy: False, trendy: False, upscale: False, casual: True}, GoodForMeal: {dessert: False, latenight: False, lunch: True, dinner: True, brunch: False, breakfast: False}, BikeParking: True, BusinessParking: {garage: False, street: True, validated: False, lot: True, valet: False}, GoodForKids: True, Caters: False, BYOB: False, DogsAllowed: False, HappyHour: True, WheelchairAccessible: True, Corkage: True, HasReservations: True, Attire: casual, PriceRange: 2, HasTakeOut: True, HasDelivery: True, GoodForGroups: True, HasTableService: True
+Information: ['I actually ate at the jasper ave location, first time I had experienced Famosa.   Pizza was fantastically delicious, as was the tomato bisque.  Loved the menu.  Loved my affogato (sp?), which is not specifically on the menu, but which they enthusiastically made for me.', "This Famoso location on Whyte Avenue is really a great place to meet folks for a bite. Famoso pizza is by far my favourite pizza by flavour and price in general however this is not my favourite location -- maybe I'm just too used to visiting the flagship location on Jasper Avenue? The last time I visited here my order was not delivered to me correctly and so staff had to remake my pizza which was dealt with nicely, but it would have been nice if this was dealt with properly the first time. The wait staff was super friendly and helpful however and so I can't fault that at all!\n\nI've been here with just a friend or two and I've been here with a larger group and it's a great restaurant to visit for folks who are vegan or vegetarian. It's also nice to visit a location that isn't always as busy as the Jasper Avenue one.", "My friend had her birthday dinner here, which was pretty much an excuse to finally get to try this place out, as my partner was always whiny and complainy about how soggy the pizzas are whenever I bring it up.\n\nNote to self: Never trust Sean's opinion ever again.\n\nI ordered the San Andreas Pizza and a peach-flavoured Italian Soda, both of which came quickly. The menu states that pizzas are only in the ovens for 90 seconds, so if you're starving and on Whyte or Jasper Avenue check this place out. My pizza was topped with juicy tomatoes, cilantro, bits of chicken, slices of avocado and drizzled in a light cream sauce. \n\nIt was a bit messy to eat, but who doesn't like to get messy from time to time? Let your inner barbarian out and enjoy the tastiness that lays before you. And who needs that strict diet? Certainly not you! Treat yourself to a nutella banana pizza and maybe some gelato afterwards. You've earned it...unless your name is Sean S. -_-"]
+Using a few concise sentences, tell me whether Famoso Neapolitan Pizzeria is good for the following context. If the Famoso Neapolitan Pizzeria are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
+Hard constraints: {'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': []}
 Soft constraints: None"
-2023-07-11 11:28:57,792 - gpt_wrapper - DEBUG - gpt_output="Tanuki Kyoto Japanese Cuisine is good for Japanese cuisine and sushi. It is located at 10128 109 Street NW and offers affordable prices. The restaurant has good service and a variety of rolls to choose from."
-2023-07-11 11:28:57,793 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called I Love Sushi that has the following features and information.
-Features: location: at 10106 105 Street NW, Alcohol: beer_and_wine, GoodForKids: True, WiFi: no, NoiseLevel: quiet, BikeParking: True, BusinessParking: {garage: False, street: True, validated: False, lot: False, valet: False}, OutdoorSeating: False, Caters: False, GoodForMeal: {dessert: False, latenight: False, lunch: True, dinner: True, brunch: False, breakfast: False}, HasTV: True, Ambience: {touristy: False, hipster: False, romantic: False, intimate: False, trendy: False, upscale: False, classy: True, casual: True}, HasReservations: True, PriceRange: 2, HasTakeOut: True, Attire: casual, GoodForGroups: False, HasDelivery: True
-Information: ["One of my favorite Sushi restaurants in Edmonton. It's a tiny little place that's great for lunch. Not sure if they're open for supper, but it's located right off Jasper ave, so I wouldn't assume that I would be around there for supper anyway. Love their bento boxes for a great price ($11.50), and find the servers nice.", "I first dined at I Love Sushi after having a bit too much to drink. I enjoyed it immensely, but didn't get around to going back until I began working a few blocks away. The place is much better when you're sober.\n\nI Love Sushi is a small Japanese restaurant in downtown Edmonton. As the name suggests, the focus is on sushi, but there are a few non-sushi options for those who aren't fans of seafood.\n\nI really enjoy this restaurant. Not only is the quality of the food very high -- it's one of the best sushi places in Edmonton -- the staff are friendly and the atmosphere is always peaceful and relaxing. Even during the lunch rush, a trip to I Love Sushi feels like a nice escape from the hectic workday. That said, because it is so small, it's best to arrive early if you want to get a table. I tend to go late -- around 1:30pm -- to avoid the lunch rush, but not everyone has the flexibility to move their lunch schedule around.\n\nThe prices are good and the food is great (not as good as in Vancouver but, hey, we're on the prairies). If you're looking for good sushi downtown, I highly recommend I Love Sushi.", "This is a nice restaurant right on (just a bit off) Jasper Ave. I think the name says it all. It is for sushi lovers.\n\nThe restaurant had excellent service, great food, and expected prices. It has the ambiance of a very simple and cozy little place, nothing over the top. This has become one of the sushi places I recommend to everyone, Kyoto is still my favorite but this isn't bad at all!\n\nIt gets very busy around lunch time so be warned."]
-Using a few concise sentences, tell me whether I Love Sushi is good for the following context. If the I Love Sushi are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
-Hard constraints: {'location': [], 'cuisine type': ['japanese'], 'dish type': ['sushi']}
+2023-07-14 23:07:05,078 - gpt_wrapper - DEBUG - gpt_output="Famoso Neapolitan Pizzeria is good for the context of Italian cuisine as it offers authentic Neapolitan pizza. It is also good for the context of pizza as it has a variety of delicious pizzas on the menu. However, it does not have any specific dish type constraints other than pizza. Regarding location constraints, there are no specific limitations mentioned."
+2023-07-14 23:07:05,078 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called LovePizza that has the following features and information.
+Features: address: 10196 109 Street, city: Edmonton, state: AB, postal_code: T5J 1M7, latitude: 53.541637, longitude: -113.5089014, stars: 4.0, review_count: 142, is_open: True, categories: ['Restaurants', ' Pizza'], hours: {'Monday': '11:0-22:0', 'Tuesday': '11:0-22:0', 'Wednesday': '11:0-22:0', 'Thursday': '11:0-22:0', 'Friday': '11:0-22:0', 'Saturday': '11:0-22:0', 'Sunday': '11:0-22:0'}, Alcohol: beer_and_wine, HappyHour: False, WheelchairAccessible: True, Caters: True, WiFi: free, GoodForMeal: {dessert: False, latenight: False, lunch: True, dinner: True, brunch: False, breakfast: False}, GoodForKids: True, BusinessAcceptsCreditCards: True, BikeParking: True, OutdoorSeating: False, HasTV: False, Ambience: {touristy: False, hipster: True, romantic: False, intimate: False, trendy: True, upscale: False, classy: False, casual: True}, NoiseLevel: average, BusinessParking: {garage: False, street: False, validated: False, lot: True, valet: False}, DogsAllowed: False, HasTakeOut: True, HasDelivery: True, PriceRange: 2, Attire: casual, HasTableService: False, GoodForGroups: True, HasReservations: False
+Information: ["I like this pizza shop, it is better than other pizza shop and also expensive than Domino's etc. The quality and taste of pizza is great. The price is acceptable and vegetables looks fresh. I guess because it locates at Jasper ave, the lunch time is not good time to enjoy the food. They only have one size pizza, and the size is right for a single person. Overall, it worth to give a try.", "Uh, love LovePizza? - Ya I do!! \n\nFirst off, when I walked into this chic black & white tiled resto, I was taken aback as to how large and airy it is. Because it's located in the business plaza on 109th and Jasper Ave that is full of tiny businesses, I assumed it would be quite small as well - more of a take-out place with 4 or 5 tables. Boy was I wrong! With a vaulted ceiling, huge windows, and seating for what looked like 40, this place is wide open and ready to rock! \n\nAfter going up to the counter to order, the staff assemble you made to order pizza and put it through an oven. It them comes out the other side and is topped with more ingredients. Pro Tip: no matter what 'za you order, get them to drizzle the balsamic reduction on it - it is delicious!! I went with the Old MacDonald pizza on whole wheat crust.... with locally farm sourced sausage, a free range egg on top, amazing cheeses, all I can say is that it was fantastic and I am really, really impressed. Also, I like that they have pizza boxes out for you to package up what you don't eat. Because even though this was 1:30pm, and I was famished from not eating breakfast, I only ate half of my $12 pizza, and took the rest for a midnight, merlot induced snack. \n\nOther highlights that make me love, love, love this place: A wonderful beet salad. Pinocchio ice cream. Local beers and decent wine & prosecco. Free parking. A chic environment and lovely restrooms.", "Love pizza kind of just popped up in the 109st and jasper ave square where save on is. Love pizza is set up like burger priest, in that it's designed to be a nicer and better quality version of fast food dining. The restaurant partners with local companies so they carry grizzly paw beverages and Pinocchio ice cream (vanilla, chocolate and pistachio). Oh and they have beer and wine!\n\nThere was a variety of pre-set pizzas on their menu but they also give you the choice of making your own. They also give you the choice of whole wheat or normal (?) crust and the pizzas are all thin crust to decrease cooking time. We got the Holy Shiitake and the Meatatarian, both were really good, and split the pistachio ice cream for dessert. The ice cream was delicious to.\n\nI can't wait to go back and try the other pizzas. Definitely be back."]
+Using a few concise sentences, tell me whether LovePizza is good for the following context. If the LovePizza are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
+Hard constraints: {'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': []}
 Soft constraints: None"
-2023-07-11 11:28:59,249 - gpt_wrapper - DEBUG - gpt_output="I Love Sushi is good for people looking for a Japanese restaurant that serves sushi. It is a small and cozy place with excellent service and great food. However, it can get busy during lunchtime, so arriving early is recommended."
-2023-07-11 11:28:59,276 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Tanuki Kyoto Japanese Cuisine and I Love Sushi.
+2023-07-14 23:07:07,265 - gpt_wrapper - DEBUG - gpt_output="LovePizza is good for the context of pizza lovers as it offers a variety of pizzas with fresh ingredients and a great taste. It is also good for groups as it has a large seating capacity. However, it may not be ideal for those looking for an Italian cuisine experience as it does not specifically specialize in Italian cuisine."
+2023-07-14 23:07:07,275 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Famoso Neapolitan Pizzeria and LovePizza.
 Below are the explanation on why each of them is good for the user.
-Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine is good for Japanese cuisine and sushi. It is located at 10128 109 Street NW and offers affordable prices. The restaurant has good service and a variety of rolls to choose from., I Love Sushi: I Love Sushi is good for people looking for a Japanese restaurant that serves sushi. It is a small and cozy place with excellent service and great food. However, it can get busy during lunchtime, so arriving early is recommended.
-Respond to the user in a few sentences starting with "How about Tanuki Kyoto Japanese Cuisine and I Love Sushi" without using the word 'constraints'."
-2023-07-11 11:29:01,735 - gpt_wrapper - DEBUG - gpt_output="How about Tanuki Kyoto Japanese Cuisine and I Love Sushi? Tanuki Kyoto Japanese Cuisine is a great option for Japanese cuisine and sushi lovers. It offers affordable prices, a variety of rolls, and good service. On the other hand, if you're looking for a cozy place with excellent service and great food, I Love Sushi is worth trying, just make sure to arrive early during lunchtime due to its popularity."
-2023-07-11 11:29:01,736 - dialogue_manager - DEBUG - rec_response="How about Tanuki Kyoto Japanese Cuisine and I Love Sushi? Tanuki Kyoto Japanese Cuisine is a great option for Japanese cuisine and sushi lovers. It offers affordable prices, a variety of rolls, and good service. On the other hand, if you're looking for a cozy place with excellent service and great food, I Love Sushi is worth trying, just make sure to arrive early during lunchtime due to its popularity."
-2023-07-11 11:29:01,736 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>, <state.message.Message object at 0x0000019D335C8150>, <state.message.Message object at 0x0000019D33607A50>, <state.message.Message object at 0x0000019D33587FD0>, <state.message.Message object at 0x0000019D32CDDF50>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'cuisine type': True, 'dish type': True}}, 'hard_constraints': {'location': ['jasper avenue, edmonton'], 'cuisine type': ['japanese'], 'dish type': ['sushi']}, 'soft_constraints': None, 'current_rec_actions': [<rec_action.recommend.Recommend object at 0x0000019D335C7F50>], 'location_type': 'specific', 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]}
-2023-07-11 11:45:40,836 - dialogue_manager - DEBUG - user_input="do they have patio?"
-2023-07-11 11:45:40,837 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
+Famoso Neapolitan Pizzeria: Famoso Neapolitan Pizzeria is good for the context of Italian cuisine as it offers authentic Neapolitan pizza. It is also good for the context of pizza as it has a variety of delicious pizzas on the menu. However, it does not have any specific dish type constraints other than pizza. Regarding location constraints, there are no specific limitations mentioned., LovePizza: LovePizza is good for the context of pizza lovers as it offers a variety of pizzas with fresh ingredients and a great taste. It is also good for groups as it has a large seating capacity. However, it may not be ideal for those looking for an Italian cuisine experience as it does not specifically specialize in Italian cuisine.
+Respond to the user in a few sentences starting with "How about Famoso Neapolitan Pizzeria and LovePizza" without using the word 'constraints'."
+2023-07-14 23:07:10,427 - gpt_wrapper - DEBUG - gpt_output="How about Famoso Neapolitan Pizzeria and LovePizza? Famoso Neapolitan Pizzeria is a great choice if you're looking for authentic Neapolitan pizza and a variety of delicious options. LovePizza, on the other hand, is perfect for pizza lovers with its fresh ingredients and tasty pizzas, although it may not offer an Italian cuisine experience. Both restaurants have their own unique appeal!"
+2023-07-14 23:07:10,428 - dialogue_manager - DEBUG - rec_response="How about Famoso Neapolitan Pizzeria and LovePizza? Famoso Neapolitan Pizzeria is a great choice if you're looking for authentic Neapolitan pizza and a variety of delicious options. LovePizza, on the other hand, is perfect for pizza lovers with its fresh ingredients and tasty pizzas, although it may not offer an Italian cuisine experience. Both restaurants have their own unique appeal!"
+2023-07-14 23:07:10,428 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x00000178C8C881F0>, <state.message.Message object at 0x00000178CA59F940>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x00000178CA4E4C70>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'cuisine type': True, 'dish type': True, 'location': True}}, 'hard_constraints': {'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': ['jasper avenue']}, 'soft_constraints': None, 'location_type': 'specific', 'current_rec_actions': [<rec_action.recommend.Recommend object at 0x00000178CA606DD0>], 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>]}
+2023-07-14 23:07:31,707 - dialogue_manager - DEBUG - user_input="do they have patio?"
+2023-07-14 23:07:31,707 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
 
 For example:
 
@@ -595,30 +300,81 @@ Response: False
 Now, provide a response to the actual user input:
 User input: do they have patio?
 Response: "
-2023-07-11 11:45:41,238 - gpt_wrapper - DEBUG - gpt_output="True"
-2023-07-11 11:45:41,238 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
+2023-07-14 23:07:31,964 - gpt_wrapper - DEBUG - gpt_output="True"
+2023-07-14 23:07:31,964 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
 
 For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
 
 
 Now, provide a response to the actual user input:
 User input: do they have patio?
 Response: "
-2023-07-11 11:45:41,469 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:45:41,469 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
+2023-07-14 23:07:32,257 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:07:32,258 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
 
 For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
 
 
 Now, provide a response to the actual user input:
 User input: do they have patio?
 Response: "
-2023-07-11 11:45:41,939 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:45:41,940 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, <user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 11:45:41,940 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+2023-07-14 23:07:32,516 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:07:32,516 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x00000178CA57AE90>, <user_intent.provide_preference.ProvidePreference object at 0x00000178CA57BEB0>]
+2023-07-14 23:07:32,516 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
 If you cannot extract a restaurants name respond with "None.".
 
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+The user may use short forms or 'slang' when referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
 
 User Input: I don't like thai express, starbucks or subway.
@@ -635,11 +391,11 @@ Response: Tim Hortons.
 
 User Input: do they have patio?
 Response:"
-2023-07-11 11:45:42,329 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 11:45:42,330 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+2023-07-14 23:07:32,853 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-14 23:07:32,854 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
 If you cannot extract a restaurants name respond with "None.".
 
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+The user may use short forms or 'slang' when referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
 
 User Input: I don't like thai express, starbucks or subway.
@@ -656,8 +412,8 @@ Response: Tim Hortons.
 
 User Input: do they have patio?
 Response:"
-2023-07-11 11:45:42,596 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 11:45:42,597 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+2023-07-14 23:07:33,174 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-14 23:07:33,175 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
 
 Here are the descriptions of each constraint categories that you have to extract:
 - location: The desired location of the restaurants.
@@ -748,20 +504,20 @@ New Soft Constraints:
 Now use the following input to solve the task:
 
 Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
+- cuisine type: "italian"
+- dish type: "pizza"
+- location: "jasper avenue"
 Old Soft Constraints:
 None
 User’s Current Input: "do they have patio?""
-2023-07-11 11:45:43,969 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
+2023-07-14 23:07:34,602 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- cuisine type: "italian"
+- dish type: "pizza"
+- location: "jasper avenue"
 New Soft Constraints:
 - others: "patio""
-2023-07-11 11:45:43,969 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x0000019D33763710>]
-2023-07-11 11:45:43,969 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
+2023-07-14 23:07:34,603 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x00000178CA4E3CA0>]
+2023-07-14 23:07:34,603 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
 
 Question: Do they have wine?
 Individual Questions: Do they have wine?
@@ -780,13 +536,13 @@ Individual Questions: Do they take reservations?\nAre the reservations first-com
 
 Question: do they have patio?
 Individual Questions:"
-2023-07-11 11:45:44,558 - gpt_wrapper - DEBUG - gpt_output="Do they have a patio?"
-2023-07-11 11:45:44,558 - answer - DEBUG - The question is Do they have a patio?
-2023-07-11 11:45:44,558 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 11:45:44,558 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
+2023-07-14 23:07:35,061 - gpt_wrapper - DEBUG - gpt_output="Do they have a patio?"
+2023-07-14 23:07:35,061 - answer - DEBUG - The question is Do they have a patio?
+2023-07-14 23:07:35,061 - answer - DEBUG - The recommended restaurant is Famoso Neapolitan Pizzeria
+2023-07-14 23:07:35,061 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Famoso Neapolitan Pizzeria.
 
 Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, OutdoorSeating, WiFi, Alcohol, HasTV, Ambience, best meals, BikeParking, BusinessParking, GoodForKids, Caters, BYOB, DogsAllowed, HappyHour, WheelchairAccessible, Corkage, HasReservations, Attire, PriceRange, HasTakeOut, HasDelivery, GoodForGroups, HasTableService, or none
 Only respond with the name of the category. 
 
 Input: What's their addresses?
@@ -803,11 +559,11 @@ Output: PopularMeals
 
 Input: Do they have a patio?
 Output:"
-2023-07-11 11:45:44,918 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 11:45:44,919 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 11:45:44,919 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 11:45:44,919 - answer - DEBUG - Metadata question!
-2023-07-11 11:45:44,920 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
+2023-07-14 23:07:35,511 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
+2023-07-14 23:07:35,511 - answer - DEBUG - The category is OutdoorSeating
+2023-07-14 23:07:35,511 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
+2023-07-14 23:07:35,511 - answer - DEBUG - Metadata question!
+2023-07-14 23:07:35,511 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
 
 Question: "Do they have a high chair?"
 Answer: "Subway is kid friendly."
@@ -822,14 +578,14 @@ Answer: "Yes, there are gluten free options."
 Response: Yes.
 
 Question: "Do they have a patio?"
-Answer: "Tanuki Kyoto Japanese Cuisine does not have outdoor seating."
+Answer: "Famoso Neapolitan Pizzeria does have outdoor seating."
 Response:"
-2023-07-11 11:45:45,271 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 11:45:45,272 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 11:45:45,272 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
+2023-07-14 23:07:35,833 - gpt_wrapper - DEBUG - gpt_output="Yes."
+2023-07-14 23:07:35,833 - answer - DEBUG - The recommended restaurant is LovePizza
+2023-07-14 23:07:35,833 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants LovePizza.
 
 Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
+address, city, state, postal_code, stars, review_count, hours, Alcohol, HappyHour, WheelchairAccessible, Caters, WiFi, best meals, GoodForKids, BusinessAcceptsCreditCards, BikeParking, OutdoorSeating, HasTV, Ambience, NoiseLevel, BusinessParking, DogsAllowed, HasTakeOut, HasDelivery, PriceRange, Attire, HasTableService, GoodForGroups, HasReservations, or none
 Only respond with the name of the category. 
 
 Input: What's their addresses?
@@ -846,11 +602,11 @@ Output: PopularMeals
 
 Input: Do they have a patio?
 Output:"
-2023-07-11 11:45:45,701 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 11:45:45,701 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 11:45:45,701 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 11:45:45,701 - answer - DEBUG - Metadata question!
-2023-07-11 11:45:45,702 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
+2023-07-14 23:07:36,172 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
+2023-07-14 23:07:36,172 - answer - DEBUG - The category is OutdoorSeating
+2023-07-14 23:07:36,172 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
+2023-07-14 23:07:36,172 - answer - DEBUG - Metadata question!
+2023-07-14 23:07:36,172 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
 
 Question: "Do they have a high chair?"
 Answer: "Subway is kid friendly."
@@ -865,24 +621,20 @@ Answer: "Yes, there are gluten free options."
 Response: Yes.
 
 Question: "Do they have a patio?"
-Answer: "I Love Sushi does not have outdoor seating."
+Answer: "LovePizza does not have outdoor seating."
 Response:"
-2023-07-11 11:45:45,983 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 11:45:45,983 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Do they have a patio?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+2023-07-14 23:07:36,509 - gpt_wrapper - DEBUG - gpt_output="Yes."
+2023-07-14 23:07:36,509 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Do they have a patio?" referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 
 Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine does not have outdoor seating., I Love Sushi: I Love Sushi does not have outdoor seating.'}
+{'Famoso Neapolitan Pizzeria: Famoso Neapolitan Pizzeria does have outdoor seating., LovePizza: LovePizza does not have outdoor seating.'}
 
 Format the response to the user."
-2023-07-11 11:45:46,907 - gpt_wrapper - DEBUG - gpt_output="The response to the user should be:
-
-Both Tanuki Kyoto Japanese Cuisine and I Love Sushi do not have outdoor seating."
-2023-07-11 11:45:46,907 - dialogue_manager - DEBUG - rec_response="The response to the user should be:
-
-Both Tanuki Kyoto Japanese Cuisine and I Love Sushi do not have outdoor seating."
-2023-07-11 11:45:46,907 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>, <state.message.Message object at 0x0000019D335C8150>, <state.message.Message object at 0x0000019D33607A50>, <state.message.Message object at 0x0000019D33587FD0>, <state.message.Message object at 0x0000019D32CDDF50>, <state.message.Message object at 0x0000019D6C8F9850>, <state.message.Message object at 0x0000019D336BD250>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 6}], 'updated_keys': {}, 'hard_constraints': {'location': ['jasper avenue, edmonton'], 'cuisine type': ['japanese'], 'dish type': ['sushi']}, 'soft_constraints': {'others': ['patio']}, 'current_rec_actions': [<rec_action.answer.Answer object at 0x0000019D33763710>], 'location_type': 'specific', 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]}
-2023-07-11 11:46:19,123 - dialogue_manager - DEBUG - user_input="what menu do they have"
-2023-07-11 11:46:19,123 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
+2023-07-14 23:07:37,718 - gpt_wrapper - DEBUG - gpt_output="Famoso Neapolitan Pizzeria does have outdoor seating. LovePizza, on the other hand, does not have outdoor seating."
+2023-07-14 23:07:37,719 - dialogue_manager - DEBUG - rec_response="Famoso Neapolitan Pizzeria does have outdoor seating. LovePizza, on the other hand, does not have outdoor seating."
+2023-07-14 23:07:37,719 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x00000178C8C881F0>, <state.message.Message object at 0x00000178CA59F940>, <state.message.Message object at 0x00000178CA59F9A0>, <state.message.Message object at 0x00000178CA59E9B0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x00000178CA4E4C70>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x00000178CA57AE90>, 'utterance_index': 2}], 'updated_keys': {}, 'hard_constraints': {'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': ['jasper avenue']}, 'soft_constraints': {'others': ['patio']}, 'location_type': 'specific', 'current_rec_actions': [<rec_action.answer.Answer object at 0x00000178CA4E3CA0>], 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>]}
+2023-07-14 23:07:48,856 - dialogue_manager - DEBUG - user_input="what kind of menu do they offer?"
+2023-07-14 23:07:48,857 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
 
 For example:
 
@@ -930,32 +682,83 @@ Response: False
 
 
 Now, provide a response to the actual user input:
-User input: what menu do they have
+User input: what kind of menu do they offer?
 Response: "
-2023-07-11 11:46:19,503 - gpt_wrapper - DEBUG - gpt_output="True"
-2023-07-11 11:46:19,503 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
+2023-07-14 23:07:49,100 - gpt_wrapper - DEBUG - gpt_output="True"
+2023-07-14 23:07:49,100 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
 
 For example:
 
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
 
 Now, provide a response to the actual user input:
-User input: what menu do they have
+User input: what kind of menu do they offer?
 Response: "
-2023-07-11 11:46:19,858 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:46:19,859 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
+2023-07-14 23:07:49,423 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:07:49,423 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
 
 For example:
 
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
 
 Now, provide a response to the actual user input:
-User input: what menu do they have
+User input: what kind of menu do they offer?
 Response: "
-2023-07-11 11:46:20,272 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 11:46:20,272 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, <user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 11:46:20,273 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+2023-07-14 23:07:49,687 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-14 23:07:49,688 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x00000178CA57AE90>, <user_intent.provide_preference.ProvidePreference object at 0x00000178CA57BEB0>]
+2023-07-14 23:07:49,688 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
 If you cannot extract a restaurants name respond with "None.".
 
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+The user may use short forms or 'slang' when referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
 
 User Input: I don't like thai express, starbucks or subway.
@@ -970,13 +773,13 @@ Response: Thai Express.
 User Input: where is timmy's?
 Response: Tim Hortons.
 
-User Input: what menu do they have
+User Input: what kind of menu do they offer?
 Response:"
-2023-07-11 11:46:20,626 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 11:46:20,626 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+2023-07-14 23:07:50,454 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-14 23:07:50,455 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
 If you cannot extract a restaurants name respond with "None.".
 
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+The user may use short forms or 'slang' when referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
 
 User Input: I don't like thai express, starbucks or subway.
@@ -991,10 +794,10 @@ Response: Thai Express.
 User Input: where is timmy's?
 Response: Tim Hortons.
 
-User Input: what menu do they have
+User Input: what kind of menu do they offer?
 Response:"
-2023-07-11 11:46:20,975 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 11:46:20,975 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+2023-07-14 23:07:50,792 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-14 23:07:50,792 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
 
 Here are the descriptions of each constraint categories that you have to extract:
 - location: The desired location of the restaurants.
@@ -1085,20 +888,20 @@ New Soft Constraints:
 Now use the following input to solve the task:
 
 Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
+- cuisine type: "italian"
+- dish type: "pizza"
+- location: "jasper avenue"
 Old Soft Constraints:
 - others: "patio"
-User’s Current Input: "what menu do they have""
-2023-07-11 11:46:22,326 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
+User’s Current Input: "what kind of menu do they offer?""
+2023-07-14 23:07:52,219 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- cuisine type: "italian"
+- dish type: "pizza"
+- location: "jasper avenue"
 New Soft Constraints:
 - others: "patio""
-2023-07-11 11:46:22,326 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x0000019D33763710>]
-2023-07-11 11:46:22,327 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
+2023-07-14 23:07:52,219 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x00000178CA4E3CA0>]
+2023-07-14 23:07:52,219 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
 
 Question: Do they have wine?
 Individual Questions: Do they have wine?
@@ -1115,15 +918,15 @@ Individual Questions: Are they busy?\nIf they are busy, what days are busiest?\n
 Question: Do they take reservations or is it first-come, first-served?
 Individual Questions: Do they take reservations?\nAre the reservations first-come, first-served?
 
-Question: what menu do they have
+Question: what kind of menu do they offer?
 Individual Questions:"
-2023-07-11 11:46:22,813 - gpt_wrapper - DEBUG - gpt_output="What menu do they have?"
-2023-07-11 11:46:22,813 - answer - DEBUG - The question is What menu do they have?
-2023-07-11 11:46:22,813 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 11:46:22,813 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
+2023-07-14 23:07:52,659 - gpt_wrapper - DEBUG - gpt_output="What kind of menu do they offer?"
+2023-07-14 23:07:52,659 - answer - DEBUG - The question is What kind of menu do they offer?
+2023-07-14 23:07:52,659 - answer - DEBUG - The recommended restaurant is Famoso Neapolitan Pizzeria
+2023-07-14 23:07:52,659 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Famoso Neapolitan Pizzeria.
 
 Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, OutdoorSeating, WiFi, Alcohol, HasTV, Ambience, best meals, BikeParking, BusinessParking, GoodForKids, Caters, BYOB, DogsAllowed, HappyHour, WheelchairAccessible, Corkage, HasReservations, Attire, PriceRange, HasTakeOut, HasDelivery, GoodForGroups, HasTableService, or none
 Only respond with the name of the category. 
 
 Input: What's their addresses?
@@ -1138,14 +941,14 @@ Output: HasReservations
 Input: What are the meals it's known for?
 Output: PopularMeals
 
-Input: What menu do they have?
+Input: What kind of menu do they offer?
 Output:"
-2023-07-11 11:46:23,151 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 11:46:23,152 - answer - DEBUG - The category is none
-2023-07-11 11:46:23,152 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 11:46:23,152 - answer - DEBUG - Non metadata question!
-2023-07-11 11:46:23,152 - answer - DEBUG - Query: What menu do they have?
-2023-07-11 11:46:23,868 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Tanuki Kyoto Japanese Cuisine based on provided information.
+2023-07-14 23:07:52,952 - gpt_wrapper - DEBUG - gpt_output="none"
+2023-07-14 23:07:52,952 - answer - DEBUG - The category is none
+2023-07-14 23:07:52,952 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
+2023-07-14 23:07:52,952 - answer - DEBUG - Non metadata question!
+2023-07-14 23:07:52,952 - answer - DEBUG - Query: What kind of menu do they offer?
+2023-07-14 23:07:53,872 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Famoso Neapolitan Pizzeria based on provided information.
 
 Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
 
@@ -1153,15 +956,15 @@ Question: Do they have a slide in the restaurant?
 Information: ['I really like this place. They have great food.']
 Answer: I do not know.
 
-Question: What menu do they have?
-Information: ["I've been here multiple times with co-workers, and each time I go it's never a bad experience. All of the staff seem genuinely happy to meet you, and are eager to serve you and share their Japanese food knowledge with you if you require it. \nThe bento box on their menu is really great value if you're not 100% sure what you want - or, if you are like me and want a little bit of everything - the rice is filling with the meat, but you'll also get soup and salad and sashimi and sushi too for a decent price. Do yourself a favour and go with that, you won't regret it :)", "Still a long standing favorite. It's close to the husband's workplace so we've been here a few times. I RARELY have any problems here, but last time we came here my sashimi was room temperature. Gross.\n\nHaving said that, this is THE place to order Chirashi. It's a little different every time and it is a sashimi lovers wet dream. ALL THE PROTEINS!! You could have salmon, two kinds of tuna, mackeral, surf clam, scallop, octopus, whitefish,  marinated mushrooms, egg, and/or fish roe covering a bed of rice.\n\nYesterday was the first time I noticed that Chirashi isn't on the dinner menu. I'm usually all about the bento box, so I guess I just never looked until now. If you do want to go there for lunch, you might want to make a reservation. It fills up pretty fast.\n\nNow about those bento boxes...They're a little pricer than usual at $21.00. I'd say it's still worth it. You still get your standard miso soup, salad, and rice. You also get a choice of three proteins AND you get a serving of fresh fruit that isn't all cantaloupe. All the protein portions are generous. If you happen to choose the sashimi, you'll get 5 kinds.\n\nFour and a half stars.", "2 stars for poor service on a Friday early evening and for food that was subpar in my opinion. We ordered miso soup (which tasted watered down); an order of a new roll with salmon and seaweed salad in it (it was spicy! and underwhelming); an order of salmon sashimi which was decent; shrimp tempura (the shrimp were pretty small compared to other places we've had this at); and also ordered beef shogayaki (which they forgot about - but our server claimed it was on its way). Don't think I'll be back anytime soon."]
+Question: What kind of menu do they offer?
+Information: ["Famoso salad is good, but the menu lacks gluten free options. Pizza according to my friends is good. I don't like that you order at the cashier and they just bring you your food. no waiter service for food, just drinks.", "Since the food is what it's mostly about lets get everything else out of the way! Service? Stellar, friendly, helpful, and dare I say attractive? Price? Cheap, cheap, cheap! Wallet friendly from start to finish, so pony up kids! Decor? Who cares? It's clean, trendy, open and it smells delicious inside. The patio is a great escape as well and pairs nicely with a cocktail. Wink, wink. \n\nFood. Let's do this. (Bare in mind I'm doing this on a full stomach, in a particularly salty mood with a three year old jumping around like my living room is an olympic gymnastics practice room. My point? Im being only slightly biased and completely objective.) \n\nPizza is delicious, and I hate this word, with a passion. Nothing comes from a frozen state, its tradition thin crust with foldability and the cheese is to die for. Literally, I almost got hit by a car running to the front doors. I'd die for this cheese. I order it in every form available for purchase: Appetizers, pizza, salad, you name it! Do it! \n\nThe drinks are always delicious and the women working the counter are always prepared to offer suggestions, and they NEVER up-sale. They don't work on commission, folks! \n\nEverything else? You've got dry wines, lovely salads, beautifully arranged lunch pairings, spicy thai pizza, duck pizza, gelato, espresso, tiramisu, berry lemonade...I could go on. I won't. I think I just heard a lamp break...you get the point. Just go, already!", "Amazing! The staff is fantastic and friendly and always easy to find. The menu is fantastic, and since you order at the bar, they provide a well designed notepad for you, so you don't forget your order, especially for multiple people! Our wait time for pizza couldn't have been longer than ten minutes, it was fresh, piping hot and gourmet. \n\nI'm lactose intolerant, so at first I was glad for the Marinara pizza that doesn't include cheese. But then I saw that they offer free substitution of Daiya vegan mozzarella for any of their cheeses! I was euphoric, dining out can be hard when you're lactose intolerant and I was thrilled that Famoso offered an option that meant I could enjoy nearly their whole menu! \nThanks Famoso!!!!"]
 Answer:"
-2023-07-11 11:46:24,995 - gpt_wrapper - DEBUG - gpt_output="The restaurant Tanuki Kyoto Japanese Cuisine has a menu that includes bento boxes, Chirashi, sashimi, sushi, miso soup, salad, rice, and various protein options."
-2023-07-11 11:46:24,995 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 11:46:24,995 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
+2023-07-14 23:07:55,652 - gpt_wrapper - DEBUG - gpt_output="They offer a menu that includes pizza, salads, appetizers, lunch pairings, gelato, espresso, tiramisu, and berry lemonade. There is also a substitution option for vegan mozzarella for those who are lactose intolerant."
+2023-07-14 23:07:55,653 - answer - DEBUG - The recommended restaurant is LovePizza
+2023-07-14 23:07:55,653 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants LovePizza.
 
 Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
+address, city, state, postal_code, stars, review_count, hours, Alcohol, HappyHour, WheelchairAccessible, Caters, WiFi, best meals, GoodForKids, BusinessAcceptsCreditCards, BikeParking, OutdoorSeating, HasTV, Ambience, NoiseLevel, BusinessParking, DogsAllowed, HasTakeOut, HasDelivery, PriceRange, Attire, HasTableService, GoodForGroups, HasReservations, or none
 Only respond with the name of the category. 
 
 Input: What's their addresses?
@@ -1176,14 +979,14 @@ Output: HasReservations
 Input: What are the meals it's known for?
 Output: PopularMeals
 
-Input: What menu do they have?
+Input: What kind of menu do they offer?
 Output:"
-2023-07-11 11:46:25,311 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 11:46:25,312 - answer - DEBUG - The category is none
-2023-07-11 11:46:25,312 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 11:46:25,312 - answer - DEBUG - Non metadata question!
-2023-07-11 11:46:25,313 - answer - DEBUG - Query: What menu do they have?
-2023-07-11 11:46:26,287 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
+2023-07-14 23:07:55,946 - gpt_wrapper - DEBUG - gpt_output="none"
+2023-07-14 23:07:55,947 - answer - DEBUG - The category is none
+2023-07-14 23:07:55,947 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
+2023-07-14 23:07:55,947 - answer - DEBUG - Non metadata question!
+2023-07-14 23:07:55,947 - answer - DEBUG - Query: What kind of menu do they offer?
+2023-07-14 23:07:56,593 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants LovePizza based on provided information.
 
 Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
 
@@ -1191,1025 +994,20 @@ Question: Do they have a slide in the restaurant?
 Information: ['I really like this place. They have great food.']
 Answer: I do not know.
 
-Question: What menu do they have?
-Information: ['Cute little shop at the corner that serves decent sushi at pretty reasonable prices. Had the butterfly maki which consists of salmon sashimi and avocado. There are also bento sets which come with a choice of tempura, chicken or beef served together with sashimi and miso soup. Overall, this place is great for a quick sushi fix.', 'One if my favourite places to go!!! Love the atmosphere, food, price, menu, just awesome. It is also gluten free friendly so i go with my sister. my favorite is the beef maki!!! i Love beef maki and it is hard to find. Also i love their onion cakes and beef or chicken bowl. It is a nice tiny place where i go anytime i get the opportunity. I also love their sushi specials and i find that they have a great menu for ppl who have a limited diet. Great for vegetarians, non pork eaters, pescatarians etc. One of my favs for sure!', 'Friendly staff but the food is very generic, nothing special about thr menue or quality.']
+Question: What kind of menu do they offer?
+Information: ["If you love unique taste and supporting local businesses this place is perfect. Upon coming in the place is clean and bright. Staff were waiting to take your order. Some menu options but also a make your own with a list of the ingredients. They also have dessert pizza, ice cream and salad. We went with the menu and got the Ukrainian and old macdonald. Both were very good but for some reason I found missing something but I couldn't figure out what it was. I loved that all the ingredients are locally sourced. Makes it that much more yummy. The cute message on the wall about how the business came about was also adorable and made me love this place without even trying the food. Definitely want to go back and try some of the other options and settle on one that I love!", "Mango and coconut gelato???  To die for!!\n\nPizza is ok, not the best of its type,wouldn't be my first choice when the craving sets in.  The location is fun because its surrounded by a zillion other little places to eat, which may not be to its advantage.  However, love all the glass and high ceiling and chic decor.  They even make it easy to take home that last piece by putting take-out boxes within easy reach.", 'Fast efficient service. \nLoved choices!\nWhole wheat dough, spicy tomato sauce, great toppings. You make your own or order  off menu. \nLarge pizzas. Innovative combinations! \nDefinitely a return!!']
 Answer:"
-2023-07-11 11:46:28,453 - gpt_wrapper - DEBUG - gpt_output="They have a menu that includes sushi, bento sets with a choice of tempura, chicken or beef, miso soup, onion cakes, and beef or chicken bowl. They also have sushi specials and a menu that caters to people with limited diets. They are gluten free friendly and have options for vegetarians, non pork eaters, and pescatarians."
-2023-07-11 11:46:28,453 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "What menu do they have?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
+2023-07-14 23:07:57,894 - gpt_wrapper - DEBUG - gpt_output="They offer a menu with various options and a "make your own" option. They also have dessert pizza, ice cream, and salad."
+2023-07-14 23:07:57,895 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "What kind of menu do they offer?" referring to the following restaurants: Famoso Neapolitan Pizzeria, LovePizza.
 
 Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: The restaurant Tanuki Kyoto Japanese Cuisine has a menu that includes bento boxes, Chirashi, sashimi, sushi, miso soup, salad, rice, and various protein options., I Love Sushi: They have a menu that includes sushi, bento sets with a choice of tempura, chicken or beef, miso soup, onion cakes, and beef or chicken bowl. They also have sushi specials and a menu that caters to people with limited diets. They are gluten free friendly and have options for vegetarians, non pork eaters, and pescatarians.'}
+{'Famoso Neapolitan Pizzeria: They offer a menu that includes pizza, salads, appetizers, lunch pairings, gelato, espresso, tiramisu, and berry lemonade. There is also a substitution option for vegan mozzarella for those who are lactose intolerant., LovePizza: They offer a menu with various options and a "make your own" option. They also have dessert pizza, ice cream, and salad.'}
 
 Format the response to the user."
-2023-07-11 11:46:31,707 - gpt_wrapper - DEBUG - gpt_output="The restaurant Tanuki Kyoto Japanese Cuisine has a menu that includes bento boxes, Chirashi, sashimi, sushi, miso soup, salad, rice, and various protein options. 
-I Love Sushi has a menu that includes sushi, bento sets with a choice of tempura, chicken or beef, miso soup, onion cakes, and beef or chicken bowl. They also have sushi specials and a menu that caters to people with limited diets. They are gluten free friendly and have options for vegetarians, non pork eaters, and pescatarians."
-2023-07-11 11:46:31,707 - dialogue_manager - DEBUG - rec_response="The restaurant Tanuki Kyoto Japanese Cuisine has a menu that includes bento boxes, Chirashi, sashimi, sushi, miso soup, salad, rice, and various protein options. 
-I Love Sushi has a menu that includes sushi, bento sets with a choice of tempura, chicken or beef, miso soup, onion cakes, and beef or chicken bowl. They also have sushi specials and a menu that caters to people with limited diets. They are gluten free friendly and have options for vegetarians, non pork eaters, and pescatarians."
-2023-07-11 11:46:31,707 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>, <state.message.Message object at 0x0000019D335C8150>, <state.message.Message object at 0x0000019D33607A50>, <state.message.Message object at 0x0000019D33587FD0>, <state.message.Message object at 0x0000019D32CDDF50>, <state.message.Message object at 0x0000019D6C8F9850>, <state.message.Message object at 0x0000019D336BD250>, <state.message.Message object at 0x0000019D335A7CD0>, <state.message.Message object at 0x0000019D32C38E10>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 8}], 'updated_keys': {}, 'hard_constraints': {'location': ['jasper avenue, edmonton'], 'cuisine type': ['japanese'], 'dish type': ['sushi']}, 'soft_constraints': {'others': ['patio']}, 'current_rec_actions': [<rec_action.answer.Answer object at 0x0000019D33763710>], 'location_type': 'specific', 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>], 'satisfied_goals': [{'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 6}]}
-2023-07-11 17:14:53,244 - dialogue_manager - DEBUG - user_input="	"
-2023-07-11 17:14:53,263 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurant, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurant.  
-
-For example:
-
-User input: Is there patio
-Response: True
-
-User input: Whats the price range?
-Response: True
-
-User input: Is it nearby? Is it in Toronto?
-Response: True
-
-User input: can you please recommend some menu items 
-Response: True
-
-User input: compare them, list the pros and cons of them
-Response: True
-
-User input: Do they have pizza?
-Response: True
-
-User input: Boulevard, Edmonton
-Response: False
-
-User input: Can you tell me somewhere to eat?
-Response: False
-
-User input: i would like some vegetarian food.
-Response: False
-
-User input: I am allergic to seafood, i want to find a restaurant.
-Response: False
-
-User input: Can you give me a recommendation?
-Response: False
-
-User input: i want a restaurant in (location)
-Response: False
-
-User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
-Response: False
-
-User input: i want kid's menu
-Response: False
-
-
-Now, provide a response to the actual user input:
-User input: 	
-Response: "
-2023-07-11 17:14:53,998 - gpt_wrapper - DEBUG - gpt_output="True"
-2023-07-11 17:14:54,000 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurant”: User agrees, accepts, likes, or reacts positively towards a recommended restaurant. If the user input is yes or ok, return True. If they ask a followup question while accepting, also return True. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: 	
-Response: "
-2023-07-11 17:14:54,541 - gpt_wrapper - DEBUG - gpt_output="User agrees."
-2023-07-11 17:14:54,543 - gpt_wrapper - DEBUG - gpt_input="This is a restaurant recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurant”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurant. 
-
-For example:
-
-
-Now, provide a response to the actual user input:
-User input: 	
-Response: "
-2023-07-11 17:14:55,270 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-11 17:14:55,272 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, <user_intent.provide_preference.ProvidePreference object at 0x0000019D1A6B3A10>]
-2023-07-11 17:14:55,274 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
-If you cannot extract a restaurants name respond with "None.".
-
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
-
-User Input: I don't like thai express, starbucks or subway.
-Response: Thai Express, Starbucks, Subway.
-
-User Input: I like that they have a patio.
-Response: None.
-
-User Input: Does thai express have a balcony?
-Response: Thai Express.
-
-User Input: where is timmy's?
-Response: Tim Hortons.
-
-User Input: 	
-Response:"
-2023-07-11 17:14:56,022 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 17:14:56,024 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
-If you cannot extract a restaurants name respond with "None.".
-
-The user may use short forms or 'slang' when referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
-
-User Input: I don't like thai express, starbucks or subway.
-Response: Thai Express, Starbucks, Subway.
-
-User Input: I like that they have a patio.
-Response: None.
-
-User Input: Does thai express have a balcony?
-Response: Thai Express.
-
-User Input: where is timmy's?
-Response: Tim Hortons.
-
-User Input: 	
-Response:"
-2023-07-11 17:14:56,365 - gpt_wrapper - DEBUG - gpt_output="None."
-2023-07-11 17:14:56,370 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
-
-Here are the descriptions of each constraint categories that you have to extract:
-- location: The desired location of the restaurants.
-- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
-- dish type: The desired menu item or dish in the restaurant that user shows interests.
-- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
-- price range: The preferred range of prices for the restaurants specified by the user.
-- wait times: The acceptable wait time for the user when dining at the restaurants.
-- atmosphere: The preferred atmosphere or ambience of the restaurants.
-- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
-- others: Any additional constraints or preferred features.
-
-For example:
-
-Old Hard Constraints:
-- location: "toronto"
-Old Soft Constraints:
-None
-User’s Current Input: "pizza and pasta"
-New Hard Constraints:
-- location: "toronto"
-- cuisine type: "italian"
-- dish type: "pizza", "pasta"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-Old Soft Constraints:
-- price range: "moderate"
-- others: "free parking"
-User’s Current Input: "does it have a patio?"
-New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-New Soft Constraints:
-- price range: "moderate"
-- others: "free parking", "patio"
-
-Old Hard Constraints:
-- location: "jasper avenue"
-- cuisine type: "japanese"
-Old Soft Constraints:
-None
-User’s Current Input: "What kind of menu does I Love Sushi offer?"
-New Hard Constraints:
-- location: "jasper avenue"
-- cuisine type: "japanese"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-None
-Old Soft Constraints:
-None
-User’s Current Input: "I want sushi and miso soup"
-New Hard Constraints:
-- cuisine type: "japanese"
-- dish type: "sushi", "miso soup"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-Old Soft Constraints:
-None
-User’s Current Input: "Edmonton"
-New Hard Constraints:
-- location: "edmonton"
-- cuisine type: "italian"
-New Soft Constraints:
-None
-
-Old Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-Old Soft Constraints:
-None
-User’s Current Input: "Is it expensive?"
-New Hard Constraints:
-- location: "spadina"
-- cuisine type: "european"
-New Soft Constraints:
-- price range: "affordable"
-
-Now use the following input to solve the task:
-
-Old Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
-Old Soft Constraints:
-- others: "patio"
-User’s Current Input: "	""
-2023-07-11 17:14:57,741 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- location: "jasper avenue, edmonton"
-- cuisine type: "japanese"
-- dish type: "sushi"
-
-New Soft Constraints:
-- others: "patio""
-2023-07-11 17:14:57,744 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x0000019D33763710>]
-2023-07-11 17:14:57,744 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
-
-Question: Do they have wine?
-Individual Questions: Do they have wine?
-
-Question: What are dishes, cocktails and types of wine do you recommend?
-Individual Questions: What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend?
-
-Question: Does starbucks serve bubble tea or coffee?
-Individual Questions: Does starbucks serve bubble tea?\nDoes starbucks serve coffee?
-
-Question: Are they busy, if so, what days are the busiest and which servers are the best?
-Individual Questions: Are they busy?\nIf they are busy, what days are busiest?\nIf they are busy, which servers are the best?
-
-Question: Do they take reservations or is it first-come, first-served?
-Individual Questions: Do they take reservations?\nAre the reservations first-come, first-served?
-
-Question: 	
-Individual Questions:"
-2023-07-11 17:14:59,386 - gpt_wrapper - DEBUG - gpt_output="Question: Are there vegetarian options available?
-Individual Questions: Are there vegetarian options available?
-
-Question: What time do they close?
-Individual Questions: What time do they close?
-
-Question: Is there outdoor seating?
-Individual Questions: Is there outdoor seating?"
-2023-07-11 17:14:59,388 - answer - DEBUG - The question is Question: Are there vegetarian options available?
-2023-07-11 17:14:59,388 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:14:59,388 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: Are there vegetarian options available?
-Output:"
-2023-07-11 17:14:59,726 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:14:59,726 - answer - DEBUG - The category is none
-2023-07-11 17:14:59,726 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:14:59,726 - answer - DEBUG - Non metadata question!
-2023-07-11 17:14:59,727 - answer - DEBUG - Query: Question: Are there vegetarian options available?
-2023-07-11 17:15:00,931 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Tanuki Kyoto Japanese Cuisine based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: Question: Are there vegetarian options available?
-Information: ['For all you vegans/vegetarians out there....... this is not the place for you to enjoy sushi!\n\nI found the veggie options on the menu to be minimal, over priced, and unimaginative.  Perhaps I am spoiled by the vast array of sushi joints in my neighbourhood.... but I really was disappointed by the lack of veggieness at Kyoto.\n\nThe gomae, cucumber maki and avocado maki were adequate.  The server taking our take out order was friendly enough.', 'Wonderful, warm atmosphere with beautiful Buddhist artwork. Very tasty and good quality vegetarian options - fresh and light - especially goma-e. Wonderful experience. Warm, welcoming service. Enjoy!', 'definite YES!!! Kyoto never seems to disappoint. I love the decor at this location, the private rooms are awesome!!! The food is great with a lot of variety. I love the bento boxes and the chicken/beef bowl. Very flexible with what you can choose with the your combos. Ill go there anytime! Good service as well and fair pricing. Definite fan.']
-Answer:"
-2023-07-11 17:15:01,598 - gpt_wrapper - DEBUG - gpt_output="Yes, there are vegetarian options available."
-2023-07-11 17:15:01,598 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:01,598 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: Are there vegetarian options available?
-Output:"
-2023-07-11 17:15:01,981 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:01,981 - answer - DEBUG - The category is none
-2023-07-11 17:15:01,981 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:01,982 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:01,982 - answer - DEBUG - Query: Question: Are there vegetarian options available?
-2023-07-11 17:15:02,489 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: Question: Are there vegetarian options available?
-Information: ["I quite enjoy going to this restaurant in the afternoon.  The lunch rush is over and I get linger over my sushi and tea in the sunny dinning room.  I always get the assorted sushi platter and they never fail to serve me some of the freshest sushi you can get in Edmonton.  My boyfriend is a vegetarian and is thrilled with the abundance of the veggie bento box.  It's one of our go-to date places - super tasty food, cosy ambiance and really fair prices.", 'One if my favourite places to go!!! Love the atmosphere, food, price, menu, just awesome. It is also gluten free friendly so i go with my sister. my favorite is the beef maki!!! i Love beef maki and it is hard to find. Also i love their onion cakes and beef or chicken bowl. It is a nice tiny place where i go anytime i get the opportunity. I also love their sushi specials and i find that they have a great menu for ppl who have a limited diet. Great for vegetarians, non pork eaters, pescatarians etc. One of my favs for sure!', 'Cute little shop at the corner that serves decent sushi at pretty reasonable prices. Had the butterfly maki which consists of salmon sashimi and avocado. There are also bento sets which come with a choice of tempura, chicken or beef served together with sashimi and miso soup. Overall, this place is great for a quick sushi fix.']
-Answer:"
-2023-07-11 17:15:03,140 - gpt_wrapper - DEBUG - gpt_output="Yes, there are vegetarian options available."
-2023-07-11 17:15:03,140 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Question: Are there vegetarian options available?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available., I Love Sushi: Yes, there are vegetarian options available.'}
-
-Format the response to the user."
-2023-07-11 17:15:05,065 - gpt_wrapper - DEBUG - gpt_output="Response: 
-Yes, there are vegetarian options available at both Tanuki Kyoto Japanese Cuisine and I Love Sushi."
-2023-07-11 17:15:05,065 - answer - DEBUG - The question is Individual Questions: Are there vegetarian options available?
-2023-07-11 17:15:05,065 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:05,065 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: Are there vegetarian options available?
-Output:"
-2023-07-11 17:15:05,764 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:05,764 - answer - DEBUG - The category is none
-2023-07-11 17:15:05,764 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:05,765 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:05,765 - answer - DEBUG - Query: Individual Questions: Are there vegetarian options available?
-2023-07-11 17:15:06,426 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Tanuki Kyoto Japanese Cuisine based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: Individual Questions: Are there vegetarian options available?
-Information: ['For all you vegans/vegetarians out there....... this is not the place for you to enjoy sushi!\n\nI found the veggie options on the menu to be minimal, over priced, and unimaginative.  Perhaps I am spoiled by the vast array of sushi joints in my neighbourhood.... but I really was disappointed by the lack of veggieness at Kyoto.\n\nThe gomae, cucumber maki and avocado maki were adequate.  The server taking our take out order was friendly enough.', 'Wonderful, warm atmosphere with beautiful Buddhist artwork. Very tasty and good quality vegetarian options - fresh and light - especially goma-e. Wonderful experience. Warm, welcoming service. Enjoy!', 'definite YES!!! Kyoto never seems to disappoint. I love the decor at this location, the private rooms are awesome!!! The food is great with a lot of variety. I love the bento boxes and the chicken/beef bowl. Very flexible with what you can choose with the your combos. Ill go there anytime! Good service as well and fair pricing. Definite fan.']
-Answer:"
-2023-07-11 17:15:07,496 - gpt_wrapper - DEBUG - gpt_output="Yes, there are vegetarian options available."
-2023-07-11 17:15:07,496 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:07,496 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: Are there vegetarian options available?
-Output:"
-2023-07-11 17:15:08,308 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:08,308 - answer - DEBUG - The category is none
-2023-07-11 17:15:08,308 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:08,308 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:08,309 - answer - DEBUG - Query: Individual Questions: Are there vegetarian options available?
-2023-07-11 17:15:08,799 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: Individual Questions: Are there vegetarian options available?
-Information: ['One if my favourite places to go!!! Love the atmosphere, food, price, menu, just awesome. It is also gluten free friendly so i go with my sister. my favorite is the beef maki!!! i Love beef maki and it is hard to find. Also i love their onion cakes and beef or chicken bowl. It is a nice tiny place where i go anytime i get the opportunity. I also love their sushi specials and i find that they have a great menu for ppl who have a limited diet. Great for vegetarians, non pork eaters, pescatarians etc. One of my favs for sure!', "I quite enjoy going to this restaurant in the afternoon.  The lunch rush is over and I get linger over my sushi and tea in the sunny dinning room.  I always get the assorted sushi platter and they never fail to serve me some of the freshest sushi you can get in Edmonton.  My boyfriend is a vegetarian and is thrilled with the abundance of the veggie bento box.  It's one of our go-to date places - super tasty food, cosy ambiance and really fair prices.", 'Cute little shop at the corner that serves decent sushi at pretty reasonable prices. Had the butterfly maki which consists of salmon sashimi and avocado. There are also bento sets which come with a choice of tempura, chicken or beef served together with sashimi and miso soup. Overall, this place is great for a quick sushi fix.']
-Answer:"
-2023-07-11 17:15:09,452 - gpt_wrapper - DEBUG - gpt_output="Yes, they have vegetarian options available."
-2023-07-11 17:15:09,452 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Individual Questions: Are there vegetarian options available?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available., I Love Sushi: Yes, they have vegetarian options available.'}
-
-Format the response to the user."
-2023-07-11 17:15:10,534 - gpt_wrapper - DEBUG - gpt_output=""Individual Questions: 
-- Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available.
-- I Love Sushi: Yes, they have vegetarian options available.""
-2023-07-11 17:15:10,534 - answer - DEBUG - The question is 
-2023-07-11 17:15:10,534 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:10,534 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: 
-Output:"
-2023-07-11 17:15:10,834 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:10,835 - answer - DEBUG - The category is none
-2023-07-11 17:15:10,835 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:10,835 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:10,835 - answer - DEBUG - Query: 
-2023-07-11 17:15:11,399 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Tanuki Kyoto Japanese Cuisine based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: 
-Information: ['Last one from our 3 block challenge...also from May 2009!\n\nWe cheated.\n\n\n\nSort of.\n\n\nWe said to each other that we would try to focus on NEW places, places we have only driven by or some we haven\'t even heard of. Well, its only review #3 and we have cheated. We went to an old favorite. In our defence though, it fits EVERY other criteria: its within a 3 block radius and its not a big chain (there are two restaurants in Edmonton). \n\nKyoto is a place that we enjoyed often during our dating days when Heath would come to the city on the weekend hungry for something different and unavailable in Lloydminster. We would often wander into the Japanese restaurant for sushi and warm miso soup as well as delicious bento boxes full of goodies. It occured to us as we walked in today that we hadn\'t been there in a couple of years due to finding a place on Whyte Ave that we loved for a while, and then an unfortunate sushi "accident" that landed me (Jess) in the emergency room before a final exam. I have been slow to warm up to the idea of raw tuna since, but today I was feeling a bit impulsive, so decided to give it another go.\n\nWe wandered into the restaurant around 3 in the afternoon, thinking it would be pretty dead on a long weekend Sunday. We. Were. Wrong. Apparently Lupper is a new thing in Edmonton and we are the last to catch on! The place was packed! We were able to get a cozy booth on the far side of the restaurant though and were quickly seated amongst the new decor. \n\nThe server took a while to come over to our table, but in her defence she was the only server in the restaurant and must have had at least 15 tables. When she did come over, she took our order quickly for food and drinks and miraculously returned in lightning speed with two diet cokes. I honestly don\'t know how she managed to put the order in and pick them up and deliver them in that short of time! Soon afterwards, she was back with a smile on her face and a couple of bowls of soup and bean sprout salad that come complementary with every meal. The miso soup was the same as I remembered, warm but not scalding, and with a lighter form of miso that lended a savory and slighly salty taste. The bean sprout salad was doused in what tasted like miso and ponzu sauce and was deliciously peppery. We devoured both in minutes and were greeted by our mains just in time for the last bite.\n\nHeath ordered a beef rice bowl that consisted of cooked beef, silver noodles, rice, onions, zuccini, and more onions. He added some soy sauce and dug in with some chopstix and thankfully let me have a taste before it was all gone. The beef was simple but delicious and perfect with a bit of green onion in ever bite. I in turn shared my Rainbow Roll and offered him one of my two pieces of Toro (Tuna Belly) sushi, but he declined and told me to "enjoy it" as he knows it used to be my favorite sushi dish before "the incident", and he is a smart man who also knows that if I love it again we will probably be going for a lot more sushi! The Rainbow Roll was huge with 8 pieces of tempura wrapped in salmon, tuna, avocado and mackerel. I enjoy a fair amount of wasabi in my soy sauce and gingerly dipped whole pieces in before not-so-gingerly stuffing them in my mouth. I was only able to eat 4 pieces before starting to get full, so I decided I should probably move on to the Toro. It was just as I remembered it. Beautiful. The meat was so tender it fell apart and the little bit of wasabi rubbed underneath the meat as well as the green onion on top put it over the edge. The "incident" was soon forgotten (it didn\'t happen at this restaurant anyway) and I professed my love for all things Japanese again. \n\nHeath polished off the last of the rainbow rolls and we both sat back stuffed. Our server brought us our bill with a big smile and we paid and left the warm restaurant into the pouring rain to continue our afternoon. Total bill with tip: 34.76.', 'I had a dream.... a dream of a Saturday filled with a dinner of deliciously delectable delicacies. Delivered to me on demand to devour devilishly.  Instead... I got a disastrous day of despair.\n\nThis is part One of Two of that story: Kyoto\n\nThe plan was a simple one, Kyoto for an appetizer of Toro then off to Tres Carnales for tacos.  I was flying solo today since the gf had to work - she actually has the gal to believe saving lives is more important then dinner with me!!!!!! So I called up my cousin and off we went.  \n\nI must note that I love Kyoto - the old Kyoto.  I am a regular diner here and every I come recently I ask myself why im so loyal.  It breaks my heart to have to write this review, but I wont allow my feelings to interfere with the true experience of the day. \n\nWe arrived around 340, and as usual, the place is packed.  So after a bit of a wait (and two servers walking right by us standing at the door) someone finally asks:\n\n"have you been helped?" \n"no actually, table for two please" \n\nWe were seated and eventually someone noticed we were ready for a drink order.  We also ordered our Toro then as well since we knew thats what we wanted;  we also ordered a roll and a few other little things.  \n\nOne of the nice things about coming at this time is that they give you a bean sprout salad along with your miso soup.  Both great. \n\nAfter about 10 mins our server comes back and lets us know the news:  \n\n"Sorry we are out of Toro."\n\nTime for an aside:  I live in the north end,  I drive here because I have come to expect a level of quality and service.  The previous TWO times I have come here they have been "out of Toro." I\'ve only ever encountered this problem once before ANYWHERE else (and I eat ALOT of sushi); and even then it was late on a weeknight... not Early on a Saturday afternoon. \n\n"what do you mean your out of toro, do you guys not sell it anymore?"\n"hold on let me go check"\n\n----- waits-----\n\n"nope we sell it we are just out" \n"ok, thank you please just bring the other stuff"\n\nThe food came and i didnt see our server again.... here is the short version: The rolls were falling apart when you picked them up.  The other sushi we ordered was cut way more thin then is acceptable and generally the free soup was the highlight.  \n\nSince our server decided not to return to our table I got up and asked for our bill... Surprise they charged us for all that toro that doesn\'t exist. Which would be fine if the lady at the till would believe that they were out and we didnt receive it... Lucky that was easy enough to prove.  \n\n"Dont worry cousin Tres Carnales will be much better\n\nat this time you may notice that we didnt make it to Tres.... instead we found ourselves at "Louisiana Purchase."  Read the next exciting installment of Mystery Diners reviews to find out why!. \n\n---\nShort review:\n\nAtmosphere: 4/5- It a nice place; clean, modern, with a nice "vibe"\n\nService: 2/5 - Had to wait to be seated,  then was forgotten about, and to top it off our bill was wrong. \n\nFood: 3/5 - Not what it use to be.   Acceptable but no longer worth the drive to get here. \n\nDinning experience: 2/5 - Not having tuna is not acceptable once, let alone three times in a row. \n\nPrice: 3/5 -  Cost 36$ for two of us,that price was changed due to the non existent toro. \n\nOverall: 2.8 - Will i be back? Yes, but not because I should but for the same reason abused partners keep going back... im a sucker.', "I relented to eating here when my friend suggested it. But if anyone knows me well, they know my top and only choice for sushi would be Furusato on Whyte. Still, Kyoto isn't too bad in terms of generic sushi; they were actually a lot better than I had expected.\n\nThis location is fairly big, with small tables and private low-floor rooms. It's usually pretty busy, and my friend had to make reservations when we went for our group of four. I always like it when Japanese restaurants have the low-floor rooms; it makes it seem more authentic somehow. Although I'm always paranoid someone will steal my shoes!\n\nI wasn't really hungry that day, so I only ordered a few pieces of sushi. I think I ordered the hokkigai (surf clam) and tamago (egg) sushi, along with a california roll. Pretty basic, in terms of sushi. The food was fresh though, which is what you always want, especially for sushi.\n\nThe service was also pretty good, considering they were super-busy that day we went. We had to flag down our waitress a few times, but we got what we needed. In terms of cost, it's about average; it's not ridiculously overpriced that I would refuse to come back, if my friends suggest it again."]
-Answer:"
-2023-07-11 17:15:12,319 - gpt_wrapper - DEBUG - gpt_output="I do not know."
-2023-07-11 17:15:12,319 - answer - DEBUG - Answer with GPT
-2023-07-11 17:15:12,320 - gpt_wrapper - DEBUG - gpt_input="The user is asking a question about Tanuki Kyoto Japanese Cuisine.
-Answer the users question: "" "
-2023-07-11 17:15:13,420 - gpt_wrapper - DEBUG - gpt_output="I'm sorry, but I cannot answer the user's question about Tanuki Kyoto Japanese Cuisine as there is no specific question provided."
-2023-07-11 17:15:13,420 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:13,420 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: 
-Output:"
-2023-07-11 17:15:13,921 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:13,921 - answer - DEBUG - The category is none
-2023-07-11 17:15:13,921 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:13,922 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:13,922 - answer - DEBUG - Query: 
-2023-07-11 17:15:14,397 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: 
-Information: ["Maybe it was the grey day - and the hot miso soup, but this tiny sushi shop, north of Jasper, won a small piece of my heart today. \n\nIt's cozy, eclectic - soft white light strands, fake flowers, wicker chairs, assorted pottery for dish wear, Hello Kitty?! and piano music lulling me through my menu read just after lunch hour.\n\nI order the miso, a green onion cake, tea and a plate of Dynamite Maki. The food comes almost instantly, and as I shift my laptop and books to make room for my meal, one of the Moo-Moo kimono-wearing servers comes and fusses over my table, to help me put it in order.\n\nThe food is fresh and good - not the best sushi I've ever had, but better than Wok Box down the street and the place has infinitely more character. \n\nCharacter's huge in my books - and this is a place for quick, stress-busting work lunches, lazy snowstorm afternoons and after-five sake crawls. \n\nHmmm.... sake crawls.", "You can't really go wrong at ILS.  The restaurant is a well maintained hole in the wall just off Jasper.   The prices are reasonable, the sushi is fresh and the service is pleasant.  It can be a challenge to get a larger group of people in a lunch time (i.e. more than two), but if you can it's worth it.  \n\nI'm not going to say ILS will rock your world.  I've never been distracted by a flaw or disappointing time, so I call it a safe bet.", "This is a typical little hole-in-the-wall place, run by a local family. It gets pretty busy during lunch, when hordes of business people flood in during their short break. The rest of the day, it is generally quiet, and every time I've gone, we've pretty much had the place to ourselves. That's a good thing, because there are only about ten tables in the whole place. \n\nDespite the name, I Love Sushi has far more on the menu that just sushi. Don't get me wrong, sushi is great, but there is far more to Japanese cuisine than just sushi. \n\nThe sushi here is average, but what I come back for over and over is the Oyako-don and Tonkatsu. Both are great dishes that will fill you up on a cold winter's day or fuel you up for a night on the town. \n\nCompared to other places nearby (Mikado & Kyoto), the prices are dirt cheap too. If you're looking to try other aspects of Japanese cuisine, drop in and sample a few different things - they won't cost as much as they do at other places in town, and taste just as good (if not better)."]
-Answer:"
-2023-07-11 17:15:15,355 - gpt_wrapper - DEBUG - gpt_output="I do not know."
-2023-07-11 17:15:15,355 - answer - DEBUG - Answer with GPT
-2023-07-11 17:15:15,355 - gpt_wrapper - DEBUG - gpt_input="The user is asking a question about I Love Sushi.
-Answer the users question: "" "
-2023-07-11 17:15:16,972 - gpt_wrapper - DEBUG - gpt_output="I'm sorry, but it seems like the user forgot to ask the question about I Love Sushi. Could you please provide more context or rephrase the question?"
-2023-07-11 17:15:16,972 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{"Tanuki Kyoto Japanese Cuisine: I'm sorry, but I cannot answer the user's question about Tanuki Kyoto Japanese Cuisine as there is no specific question provided., I Love Sushi: I'm sorry, but it seems like the user forgot to ask the question about I Love Sushi. Could you please provide more context or rephrase the question?"}
-
-Format the response to the user."
-2023-07-11 17:15:19,054 - gpt_wrapper - DEBUG - gpt_output="I apologize, but it seems like your question about Tanuki Kyoto Japanese Cuisine is missing or unclear. Could you please provide more specific information or rephrase your question? Additionally, it appears that you forgot to ask a question about I Love Sushi. Can you please provide more context or rephrase your question?"
-2023-07-11 17:15:19,054 - answer - DEBUG - The question is Question: What time do they close?
-2023-07-11 17:15:19,054 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:19,055 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: What time do they close?
-Output:"
-2023-07-11 17:15:19,394 - gpt_wrapper - DEBUG - gpt_output="hours"
-2023-07-11 17:15:19,394 - answer - DEBUG - The category is hours
-2023-07-11 17:15:19,394 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:19,394 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:19,400 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Question: What time do they close?"
-Answer: "Tanuki Kyoto Japanese Cuisine is is open on Monday from 11:00am to 10:00pm, is open on Tuesday from 11:00am to 10:00pm, is open on Wednesday from 11:00am to 10:00pm, is open on Thursday from 11:00am to 10:00pm, is open on Friday from 11:00am to 11:00pm, is open on Saturday from 11:00am to 11:00pm, is open on Sunday from 11:00am to 10:00pm."
-Response:"
-2023-07-11 17:15:19,856 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:19,856 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:19,856 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: What time do they close?
-Output:"
-2023-07-11 17:15:20,179 - gpt_wrapper - DEBUG - gpt_output="hours"
-2023-07-11 17:15:20,179 - answer - DEBUG - The category is hours
-2023-07-11 17:15:20,179 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:20,179 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:20,179 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Question: What time do they close?"
-Answer: "I Love Sushi is is open on Monday from 11:00am to 8:30pm, is open on Tuesday from 11:00am to 8:30pm, is open on Wednesday from 11:00am to 8:30pm, is open on Thursday from 11:00am to 8:30pm, is open on Friday from 11:00am to 9:00pm, is open on Saturday from 4:30pm to 9:00pm."
-Response:"
-2023-07-11 17:15:20,873 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:20,874 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Question: What time do they close?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine is is open on Monday from 11:00am to 10:00pm, is open on Tuesday from 11:00am to 10:00pm, is open on Wednesday from 11:00am to 10:00pm, is open on Thursday from 11:00am to 10:00pm, is open on Friday from 11:00am to 11:00pm, is open on Saturday from 11:00am to 11:00pm, is open on Sunday from 11:00am to 10:00pm., I Love Sushi: I Love Sushi is is open on Monday from 11:00am to 8:30pm, is open on Tuesday from 11:00am to 8:30pm, is open on Wednesday from 11:00am to 8:30pm, is open on Thursday from 11:00am to 8:30pm, is open on Friday from 11:00am to 9:00pm, is open on Saturday from 4:30pm to 9:00pm.'}
-
-Format the response to the user."
-2023-07-11 17:15:26,438 - gpt_wrapper - DEBUG - gpt_output="Tanuki Kyoto Japanese Cuisine is open on Monday from 11:00am to 10:00pm, on Tuesday from 11:00am to 10:00pm, on Wednesday from 11:00am to 10:00pm, on Thursday from 11:00am to 10:00pm, on Friday from 11:00am to 11:00pm, on Saturday from 11:00am to 11:00pm, and on Sunday from 11:00am to 10:00pm.
-
-I Love Sushi is open on Monday from 11:00am to 8:30pm, on Tuesday from 11:00am to 8:30pm, on Wednesday from 11:00am to 8:30pm, on Thursday from 11:00am to 8:30pm, on Friday from 11:00am to 9:00pm, and on Saturday from 4:30pm to 9:00pm."
-2023-07-11 17:15:26,439 - answer - DEBUG - The question is Individual Questions: What time do they close?
-2023-07-11 17:15:26,439 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:26,439 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: What time do they close?
-Output:"
-2023-07-11 17:15:27,104 - gpt_wrapper - DEBUG - gpt_output="hours"
-2023-07-11 17:15:27,104 - answer - DEBUG - The category is hours
-2023-07-11 17:15:27,104 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:27,104 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:27,105 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Individual Questions: What time do they close?"
-Answer: "Tanuki Kyoto Japanese Cuisine is is open on Monday from 11:00am to 10:00pm, is open on Tuesday from 11:00am to 10:00pm, is open on Wednesday from 11:00am to 10:00pm, is open on Thursday from 11:00am to 10:00pm, is open on Friday from 11:00am to 11:00pm, is open on Saturday from 11:00am to 11:00pm, is open on Sunday from 11:00am to 10:00pm."
-Response:"
-2023-07-11 17:15:28,393 - gpt_wrapper - DEBUG - gpt_output="Yes, the response directly addresses the user's question by providing the specific closing hours for each day of the week for Tanuki Kyoto Japanese Cuisine."
-2023-07-11 17:15:28,394 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:28,394 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: What time do they close?
-Output:"
-2023-07-11 17:15:29,140 - gpt_wrapper - DEBUG - gpt_output="hours"
-2023-07-11 17:15:29,140 - answer - DEBUG - The category is hours
-2023-07-11 17:15:29,141 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:29,141 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:29,141 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Individual Questions: What time do they close?"
-Answer: "I Love Sushi is is open on Monday from 11:00am to 8:30pm, is open on Tuesday from 11:00am to 8:30pm, is open on Wednesday from 11:00am to 8:30pm, is open on Thursday from 11:00am to 8:30pm, is open on Friday from 11:00am to 9:00pm, is open on Saturday from 4:30pm to 9:00pm."
-Response:"
-2023-07-11 17:15:29,679 - gpt_wrapper - DEBUG - gpt_output="No."
-2023-07-11 17:15:29,679 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:29,679 - answer - DEBUG - Query: Individual Questions: What time do they close?
-2023-07-11 17:15:31,572 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: Individual Questions: What time do they close?
-Information: ['It is a small little Japanese place. Crowded at lunch because it is great food, great price for good sushi. If you do not like to wait for lunch rush hour, go there after 12:30pm or go for dinner.\n\nThe only bad thing about this place is they close down at 8PM, I can never go for dinner time because they close too early.\n\nI enjoyed many lunches and I would go back.', "Business lunch for two people. Arrived just before noon. Place was filling up fast. Server friendly. Friend ordered the food, had soup, rolls and various dishes. We were quite hungry so we got a broad selection. Food arrived fast and looked appetizing. Can't remember how many different varieties but it was all tasting well. Had to rush for a call after lunch and waiter got us our bill fast. Will definitely come back again.", "I have had good experiences at I Love Sushi so I was eager to go there for my birthday recently. It turned out to be my first and last less than impressive experience. I am not sure if the server just made a bad call or if this is their usual practice of giving away a reserved table an hour before the reservation is due. The couple who had our table was not finished when we came in at noon; they looked like old friends catching up not people grabbing lunch at work. We had to wait 15 mins for our table in this tiny restaurant where everyone is staring at us. Not cool. The server barely apologized and did nothing to assuage our disappointment at the experience. The other couple discovered we were waiting for the table and this, I imagine, marred their experience as they departed. So I Love Sushi may have very well lost two customers due to their short sightedness! \n\nI won't be back, not just because of this experience: having to wait for our table and the indifference of the server but also because the food was meh...bland and without much to separate it from Safeway's offerings (theirs may have been better actually). I had a sashimi bento box with tempura. I go to Kyoto a lot because it's closer to work and I see now the quality there is much better.\n\nThree strikes, you're out...which is such a pity because their location across from the park is so appealing :("]
-Answer:"
-2023-07-11 17:15:32,412 - gpt_wrapper - DEBUG - gpt_output="They close at 8PM."
-2023-07-11 17:15:32,412 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Individual Questions: What time do they close?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine is is open on Monday from 11:00am to 10:00pm, is open on Tuesday from 11:00am to 10:00pm, is open on Wednesday from 11:00am to 10:00pm, is open on Thursday from 11:00am to 10:00pm, is open on Friday from 11:00am to 11:00pm, is open on Saturday from 11:00am to 11:00pm, is open on Sunday from 11:00am to 10:00pm., I Love Sushi: They close at 8PM.'}
-
-Format the response to the user."
-2023-07-11 17:15:34,819 - gpt_wrapper - DEBUG - gpt_output="Tanuki Kyoto Japanese Cuisine is open on Monday through Thursday from 11:00am to 10:00pm, on Friday and Saturday from 11:00am to 11:00pm, and on Sunday from 11:00am to 10:00pm. 
-I Love Sushi closes at 8:00pm."
-2023-07-11 17:15:34,820 - answer - DEBUG - The question is 
-2023-07-11 17:15:34,820 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:34,820 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: 
-Output:"
-2023-07-11 17:15:35,590 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:35,590 - answer - DEBUG - The category is none
-2023-07-11 17:15:35,590 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:35,591 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:35,591 - answer - DEBUG - Query: 
-2023-07-11 17:15:36,122 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Tanuki Kyoto Japanese Cuisine based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: 
-Information: ['Last one from our 3 block challenge...also from May 2009!\n\nWe cheated.\n\n\n\nSort of.\n\n\nWe said to each other that we would try to focus on NEW places, places we have only driven by or some we haven\'t even heard of. Well, its only review #3 and we have cheated. We went to an old favorite. In our defence though, it fits EVERY other criteria: its within a 3 block radius and its not a big chain (there are two restaurants in Edmonton). \n\nKyoto is a place that we enjoyed often during our dating days when Heath would come to the city on the weekend hungry for something different and unavailable in Lloydminster. We would often wander into the Japanese restaurant for sushi and warm miso soup as well as delicious bento boxes full of goodies. It occured to us as we walked in today that we hadn\'t been there in a couple of years due to finding a place on Whyte Ave that we loved for a while, and then an unfortunate sushi "accident" that landed me (Jess) in the emergency room before a final exam. I have been slow to warm up to the idea of raw tuna since, but today I was feeling a bit impulsive, so decided to give it another go.\n\nWe wandered into the restaurant around 3 in the afternoon, thinking it would be pretty dead on a long weekend Sunday. We. Were. Wrong. Apparently Lupper is a new thing in Edmonton and we are the last to catch on! The place was packed! We were able to get a cozy booth on the far side of the restaurant though and were quickly seated amongst the new decor. \n\nThe server took a while to come over to our table, but in her defence she was the only server in the restaurant and must have had at least 15 tables. When she did come over, she took our order quickly for food and drinks and miraculously returned in lightning speed with two diet cokes. I honestly don\'t know how she managed to put the order in and pick them up and deliver them in that short of time! Soon afterwards, she was back with a smile on her face and a couple of bowls of soup and bean sprout salad that come complementary with every meal. The miso soup was the same as I remembered, warm but not scalding, and with a lighter form of miso that lended a savory and slighly salty taste. The bean sprout salad was doused in what tasted like miso and ponzu sauce and was deliciously peppery. We devoured both in minutes and were greeted by our mains just in time for the last bite.\n\nHeath ordered a beef rice bowl that consisted of cooked beef, silver noodles, rice, onions, zuccini, and more onions. He added some soy sauce and dug in with some chopstix and thankfully let me have a taste before it was all gone. The beef was simple but delicious and perfect with a bit of green onion in ever bite. I in turn shared my Rainbow Roll and offered him one of my two pieces of Toro (Tuna Belly) sushi, but he declined and told me to "enjoy it" as he knows it used to be my favorite sushi dish before "the incident", and he is a smart man who also knows that if I love it again we will probably be going for a lot more sushi! The Rainbow Roll was huge with 8 pieces of tempura wrapped in salmon, tuna, avocado and mackerel. I enjoy a fair amount of wasabi in my soy sauce and gingerly dipped whole pieces in before not-so-gingerly stuffing them in my mouth. I was only able to eat 4 pieces before starting to get full, so I decided I should probably move on to the Toro. It was just as I remembered it. Beautiful. The meat was so tender it fell apart and the little bit of wasabi rubbed underneath the meat as well as the green onion on top put it over the edge. The "incident" was soon forgotten (it didn\'t happen at this restaurant anyway) and I professed my love for all things Japanese again. \n\nHeath polished off the last of the rainbow rolls and we both sat back stuffed. Our server brought us our bill with a big smile and we paid and left the warm restaurant into the pouring rain to continue our afternoon. Total bill with tip: 34.76.', 'I had a dream.... a dream of a Saturday filled with a dinner of deliciously delectable delicacies. Delivered to me on demand to devour devilishly.  Instead... I got a disastrous day of despair.\n\nThis is part One of Two of that story: Kyoto\n\nThe plan was a simple one, Kyoto for an appetizer of Toro then off to Tres Carnales for tacos.  I was flying solo today since the gf had to work - she actually has the gal to believe saving lives is more important then dinner with me!!!!!! So I called up my cousin and off we went.  \n\nI must note that I love Kyoto - the old Kyoto.  I am a regular diner here and every I come recently I ask myself why im so loyal.  It breaks my heart to have to write this review, but I wont allow my feelings to interfere with the true experience of the day. \n\nWe arrived around 340, and as usual, the place is packed.  So after a bit of a wait (and two servers walking right by us standing at the door) someone finally asks:\n\n"have you been helped?" \n"no actually, table for two please" \n\nWe were seated and eventually someone noticed we were ready for a drink order.  We also ordered our Toro then as well since we knew thats what we wanted;  we also ordered a roll and a few other little things.  \n\nOne of the nice things about coming at this time is that they give you a bean sprout salad along with your miso soup.  Both great. \n\nAfter about 10 mins our server comes back and lets us know the news:  \n\n"Sorry we are out of Toro."\n\nTime for an aside:  I live in the north end,  I drive here because I have come to expect a level of quality and service.  The previous TWO times I have come here they have been "out of Toro." I\'ve only ever encountered this problem once before ANYWHERE else (and I eat ALOT of sushi); and even then it was late on a weeknight... not Early on a Saturday afternoon. \n\n"what do you mean your out of toro, do you guys not sell it anymore?"\n"hold on let me go check"\n\n----- waits-----\n\n"nope we sell it we are just out" \n"ok, thank you please just bring the other stuff"\n\nThe food came and i didnt see our server again.... here is the short version: The rolls were falling apart when you picked them up.  The other sushi we ordered was cut way more thin then is acceptable and generally the free soup was the highlight.  \n\nSince our server decided not to return to our table I got up and asked for our bill... Surprise they charged us for all that toro that doesn\'t exist. Which would be fine if the lady at the till would believe that they were out and we didnt receive it... Lucky that was easy enough to prove.  \n\n"Dont worry cousin Tres Carnales will be much better\n\nat this time you may notice that we didnt make it to Tres.... instead we found ourselves at "Louisiana Purchase."  Read the next exciting installment of Mystery Diners reviews to find out why!. \n\n---\nShort review:\n\nAtmosphere: 4/5- It a nice place; clean, modern, with a nice "vibe"\n\nService: 2/5 - Had to wait to be seated,  then was forgotten about, and to top it off our bill was wrong. \n\nFood: 3/5 - Not what it use to be.   Acceptable but no longer worth the drive to get here. \n\nDinning experience: 2/5 - Not having tuna is not acceptable once, let alone three times in a row. \n\nPrice: 3/5 -  Cost 36$ for two of us,that price was changed due to the non existent toro. \n\nOverall: 2.8 - Will i be back? Yes, but not because I should but for the same reason abused partners keep going back... im a sucker.', "I relented to eating here when my friend suggested it. But if anyone knows me well, they know my top and only choice for sushi would be Furusato on Whyte. Still, Kyoto isn't too bad in terms of generic sushi; they were actually a lot better than I had expected.\n\nThis location is fairly big, with small tables and private low-floor rooms. It's usually pretty busy, and my friend had to make reservations when we went for our group of four. I always like it when Japanese restaurants have the low-floor rooms; it makes it seem more authentic somehow. Although I'm always paranoid someone will steal my shoes!\n\nI wasn't really hungry that day, so I only ordered a few pieces of sushi. I think I ordered the hokkigai (surf clam) and tamago (egg) sushi, along with a california roll. Pretty basic, in terms of sushi. The food was fresh though, which is what you always want, especially for sushi.\n\nThe service was also pretty good, considering they were super-busy that day we went. We had to flag down our waitress a few times, but we got what we needed. In terms of cost, it's about average; it's not ridiculously overpriced that I would refuse to come back, if my friends suggest it again."]
-Answer:"
-2023-07-11 17:15:36,689 - gpt_wrapper - DEBUG - gpt_output="I do not know."
-2023-07-11 17:15:36,689 - answer - DEBUG - Answer with GPT
-2023-07-11 17:15:36,690 - gpt_wrapper - DEBUG - gpt_input="The user is asking a question about Tanuki Kyoto Japanese Cuisine.
-Answer the users question: "" "
-2023-07-11 17:15:37,895 - gpt_wrapper - DEBUG - gpt_output="I apologize, but you haven't mentioned the specific question about Tanuki Kyoto Japanese Cuisine. Could you please provide more information or clarify your query?"
-2023-07-11 17:15:37,895 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:37,895 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: 
-Output:"
-2023-07-11 17:15:38,215 - gpt_wrapper - DEBUG - gpt_output="none"
-2023-07-11 17:15:38,216 - answer - DEBUG - The category is none
-2023-07-11 17:15:38,216 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
-2023-07-11 17:15:38,216 - answer - DEBUG - Non metadata question!
-2023-07-11 17:15:38,216 - answer - DEBUG - Query: 
-2023-07-11 17:15:38,661 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants I Love Sushi based on provided information.
-
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
-
-Question: Do they have a slide in the restaurant?
-Information: ['I really like this place. They have great food.']
-Answer: I do not know.
-
-Question: 
-Information: ["Maybe it was the grey day - and the hot miso soup, but this tiny sushi shop, north of Jasper, won a small piece of my heart today. \n\nIt's cozy, eclectic - soft white light strands, fake flowers, wicker chairs, assorted pottery for dish wear, Hello Kitty?! and piano music lulling me through my menu read just after lunch hour.\n\nI order the miso, a green onion cake, tea and a plate of Dynamite Maki. The food comes almost instantly, and as I shift my laptop and books to make room for my meal, one of the Moo-Moo kimono-wearing servers comes and fusses over my table, to help me put it in order.\n\nThe food is fresh and good - not the best sushi I've ever had, but better than Wok Box down the street and the place has infinitely more character. \n\nCharacter's huge in my books - and this is a place for quick, stress-busting work lunches, lazy snowstorm afternoons and after-five sake crawls. \n\nHmmm.... sake crawls.", "You can't really go wrong at ILS.  The restaurant is a well maintained hole in the wall just off Jasper.   The prices are reasonable, the sushi is fresh and the service is pleasant.  It can be a challenge to get a larger group of people in a lunch time (i.e. more than two), but if you can it's worth it.  \n\nI'm not going to say ILS will rock your world.  I've never been distracted by a flaw or disappointing time, so I call it a safe bet.", "This is a typical little hole-in-the-wall place, run by a local family. It gets pretty busy during lunch, when hordes of business people flood in during their short break. The rest of the day, it is generally quiet, and every time I've gone, we've pretty much had the place to ourselves. That's a good thing, because there are only about ten tables in the whole place. \n\nDespite the name, I Love Sushi has far more on the menu that just sushi. Don't get me wrong, sushi is great, but there is far more to Japanese cuisine than just sushi. \n\nThe sushi here is average, but what I come back for over and over is the Oyako-don and Tonkatsu. Both are great dishes that will fill you up on a cold winter's day or fuel you up for a night on the town. \n\nCompared to other places nearby (Mikado & Kyoto), the prices are dirt cheap too. If you're looking to try other aspects of Japanese cuisine, drop in and sample a few different things - they won't cost as much as they do at other places in town, and taste just as good (if not better)."]
-Answer:"
-2023-07-11 17:15:39,261 - gpt_wrapper - DEBUG - gpt_output="I do not know."
-2023-07-11 17:15:39,261 - answer - DEBUG - Answer with GPT
-2023-07-11 17:15:39,262 - gpt_wrapper - DEBUG - gpt_input="The user is asking a question about I Love Sushi.
-Answer the users question: "" "
-2023-07-11 17:15:40,419 - gpt_wrapper - DEBUG - gpt_output="I'm sorry, but I can't answer this question as it is not clear what the user is asking about I Love Sushi. Could you please provide more information or specify your question?"
-2023-07-11 17:15:40,419 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{"Tanuki Kyoto Japanese Cuisine: I apologize, but you haven't mentioned the specific question about Tanuki Kyoto Japanese Cuisine. Could you please provide more information or clarify your query?, I Love Sushi: I'm sorry, but I can't answer this question as it is not clear what the user is asking about I Love Sushi. Could you please provide more information or specify your question?"}
-
-Format the response to the user."
-2023-07-11 17:15:41,562 - gpt_wrapper - DEBUG - gpt_output="I apologize for the confusion, but it seems that your question about Tanuki Kyoto Japanese Cuisine and I Love Sushi is not clear. Could you please provide more information or clarify your query so that I can assist you better? Thank you."
-2023-07-11 17:15:41,562 - answer - DEBUG - The question is Question: Is there outdoor seating?
-2023-07-11 17:15:41,562 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:41,562 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: Is there outdoor seating?
-Output:"
-2023-07-11 17:15:42,054 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 17:15:42,055 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 17:15:42,055 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:42,055 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:42,055 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Question: Is there outdoor seating?"
-Answer: "Tanuki Kyoto Japanese Cuisine does not have outdoor seating."
-Response:"
-2023-07-11 17:15:42,852 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:42,852 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:42,852 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Question: Is there outdoor seating?
-Output:"
-2023-07-11 17:15:43,725 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 17:15:43,725 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 17:15:43,726 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:43,726 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:43,726 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Question: Is there outdoor seating?"
-Answer: "I Love Sushi does not have outdoor seating."
-Response:"
-2023-07-11 17:15:44,426 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:44,426 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Question: Is there outdoor seating?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine does not have outdoor seating., I Love Sushi: I Love Sushi does not have outdoor seating.'}
-
-Format the response to the user."
-2023-07-11 17:15:45,792 - gpt_wrapper - DEBUG - gpt_output="Response: 
-
-For Tanuki Kyoto Japanese Cuisine, they do not have outdoor seating. As for I Love Sushi, they also do not offer outdoor seating."
-2023-07-11 17:15:45,792 - answer - DEBUG - The question is Individual Questions: Is there outdoor seating?
-2023-07-11 17:15:45,792 - answer - DEBUG - The recommended restaurant is Tanuki Kyoto Japanese Cuisine
-2023-07-11 17:15:45,793 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Tanuki Kyoto Japanese Cuisine.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Ambience, Alcohol, BusinessParking, OutdoorSeating, NoiseLevel, GoodForKids, WiFi, best meals, HasTV, Caters, BikeParking, Attire, PriceRange, HasReservations, HasTakeOut, GoodForGroups, HasDelivery, MustMakeReservation, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: Is there outdoor seating?
-Output:"
-2023-07-11 17:15:46,089 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 17:15:46,089 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 17:15:46,089 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:46,090 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:46,090 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Individual Questions: Is there outdoor seating?"
-Answer: "Tanuki Kyoto Japanese Cuisine does not have outdoor seating."
-Response:"
-2023-07-11 17:15:46,596 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:46,596 - answer - DEBUG - The recommended restaurant is I Love Sushi
-2023-07-11 17:15:46,597 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants I Love Sushi.
-
-Please classify it into one of the following categories: 
-address, city, state, postal_code, stars, review_count, hours, Alcohol, GoodForKids, WiFi, NoiseLevel, BikeParking, BusinessParking, OutdoorSeating, Caters, best meals, HasTV, Ambience, HasReservations, PriceRange, HasTakeOut, Attire, GoodForGroups, HasDelivery, or none
-Only respond with the name of the category. 
-
-Input: What's their addresses?
-Output: address
-
-Input: Can you recommend any dishes or specialties?
-Output: none
-
-Input: Can I make a reservation?
-Output: HasReservations
-
-Input: What are the meals it's known for?
-Output: PopularMeals
-
-Input: Individual Questions: Is there outdoor seating?
-Output:"
-2023-07-11 17:15:47,294 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
-2023-07-11 17:15:47,294 - answer - DEBUG - The category is OutdoorSeating
-2023-07-11 17:15:47,295 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
-2023-07-11 17:15:47,295 - answer - DEBUG - Metadata question!
-2023-07-11 17:15:47,295 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
-
-Question: "Do they have a high chair?"
-Answer: "Subway is kid friendly."
-Response: No.
-
-Question: "Do they serve vodka?"
-Answer: "They have a full bar."
-Response: No.
-
-Question: "Are there gluten free options?"
-Answer: "Yes, there are gluten free options."
-Response: Yes.
-
-Question: "Individual Questions: Is there outdoor seating?"
-Answer: "I Love Sushi does not have outdoor seating."
-Response:"
-2023-07-11 17:15:47,819 - gpt_wrapper - DEBUG - gpt_output="Yes."
-2023-07-11 17:15:47,819 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Individual Questions: Is there outdoor seating?" referring to the following restaurants: Tanuki Kyoto Japanese Cuisine, I Love Sushi.
-
-Below are the answers to the question for each restaurants.
-{'Tanuki Kyoto Japanese Cuisine: Tanuki Kyoto Japanese Cuisine does not have outdoor seating., I Love Sushi: I Love Sushi does not have outdoor seating.'}
-
-Format the response to the user."
-2023-07-11 17:15:49,228 - gpt_wrapper - DEBUG - gpt_output="Here are the responses to your individual questions:
-
-- For Tanuki Kyoto Japanese Cuisine: No, Tanuki Kyoto Japanese Cuisine does not have outdoor seating.
-- For I Love Sushi: Unfortunately, I Love Sushi also does not have outdoor seating."
-2023-07-11 17:15:49,228 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "	" and you have the answer to the question: ['Response: \nYes, there are vegetarian options available at both Tanuki Kyoto Japanese Cuisine and I Love Sushi.', 'Individual Questions: \n- Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available.\n- I Love Sushi: Yes, they have vegetarian options available.', 'I apologize, but it seems like your question about Tanuki Kyoto Japanese Cuisine is missing or unclear. Could you please provide more specific information or rephrase your question? Additionally, it appears that you forgot to ask a question about I Love Sushi. Can you please provide more context or rephrase your question?', 'Tanuki Kyoto Japanese Cuisine is open on Monday from 11:00am to 10:00pm, on Tuesday from 11:00am to 10:00pm, on Wednesday from 11:00am to 10:00pm, on Thursday from 11:00am to 10:00pm, on Friday from 11:00am to 11:00pm, on Saturday from 11:00am to 11:00pm, and on Sunday from 11:00am to 10:00pm.\n\nI Love Sushi is open on Monday from 11:00am to 8:30pm, on Tuesday from 11:00am to 8:30pm, on Wednesday from 11:00am to 8:30pm, on Thursday from 11:00am to 8:30pm, on Friday from 11:00am to 9:00pm, and on Saturday from 4:30pm to 9:00pm.', 'Tanuki Kyoto Japanese Cuisine is open on Monday through Thursday from 11:00am to 10:00pm, on Friday and Saturday from 11:00am to 11:00pm, and on Sunday from 11:00am to 10:00pm. \nI Love Sushi closes at 8:00pm.', 'I apologize for the confusion, but it seems that your question about Tanuki Kyoto Japanese Cuisine and I Love Sushi is not clear. Could you please provide more information or clarify your query so that I can assist you better? Thank you.', 'Response: \n\nFor Tanuki Kyoto Japanese Cuisine, they do not have outdoor seating. As for I Love Sushi, they also do not offer outdoor seating.', 'Here are the responses to your individual questions:\n\n- For Tanuki Kyoto Japanese Cuisine: No, Tanuki Kyoto Japanese Cuisine does not have outdoor seating.\n- For I Love Sushi: Unfortunately, I Love Sushi also does not have outdoor seating.']
-Reformat the response to the user."
-2023-07-11 17:15:51,461 - gpt_wrapper - DEBUG - gpt_output="- Yes, there are vegetarian options available at both Tanuki Kyoto Japanese Cuisine and I Love Sushi.
-- Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available.
-- I Love Sushi: Yes, they have vegetarian options available."
-2023-07-11 17:15:51,461 - dialogue_manager - DEBUG - rec_response="- Yes, there are vegetarian options available at both Tanuki Kyoto Japanese Cuisine and I Love Sushi.
-- Tanuki Kyoto Japanese Cuisine: Yes, there are vegetarian options available.
-- I Love Sushi: Yes, they have vegetarian options available."
-2023-07-11 17:15:51,461 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019D32CDFED0>, <state.message.Message object at 0x0000019D3355F9D0>, <state.message.Message object at 0x0000019D335C8150>, <state.message.Message object at 0x0000019D33607A50>, <state.message.Message object at 0x0000019D33587FD0>, <state.message.Message object at 0x0000019D32CDDF50>, <state.message.Message object at 0x0000019D6C8F9850>, <state.message.Message object at 0x0000019D336BD250>, <state.message.Message object at 0x0000019D335A7CD0>, <state.message.Message object at 0x0000019D32C38E10>, <state.message.Message object at 0x0000019D32C3A2D0>, <state.message.Message object at 0x0000019D6C9688D0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x0000019D328D7590>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 10}], 'updated_keys': {}, 'hard_constraints': {'location': ['jasper avenue, edmonton'], 'cuisine type': ['japanese'], 'dish type': ['sushi']}, 'soft_constraints': {'others': ['patio']}, 'current_rec_actions': [<rec_action.answer.Answer object at 0x0000019D33763710>], 'location_type': 'specific', 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x0000019D32FE6C10>, <information_retrievers.recommended_item.RecommendedItem object at 0x0000019D328D7C90>], 'satisfied_goals': [{'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 6}, {'user_intent': <user_intent.inquire.Inquire object at 0x0000019D336CB8D0>, 'utterance_index': 8}]}
+2023-07-14 23:08:01,722 - gpt_wrapper - DEBUG - gpt_output="Here are the menus offered by the following restaurants:
+- Famoso Neapolitan Pizzeria: They offer a variety of options including pizza, salads, appetizers, lunch pairings, gelato, espresso, tiramisu, and berry lemonade. Additionally, they provide a substitution option for vegan mozzarella for those who are lactose intolerant.
+- LovePizza: They offer a menu with a wide range of choices. They also have a "make your own" option available. In addition to that, they offer dessert pizza, ice cream, and salad."
+2023-07-14 23:08:01,722 - dialogue_manager - DEBUG - rec_response="Here are the menus offered by the following restaurants:
+- Famoso Neapolitan Pizzeria: They offer a variety of options including pizza, salads, appetizers, lunch pairings, gelato, espresso, tiramisu, and berry lemonade. Additionally, they provide a substitution option for vegan mozzarella for those who are lactose intolerant.
+- LovePizza: They offer a menu with a wide range of choices. They also have a make your own option available. In addition to that, they offer dessert pizza, ice cream, and salad."
+2023-07-14 23:08:01,722 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x00000178C8C881F0>, <state.message.Message object at 0x00000178CA59F940>, <state.message.Message object at 0x00000178CA59F9A0>, <state.message.Message object at 0x00000178CA59E9B0>, <state.message.Message object at 0x00000178CA59FA00>, <state.message.Message object at 0x00000178CA4E70A0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x00000178CA4E4C70>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x00000178CA57AE90>, 'utterance_index': 4}], 'updated_keys': {}, 'hard_constraints': {'cuisine type': ['italian'], 'dish type': ['pizza'], 'location': ['jasper avenue']}, 'soft_constraints': {'others': ['patio']}, 'location_type': 'specific', 'current_rec_actions': [<rec_action.answer.Answer object at 0x00000178CA4E3CA0>], 'recommended_items': [[<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>]], 'curr_items': [<information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59E440>, <information_retrievers.recommended_item.RecommendedItem object at 0x00000178CA59F970>], 'satisfied_goals': [{'user_intent': <user_intent.inquire.Inquire object at 0x00000178CA57AE90>, 'utterance_index': 2}]}

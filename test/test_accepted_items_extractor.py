@@ -35,11 +35,11 @@ class TestAcceptedRestaurantsExtractorTest:
         _recently_mentioned_restaurant_names = set(recently_mentioned_restaurant_names)
         _accepted_restaurant_names = set(accepted_restaurant_names)
         all_mentioned_restaurants = [RecommendedItem(Item("business_id", {"name": name}), "", []) for name in all_mentioned_restaurant_names]
-        recently_mentioned_restaurants = [restaurant for restaurant in all_mentioned_restaurants if restaurant.get("name") in _recently_mentioned_restaurant_names]
-        accepted_restaurants = [restaurant.get("name") for restaurant in all_mentioned_restaurants if restaurant.get("name") in _accepted_restaurant_names]
+        recently_mentioned_restaurants = [restaurant for restaurant in all_mentioned_restaurants if restaurant.get_name() in _recently_mentioned_restaurant_names]
+        accepted_restaurants = [restaurant.get_name() for restaurant in all_mentioned_restaurants if restaurant.get_name() in _accepted_restaurant_names]
 
         conv_history = [Message("user", utterance)]
 
         actual = accepted_restaurants_extractor.extract(conv_history, all_mentioned_restaurants, recently_mentioned_restaurants)
 
-        assert [restaurant.get("name") for restaurant in actual] == accepted_restaurants
+        assert [restaurant.get_name() for restaurant in actual] == accepted_restaurants

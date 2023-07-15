@@ -5,6 +5,7 @@ import openai.error
 import yaml
 
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+from information_retrievers.restaurant_item_loader import RestaurantItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
 from warning_observer import WarningObserver
@@ -69,8 +70,8 @@ class ConvRecSystem(WarningObserver):
         domain = domain_specific_config_loader.load_domain()
         
         model = config["MODEL"]
-        
-                
+
+
         self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
         # TEMP
@@ -133,7 +134,7 @@ class ConvRecSystem(WarningObserver):
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
         engine = NeuralSearchEngine(embedder)
-        information_retriever = NeuralInformationRetriever(engine, data_holder)
+        information_retriever = NeuralInformationRetriever(engine, data_holder, RestaurantItemLoader())
 
         default_location = config.get('DEFAULT_LOCATION') if config.get(
             'DEFAULT_LOCATION') != 'None' else None
