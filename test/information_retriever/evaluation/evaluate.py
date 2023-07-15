@@ -3,7 +3,7 @@ import pandas as pd
 import scipy.stats
 import torch
 import numpy as np
-from information_retrievers.ir.embedder import BERT_model
+from information_retrievers.embedder.bert_embedder import BERT_model
 from find_query_related_restaurants import FindQueryRelatedRestaurants
 from embedding_creator import EmbeddingCreator
 from sort_embedding import SortEmbedding

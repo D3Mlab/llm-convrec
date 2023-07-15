@@ -1,6 +1,6 @@
 import pandas as pd
 import torch
-from information_retrievers.ir.embedder import BERT_model
+from information_retrievers.embedder.bert_embedder import BERT_model
 
 
 class NeuralSearchEngine:

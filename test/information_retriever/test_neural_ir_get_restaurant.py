@@ -3,17 +3,15 @@ from state.common_state_manager import CommonStateManager
 from information_retrievers.filter.check_location import CheckLocation
 from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.ir.embedder import BERT_model
-from information_retrievers.ir.statics import *
+from information_retrievers.embedder.bert_embedder import BERT_model
+from information_retrievers.embedder.statics import *
 from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.neural_information_retriever import NeuralInformationRetriever
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from state.common_state_manager import StateManager
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from intelligence.gpt_wrapper import GPTWrapper
-import yaml
 import pytest
 import pandas as pd
 from dotenv import load_dotenv
