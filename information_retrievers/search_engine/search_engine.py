@@ -28,6 +28,67 @@ class SearchEngine:
         """
         raise NotImplementedError()
     
-    #TODO add helper functions (implement shared helpers here and non shared helpers in child classes,
-    # for non shared helpers that need different parameters, don't put the definitions here, 
-    # just put them in child classes)
+    def _similarity_score_each_item(self, similarity_score: torch.Tensor, item_review_count: torch.Tensor,
+                                    k: int) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        This function finds and returns a tensor that contains the similarity score for each item
+
+        :param similarity_score: A tensor of similarity score between each review and the query
+        :param item_review_count: A tensor containing how many review each item has
+        :param k: A number that tells the number of most similar tensors to look at when doing late fusion(k)
+        :return: Returning a tuple with element 0 being a tensor that contains the similarity score for each item
+                and element 1 being a tensor that contains the index of top k reviews for each item
+        """
+
+        index = 0
+        # size records how many items are in the matrix
+        size = item_review_count.size(0)
+
+        item_score = []
+        item_index = []
+
+        for i in range(size):
+            # Mask out the review scores related to one item
+            similarity_score_item = similarity_score[index:index + item_review_count[i]]
+
+            # Get the top k review scores or all review scores if the number of reviews is less than k
+            k_actual = min(item_review_count[i], k)
+            values, index_topk = similarity_score_item.topk(k_actual)
+
+            index_topk += index
+
+            # Get the item score by finding the mean of all the review scores
+            item_score.append(values.mean(dim=0))
+
+            # if size is smaller than k, pad with -1
+            if index_topk.size()[0] != k:
+                padding = torch.full((k - index_topk.size()[0],), -1, dtype=torch.int64)
+                index_topk = torch.cat((index_topk, padding), dim=0)
+            item_index.append(index_topk)
+
+            index += item_review_count[i]
+
+        item_score = torch.stack(item_score)
+        item_index = torch.stack(item_index)
+        return item_score, item_index
+    
+    def _most_similar_item(self, similarity_score_item: torch.Tensor, top_k_items: int) -> torch.Tensor:
+        """
+        This function returns the most similar item's index given the item similarity score
+
+        :param similarity_score_item: The similarity score for each item
+        :param top_k_items: Number of items to return
+        :return: The indices of the most similar item, beginning from the most similar to the least similar.
+        It returns at most top_k_items indices.
+        """
+
+        values, indices = similarity_score_item.topk(top_k_items)
+        num_non_zero_value = torch.nonzero(values).size(0)
+        if num_non_zero_value == 0:
+            raise Exception("There is no restaurants near that location.")
+        # remove restaurant that has score of 0
+        elif num_non_zero_value < top_k_items:
+            # remove restaurant that has score of 0
+            num_items_to_remove = top_k_items - num_non_zero_value
+            indices = indices[:-num_items_to_remove]
+        return indices
