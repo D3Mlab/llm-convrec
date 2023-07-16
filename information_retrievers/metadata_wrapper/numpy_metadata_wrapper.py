@@ -15,21 +15,7 @@ class NumpyMetadataWrapper(MetadataWrapper):
     def __init__(self, path_to_items_metadata: str):
         self._items_metadata = np.load(path_to_items_metadata)
 
-    def filter(self, checkers: list[Checker], state_manager: StateManager) -> np.ndarray:
-        """
-        Return a numpy array that has item ids that must be kept.
-        """
-        num_item = self._items_metadata.shape[0]
-        item_id_to_keep = []
-        for index in range(num_item):
-            item_metadata_dict = self._items_metadata[index]
-
-            if self.should_keep_item(checkers, state_manager, item_metadata_dict):
-                item_id_to_keep.append(item_metadata_dict['item_id'])
-
-        return np.ndarray(item_id_to_keep)
-
-    def get_item_dict(self, item_id: str) -> dict[str, str]:
+    def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
         """
         Return item metadata as a dictionary from item id.
         """
@@ -39,3 +25,15 @@ class NumpyMetadataWrapper(MetadataWrapper):
 
             if item_metadata_dict['item_id'] == item_id:
                 return item_metadata_dict
+
+    def get_item_dict_from_index(self, index: int) -> dict[str, str]:
+        """
+        Return item metadata as a dictionary from index.
+        """
+        return self._items_metadata[index]
+
+    def get_num_item(self) -> int:
+        """
+        Return the number of items.
+        """
+        return self._items_metadata.shape[0]

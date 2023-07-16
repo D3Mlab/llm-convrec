@@ -4,26 +4,24 @@ from state.state_manager import StateManager
 
 class MetadataWrapper:
     """
-    Metadata wrapper that is responsible to do filter and get item metadata as dictionary.
+    Metadata wrapper that is responsible to get item metadata as dictionary.
     """
-    def filter(self, checkers: list[Checker], state_manager: StateManager) -> np.ndarray:
-        """
-        Return a numpy array that has item ids that must be kept.
-        """
-        raise NotImplementedError()
 
-    def get_item_dict(self, item_id: str) -> dict[str, str]:
+    def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
         """
         Return item metadata as a dictionary from item id.
         """
         raise NotImplementedError()
 
-    def should_keep_item(self, checkers: list[Checker], state_manager: StateManager,
-                         item_metadata_dict: dict) -> bool:
+    def get_item_dict_from_index(self, index: int) -> dict[str, str]:
         """
-        Return true if the item should be kept, false otherwise.
+        Return item metadata as a dictionary from index.
         """
-        for checker in checkers:
-            if not checker.check(state_manager, item_metadata_dict):
-                return False
-        return True
+        raise NotImplementedError()
+
+    def get_num_item(self) -> int:
+        """
+        Return the number of items.
+        """
+        raise NotImplementedError()
+

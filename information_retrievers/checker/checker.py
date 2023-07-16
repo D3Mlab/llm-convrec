@@ -4,7 +4,7 @@ class Checker:
     """
     Responsible to check whether the item match the constraint.
     """
-    def check(self, state_manager: StateManager, item_metadata: dict):
+    def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
         Return true if the item match the constraint, false otherwise.
         """
