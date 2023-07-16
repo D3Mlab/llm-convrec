@@ -1,7 +1,13 @@
 import re
-
 import pandas as pd
 import yaml
+from information_retrievers.checker.checker import Checker
+from information_retrievers.checker.exact_word_matching_checker import ExactWordMatchingChecker
+from information_retrievers.checker.item_checker import ItemChecker
+from information_retrievers.checker.location_checker import LocationChecker
+from information_retrievers.checker.value_range_checker import ValueRangeChecker
+from information_retrievers.checker.word_in_checker import WordInChecker
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 
 
 class DomainSpecificConfigLoader:
@@ -163,8 +169,6 @@ class DomainSpecificConfigLoader:
 
     def _get_path_to_domain(self):
         return self.system_config['PATH_TO_DOMAIN_CONFIGS']
-    
-
 
     def load_inquire_classification_fewshots(self) -> list[dict]:
         filename = self.load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
@@ -204,3 +208,31 @@ class DomainSpecificConfigLoader:
             for row in reject_classification_fewshots_df.to_dict("records")
         ]
         return reject_classification_fewshots
+
+    def load_checkers(self) -> list[Checker]:
+        filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        filter_config_df = pd.read_csv(path_to_csv, encoding='latin1')
+        checkers_list = []
+        for row in filter_config_df.to_dict("records"):
+            if row['type_of_filter'].strip() == "exact word matching":
+                checkers_list.append(ExactWordMatchingChecker(
+                    row['key_in_state'].split(","), row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "item":
+                checkers_list.append(ItemChecker(
+                    row['key_in_state'], row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "location":
+                checkers_list.append(LocationChecker(
+                    row['key_in_state'], row['metadata_field'].split(","), row['default_max_distance_in_km'],
+                    row['distance_type'], GoogleV3Wrapper()))
+
+            elif row['type_of_filter'].strip() == "value range":
+                checkers_list.append(ValueRangeChecker(row['key_in_state'], row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "word in":
+                checkers_list.append(WordInChecker(
+                    row['key_in_state'].split(","), row['metadata_field']))
+
+        return checkers_list

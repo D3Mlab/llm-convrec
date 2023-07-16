@@ -22,7 +22,7 @@ class PDMetadataWrapper(MetadataWrapper):
         :return: item metadata
         """
         item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
-        return item_metadata.to_dict(orient='records')
+        return item_metadata.to_dict("records")
 
     def get_item_dict_from_index(self, index: int) -> dict[str, str]:
         """
@@ -31,7 +31,7 @@ class PDMetadataWrapper(MetadataWrapper):
         :param index: index to the item in the metadata
         :return: item metadata
         """
-        return self._items_metadata.iloc[index].to_dict(orient='records')
+        return self._items_metadata.iloc[index].to_dict("records")
 
     def get_num_item(self) -> int:
         """

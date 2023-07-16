@@ -1,5 +1,4 @@
 DOMAIN: restaurants
-
 INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
 ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
 REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
@@ -12,3 +11,4 @@ ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: "answer_extract_category_fewshots.csv"
 ANSWER_IR_FEWSHOTS_FILE: "answer_ir_fewshots.csv"
 ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: "answer_separate_questions_fewshots.csv"
 ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: "answer_verify_metadata_resp_fewshots.csv"
+FILTER_CONFIG_FILE: "filter_config.csv"

@@ -12,11 +12,11 @@ class WordInChecker(Checker):
     :param metadata_field: metadata field of interest
     """
 
-    _constraint_key: str
+    _constraint_keys: str
     _metadata_field: str
 
-    def __init__(self, constraint_key: str, metadata_field: str) -> None:
-        self._constraint_key = constraint_key
+    def __init__(self, constraint_keys: str, metadata_field: str) -> None:
+        self._constraint_keys = constraint_keys
         self._metadata_field = metadata_field
 
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
@@ -29,7 +29,10 @@ class WordInChecker(Checker):
         :param item_metadata: item's metadata
         :return: true if the item match the constraint, false otherwise
         """
-        constraint_values = state_manager.get('hard_constraints').get(self._constraint_key)
+        constraint_values = []
+        for constraint_key in self._constraint_keys:
+            constraint_values.append(state_manager.get('hard_constraints').get(constraint_key))
+
         item_metadata_field_values = item_metadata[self._metadata_field].split(",")
 
         if constraint_values is None:

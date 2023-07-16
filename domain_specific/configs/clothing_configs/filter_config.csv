@@ -1,0 +1,6 @@
+type_of_filter,key_in_state,metadata_field,default_max_distance_in_km,distance_type
+word in,category,categories
+word in,brand,brand
+exact word matching,size,size
+value range,price range,price
+item,already_recommended_item,name
