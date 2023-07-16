@@ -4,12 +4,25 @@ from geopy.distance import geodesic
 from geopy.distance import great_circle
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
+
 class LocationChecker(Checker):
     """
     Responsible to check whether the item match the constraint by checking
     whether the item is within max_distance from the location ( or one of the location)
     specified by the user
+
+    :param constraint_key: constraint key of interest
+    :param metadata_field: metadata field of interest
+    :param default_max_distance_in_km: default max allowable distance in km
+    :param distance_type: distance type (geodesic or great circle)
+    :param geocoder_wrapper: geocoder
     """
+
+    _constraint_key: str
+    _metadata_field: list[str]
+    _default_max_distance_in_km: float
+    _distance_type: str
+    _geocoder_wrapper: GeocoderWrapper
 
     def __init__(self, constraint_key: str, metadata_field: list[str],
                  default_max_distance_in_km: float, distance_type: str,
@@ -23,9 +36,21 @@ class LocationChecker(Checker):
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
         Return true if the item is close enough to the location, false otherwise.
+        If the value for the constraint key of interest is empty or none of the location is valid,
+        it will return true.
+
+        :param state_manager: current state
+        :param item_metadata: item's metadata
+        :return: true if the item is close enough to the location, false otherwise
         """
         location_names = state_manager.get('hard_constraints').get(self._constraint_key)
+        if not location_names:
+            return True
+
         lat_lon_of_locations, max_distances_in_km = self._get_lat_lon_and_max_distance(location_names)
+        if not lat_lon_of_locations or not max_distances_in_km:
+            return True
+
         lat_lon_of_item = (float(item_metadata[self._metadata_field[0]]),
                            float(item_metadata[self._metadata_field[1]]))
 
@@ -34,7 +59,11 @@ class LocationChecker(Checker):
 
     def _get_lat_lon_and_max_distance(self, location_names: list[str]) -> tuple[list, list]:
         """
-        Return a list of latitude and longitude and a list of max distance in km.
+        Return a list of latitude and longitude and a list of max distance in km from a list of locations.
+
+        :param location_names: location names in state
+        :return: a tuple where the first element is a list of latitude and longitude of locations and
+        the second element is a list of max allowable distance in km
         """
         lat_lon_of_loc = []
         max_distance_in_km = []
@@ -92,7 +121,7 @@ class LocationChecker(Checker):
     def _get_geodesic_distance(self, lat_lon_of_loc: tuple[float, float],
                                lat_lon_of_item: tuple[float, float]) -> float:
         """
-        Get geodisic distance between the location and the item using their latitudes and longitudes.
+        Get geodesic distance between the location and the item using their latitudes and longitudes.
 
         :param lat_lon_of_loc: tuple where the first element is latitude and the second element is longitude of the location
         :param lat_lon_of_item: tuple where the first element is latitude and the second element is longitude of the item

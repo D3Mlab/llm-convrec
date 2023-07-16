@@ -1,8 +1,6 @@
-import numpy as np
 import pandas as pd
 from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
-from information_retrievers.checker.checker import Checker
-from state.state_manager import StateManager
+
 
 class PDMetadataWrapper(MetadataWrapper):
     """
@@ -13,12 +11,15 @@ class PDMetadataWrapper(MetadataWrapper):
 
     _items_metadata: pd.DataFrame
 
-    def __init__(self, path_to_items_metadata: str):
+    def __init__(self, path_to_items_metadata: str) -> None:
         self._items_metadata = pd.read_csv(path_to_items_metadata)
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
         """
         Return item metadata as a dictionary from item id.
+
+        :param item_id: item id
+        :return: item metadata
         """
         item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
         return item_metadata.to_dict(orient='records')
@@ -26,11 +27,16 @@ class PDMetadataWrapper(MetadataWrapper):
     def get_item_dict_from_index(self, index: int) -> dict[str, str]:
         """
         Return item metadata as a dictionary from index.
+
+        :param index: index to the item in the metadata
+        :return: item metadata
         """
         return self._items_metadata.iloc[index].to_dict(orient='records')
 
     def get_num_item(self) -> int:
         """
         Return the number of items.
+
+        :return: number of items
         """
         return self._items_metadata.shape[0]

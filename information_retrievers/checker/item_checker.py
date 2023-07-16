@@ -1,12 +1,19 @@
 from information_retrievers.checker.checker import Checker
 from state.state_manager import StateManager
 
+
 class ItemChecker(Checker):
     """
     Responsible to check the item is not in the item list in interest in state manager.
+
+    :param key_in_state_manager: key of interest in state manager
+    :param metadata_field: metadata field of interest
     """
 
-    def __init__(self, key_in_state_manager: str, metadata_field: str):
+    _key_in_state_manager: str
+    _metadata_field: str
+
+    def __init__(self, key_in_state_manager: str, metadata_field: str) -> None:
         self._key_in_state_manager = key_in_state_manager
         self._metadata_field = metadata_field
 
@@ -14,6 +21,10 @@ class ItemChecker(Checker):
         """
         Return true if the item is not in the item list in interest, false otherwise.
         If the item list in interest is empty, it will return true.
+
+        :param state_manager: current state
+        :param item_metadata: item's metadata
+        :return: true if the item is not in the item list in interest, false otherwise
         """
         item_list = state_manager.get(self._key_in_state_manager)
         item_metadata_field_value = item_metadata[self._metadata_field]
