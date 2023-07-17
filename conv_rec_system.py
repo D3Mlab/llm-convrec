@@ -179,10 +179,10 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, observers=[self])
         
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
+        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self]),
                        ExplainPreference(),
                        Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
                        RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),

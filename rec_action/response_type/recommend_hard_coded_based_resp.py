@@ -2,9 +2,9 @@ from state.state_manager import StateManager
 
 from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
 from state.state_manager import StateManager
-from information_retrievers.neural_information_retriever import InformationRetriever
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
 import logging
 from jinja2 import Environment, FileSystemLoader
@@ -19,14 +19,14 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
     Class representing the hard coded based response for recommend
     """
     _llm_wrapper: LLMWrapper
-    _filter_restaurants: FilterRestaurants
-    _information_retriever: InformationRetriever
+    _filter_restaurants: FilterApplier
+    _information_retriever: InformationRetrieval
     _topk_items: str
     _topk_reviews: str
     _convert_state_to_query_prompt: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str, config: dict):
+    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, config: dict):
         
         super().__init__(domain)
         
@@ -96,7 +96,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
 
         recomm_resp = "How about "
         for restaurant in recommended_restaurants:
-            recomm_resp += f'{restaurant.get("name")} at {restaurant.get("address")}, {restaurant.get("city")} with {restaurant.get("stars")} stars out of {restaurant.get("review_count")} reviews or '
+            recomm_resp += f'{restaurant.get_name()} at {restaurant.get("address")}, {restaurant.get("city")} with {restaurant.get("stars")} stars out of {restaurant.get("review_count")} reviews or '
 
         return f'{recomm_resp[:-4]}?'
     

@@ -2,9 +2,9 @@ from state.state_manager import StateManager
 from typing import Dict, Any
 
 from state.state_manager import StateManager
-from information_retrievers.neural_information_retriever import InformationRetriever
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 from rec_action.response_type.recommend_resp import RecommendResponse
 
@@ -21,8 +21,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     """
     _observers: list[WarningObserver]
     _llm_wrapper: LLMWrapper
-    _filter_restaurants: FilterRestaurants
-    _information_retriever: InformationRetriever
+    _filter_restaurants: FilterApplier
+    _information_retriever: InformationRetrieval
     _topk_items: str
     _topk_reviews: str
     _convert_state_to_query_prompt: str
@@ -30,8 +30,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _format_recommendation_prompt: str
     _summarize_review_prompt: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str, config: dict, observers = None):
+    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, config: dict, observers = None):
         
         super().__init__(domain)
         
@@ -67,13 +67,13 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
 
         logger.debug(f'Query: {query}')
 
-        filtered_embedding_matrix = \
-            self._filter_restaurants.filter_by_constraints(state_manager)
+        item_ids_to_keep = \
+            self._filter_restaurants.filter_by_checkers(state_manager)
 
         try:
             self._current_recommended_items = \
                 self._information_retriever.get_best_matching_items(query, self._topk_items,
-                                                                    self._topk_reviews, filtered_embedding_matrix)
+                                                                    self._topk_reviews, item_ids_to_keep)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
             return f"Sorry, there is no {self._domain} that match your constraints."
@@ -117,7 +117,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
-            [f'{rec_item.get("name")}' for rec_item in self._current_recommended_items])
+            [f'{rec_item.get_name()}' for rec_item in self._current_recommended_items])
         explanation_str = ', '.join(
             [f'{key}: {val}' for key, val in explanation.items()])
         return self._format_recommendation_prompt.render(
@@ -131,7 +131,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         """
         explanation = {}
         for rec_item in self._current_recommended_items:
-            item_name = rec_item.get("name")
+            item_name = rec_item.get_name()
             hard_constraints = state_manager.get('hard_constraints').copy()
             
             data = state_manager.to_dict()
@@ -209,7 +209,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         """
         metadata = f"""location: at {recommended_item.get('address')}, """
         attributes = ', '.join(
-            [f'{key}: {val}' for key, val in recommended_item.get("attributes").items()])
+            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items()])
         metadata += attributes
         return metadata
     
