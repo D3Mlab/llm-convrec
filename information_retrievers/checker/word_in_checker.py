@@ -8,7 +8,7 @@ class WordInChecker(Checker):
     whether singular / plural form of a word in the constraint is in the specified metadata field
     or singular / plural form of a word in the specified metadata field is in the constraint.
 
-    :param constraint_key: constraint key of interest
+    :param constraint_keys: constraint key of interest
     :param metadata_field: metadata field of interest
     """
 
@@ -21,8 +21,10 @@ class WordInChecker(Checker):
 
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
-        Return true if the item match the constraint, false otherwise.
-        If the constraint in interest is empty, it will return true.
+        Return true if singular / plural form of a word in the constraint is
+        in the specified metadata field or singular / plural form of a word
+        in the specified metadata field is in the constraint, false otherwise.
+        If the constraint of interest is empty, it will return true.
         Might not work well if the value in the metadata filed is a dictionary.
 
         :param state_manager: current state
@@ -42,9 +44,15 @@ class WordInChecker(Checker):
 
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:
-                if constraint_value in metadata_field_value or metadata_field_value in constraint_value\
-                        or self._convert_to_plural(constraint_value) in metadata_field_value\
-                        or self._convert_to_plural(metadata_field_value) in constraint_value:
+                constraint_value_lower_stripped = constraint_value.lower().strip()
+                metadata_field_value_lower_stripped = metadata_field_value.lower().strip()
+
+                if constraint_value_lower_stripped in metadata_field_value_lower_stripped\
+                        or metadata_field_value_lower_stripped in constraint_value_lower_stripped\
+                        or self._convert_to_plural(
+                                constraint_value_lower_stripped) in metadata_field_value_lower_stripped\
+                        or self._convert_to_plural(
+                                metadata_field_value_lower_stripped) in constraint_value_lower_stripped:
                     return True
 
         return False

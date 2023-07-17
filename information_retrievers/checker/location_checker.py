@@ -118,7 +118,8 @@ class LocationChecker(Checker):
             diagonal_distance_in_km = self._get_geodesic_distance(northeast, southwest)
         return diagonal_distance_in_km / 2
 
-    def _get_geodesic_distance(self, lat_lon_of_loc: tuple[float, float],
+    @staticmethod
+    def _get_geodesic_distance(lat_lon_of_loc: tuple[float, float],
                                lat_lon_of_item: tuple[float, float]) -> float:
         """
         Get geodesic distance between the location and the item using their latitudes and longitudes.
@@ -129,7 +130,8 @@ class LocationChecker(Checker):
         """
         return geodesic(lat_lon_of_loc, lat_lon_of_item).km
 
-    def _get_great_circle_distance(self, lat_lon_of_loc: tuple[float, float],
+    @staticmethod
+    def _get_great_circle_distance(lat_lon_of_loc: tuple[float, float],
                                    lat_lon_of_item: tuple[float, float]) -> float:
         """
         Get great circle distance between the location and the item using their latitudes and longitudes.

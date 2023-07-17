@@ -20,17 +20,23 @@ class ValueRangeChecker(Checker):
 
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
-        Return true if the item match the constraint, false otherwise.
+        Return true if one of the values in the specified metadata field is
+        within one of the value range of the constraint, false otherwise.
+        If the constraint of interest is empty, it will return true.
 
         :param state_manager: current state
         :param item_metadata: item's metadata
         :return: true if the item match the constraint, false otherwise
         """
         constraint_values = state_manager.get('hard_constraints').get(self._constraint_key)
+
+        if constraint_values is None:
+            return True
+
         item_metadata_field_values = item_metadata[self._metadata_field].split(",")
 
         for value_range in constraint_values:
-            value_range_list = value_range.replace("$", "").replace(" ", "").split(",")
+            value_range_list = value_range.replace("$", "").replace(" ", "").split("-")
             for metadata_field_value in item_metadata_field_values:
                 if metadata_field_value >= value_range_list[0] and metadata_field_value >= value_range_list[1]:
                     return True

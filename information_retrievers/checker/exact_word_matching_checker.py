@@ -7,9 +7,9 @@ class ExactWordMatchingChecker(Checker):
     Responsible to check whether the item match the constraint by checking
     whether a word in the constraint matches exactly with a word in the specified metadata field
     or a word in the specified metadata field matches exactly with a word in the constraint
-    (case insensitive, ignore spaces).
+    (case insensitive).
 
-    :param constraint_key: constraint key of interest
+    :param constraint_keys: constraint key of interest
     :param metadata_field: metadata field of interest
     """
 
@@ -22,8 +22,10 @@ class ExactWordMatchingChecker(Checker):
 
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
-        Return true if the item match the constraint, false otherwise.
-        If the constraint in interest is empty, it will return true.
+        Return true if a word in the constraint matches exactly with a word
+        in the specified metadata field or a word in the specified metadata field
+        matches exactly with a word in the constraint, false otherwise.
+        If the constraint of interest is empty, it will return true.
         Might not work well if the value in the metadata filed is a dictionary.
 
         :param state_manager: current state
@@ -43,7 +45,7 @@ class ExactWordMatchingChecker(Checker):
 
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:
-                if constraint_value == metadata_field_value:
+                if constraint_value.lower().strip() == metadata_field_value.lower().strip():
                     return True
 
         return False

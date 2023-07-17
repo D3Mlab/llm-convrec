@@ -19,8 +19,8 @@ class ItemChecker(Checker):
 
     def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
         """
-        Return true if the item is not in the item list in interest, false otherwise.
-        If the item list in interest is empty, it will return true.
+        Return true if the item is not in the item list of interest, false otherwise.
+        If the item list of interest is empty, it will return true.
 
         :param state_manager: current state
         :param item_metadata: item's metadata
