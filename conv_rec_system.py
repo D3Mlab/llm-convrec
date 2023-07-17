@@ -43,8 +43,8 @@ from user_intent.reject_recommendation import RejectRecommendation
 from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from domain_specific_config_loader import DomainSpecificConfigLoader
-from rec_action.type_response.recommend_hard_coded_based_resp import ReccomendHardCodedBasedResponse
-from rec_action.type_response.recommend_prompt_based_resp import ReccomendPromptBasedResponse
+from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
+from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 
 
 
@@ -192,8 +192,8 @@ class ConvRecSystem(WarningObserver):
         
         # Initialize Rec Action
         
-        recc_hard_code_resp = ReccomendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
-        recc_prompt_resp = ReccomendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
         
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),

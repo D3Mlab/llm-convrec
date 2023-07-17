@@ -5,8 +5,8 @@ from state.state_manager import StateManager
 from information_retrievers.neural_information_retriever import InformationRetriever
 from information_retrievers.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from rec_action.type_response.prompt_based_resp import PromptBasedResponse
-from rec_action.type_response.recommend_resp import RecommendResponse
+from rec_action.response_type.prompt_based_resp import PromptBasedResponse
+from rec_action.response_type.recommend_resp import RecommendResponse
 
 from intelligence.llm_wrapper import LLMWrapper
 import logging
@@ -15,7 +15,7 @@ from warning_observer import WarningObserver
 
 logger = logging.getLogger('recommend')
 
-class ReccomendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
+class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     """
     Class representing the prompt based response for recommend
     """
