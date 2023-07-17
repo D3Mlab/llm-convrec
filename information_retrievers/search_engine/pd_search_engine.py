@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import torch
 import pandas as pd
 from information_retrievers.embedder.bert_embedder import BERT_model
@@ -10,13 +10,22 @@ class PDSearchEngine(SearchEngine):
     
     :param embedder: BERT_model to embed query
     """
+    _items_meta_data: pd.DataFrame
+    _items_reviews_embedding: pd.DataFrame
+    _reviews_embedding_matrix: torch.Tensor
+    _num_of_reviews_per_restaurant: torch.Tensor
 
-    def __init__(self, embedder: BERT_model):
-        self._embedder = embedder
+    def __init__(self, embedder: BERT_model, path_to_items_meta_data: str, path_to_items_review_embeddings: str,
+                 path_to_reviews_embedding_matrix: str, path_to_item_review_count: str):
+        super().__init__(embedder)
+        self._items_meta_data = pd.read_csv(path_to_items_meta_data)
+        self._items_reviews_embedding = pd.read_csv(path_to_items_review_embeddings)
+        self._reviews_embedding_matrix = torch.load(path_to_reviews_embedding_matrix)
+        self._num_of_reviews_per_restaurant = torch.load(path_to_item_review_count)
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        items_reviews_embedding: pd.DataFrame, matrix: torch.Tensor,
-                        item_review_count: torch.Tensor) -> tuple[list, list]:
+                        item_review_count: torch.Tensor, 
+                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
         reviews for that item
@@ -32,15 +41,29 @@ class PDSearchEngine(SearchEngine):
         reviews for the corresponding item
         """
         query_embedding = self._embedder.get_tensor_embedding(query)
-        similarity_score_review = self._similarity_score_each_review(query_embedding, matrix)
+        similarity_score_review = self._similarity_score_each_review(query_embedding, self._reviews_embedding_matrix)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(similarity_score_review,
                                                                                             item_review_count,
                                                                                             topk_reviews)
+        # Finds the indexs of the ids to count
+        id_index = self._find_index(item_ids_to_keep)
+        mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
+        mask[id_index] = True
+        similarity_score_item[~mask] = 0
+
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
-        list_of_business_id = self._get_topk_item_business_id(most_similar_item_index, items_reviews_embedding)
-        list_of_review = self._get_review(most_similar_item_index, index_most_similar_review, items_reviews_embedding)
+        list_of_business_id = self._get_topk_item_business_id(most_similar_item_index, self._items_reviews_embedding)
+        list_of_review = self._get_review(most_similar_item_index, index_most_similar_review, self._items_reviews_embedding)
 
         return list_of_business_id, list_of_review
+
+    def _find_index(self, ids_to_keep: np.array) -> list[int]:
+        indices = []
+        
+        for id in ids_to_keep:
+            indices.append(int(self._items_meta_data["business_id"][self._items_meta_data["business_id"] == id].index[0]))
+
+        return indices
 
     @staticmethod
     def _similarity_score_each_review(query: torch.Tensor, reviews: torch.Tensor) -> torch.Tensor:
@@ -56,8 +79,6 @@ class PDSearchEngine(SearchEngine):
         similarity_score = torch.matmul(reviews, query)
 
         return similarity_score
-
-
 
     @staticmethod
     def _get_topk_item_business_id(most_similar_item_index: torch.Tensor, df: pd.DataFrame) -> list[str]:

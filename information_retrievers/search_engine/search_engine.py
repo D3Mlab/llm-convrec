@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import torch
 from information_retrievers.embedder.bert_embedder import BERT_model
 
@@ -14,7 +14,7 @@ class SearchEngine:
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_review_count: torch.Tensor, 
-                        item_ids_to_keep: numpy.ndarray) -> tuple[list[str], list[list[str]]]:
+                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         """
         Takes a query and returns a list of item id that is most similar to the query and the top k
         reviews for that item
@@ -53,6 +53,7 @@ class SearchEngine:
 
             # Get the top k review scores or all review scores if the number of reviews is less than k
             k_actual = min(item_review_count[i], k)
+            
             values, index_topk = similarity_score_item.topk(k_actual)
 
             index_topk += index
