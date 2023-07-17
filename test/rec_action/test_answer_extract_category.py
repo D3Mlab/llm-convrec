@@ -39,7 +39,7 @@ class TestAnswer:
                            "stars": 0,
                            "review_count": 0,
                            "is_open": True,
-                           "attributes": restaurant_attributes,
+                           "optional": restaurant_attributes,
                            "categories": [],
                            "hours": {}}
         restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])

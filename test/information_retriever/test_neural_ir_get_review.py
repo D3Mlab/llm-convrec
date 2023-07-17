@@ -127,7 +127,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
                            "stars": float(item_info[8]),
                            "review_count": int(item_info[9]),
                            "is_open": bool(item_info[10]),
-                           "attributes": ast.literal_eval(item_info[11]),
+                           "optional": ast.literal_eval(item_info[11]),
                            "categories": list(item_info[12].split(",")),
                            "hours": {}}
         restaurant_object = Item(business_id, dictionary_info)

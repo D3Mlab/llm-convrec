@@ -20,4 +20,4 @@ class RestaurantItemLoader(ItemLoader):
             "hours": ast.literal_eval(item_dict['hours']),
         }
         return Item(item_dict['item_id'], item_dict['name'],
-                    item_info, ast.literal_eval(item_dict['attributes']))
+                    item_info, ast.literal_eval(item_dict['optional']))
