@@ -169,11 +169,12 @@ class ConvRecSystem(GPTWrapperObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
+        hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
                        Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, user_constraint_status_objects,
                                  config, constraints_categories),
-                       RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
+                       RequestInformation(user_constraint_status_objects, constraints_categories,hard_coded_responses), PostRejectionAction(),
                        PostAcceptanceAction()]
         
 

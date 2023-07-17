@@ -15,12 +15,13 @@ class RequestInformation(RecAction):
     _constraint_statuses: list[Status]
 
 
-    def __init__(self, constraint_statuses: list[Status], constraints_categories: list, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, constraint_statuses: list[Status], constraints_categories: list, hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._constraint_statuses = constraint_statuses
         
         self._mandatory_constraints = [constraint_category['key'] for constraint_category in
                                              constraints_categories if constraint_category['is_mandatory']]
+        self._hard_coded_responses = hard_coded_responses
 
     def get_name(self):
         """
@@ -55,23 +56,22 @@ class RequestInformation(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
+        
         hard_constraints = state_manager.get("hard_constraints")
+        default_response = None
 
-        for constraints in self._mandatory_constraints:
-            formatted_constraints = [key for key in constraints]
-            if len(formatted_constraints) > 1:
-                formatted_constraints[-1] = f'or {formatted_constraints[-1]}'
-            formatted_constraints = ', '.join(formatted_constraints).replace(', or ', ' or ')
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'RequestInformation':
+                constraints = response_dict['constraints']
 
-            if hard_constraints is None or all(hard_constraints.get(constraint) is None or
-                                               hard_constraints.get(constraint) == [] for constraint in constraints):
-                return f"Can you provide the {formatted_constraints}?"
+                if not constraints:
+                    default_response = response_dict['response']
+                else:
+                    if hard_constraints is None or any(hard_constraints.get(constraint) is None or
+                                                       hard_constraints.get(constraint) == [] for constraint in constraints):
+                        return response_dict['response']
 
-            for constraint in self._constraint_statuses:
-                if constraint.get_status() == 'invalid':
-                    return f"I'm sorry, can you provide a different {constraint.get_constraint_name()}"
-
-        return "Are there any additional preferences, requirements, or specific features you would like to have?"
+        return default_response
 
     def is_response_hard_coded(self) -> bool:
         """

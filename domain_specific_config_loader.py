@@ -204,3 +204,17 @@ class DomainSpecificConfigLoader:
             for row in reject_classification_fewshots_df.to_dict("records")
         ]
         return reject_classification_fewshots
+
+    def load_hard_coded_responses(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        responses_df = pd.read_csv(path_to_csv, encoding='latin1')
+        responses = [
+            {
+                'action': row['action'],
+                'response': row['response'],
+                'constraints': row['constraints'].split(', ') if isinstance(row['constraints'], str) else []
+            }
+            for row in responses_df.to_dict("records")
+        ]
+        return responses

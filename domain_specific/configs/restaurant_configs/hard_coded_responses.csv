@@ -1,0 +1,6 @@
+action,response,constraints
+PostAcceptanceAction,"Great! If you need any more assistance, feel free to ask.",
+PostRejectionAction,I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?,
+RequestInformation,SSSSSSSSCould you provide the location?,location
+RequestInformation,SSSSSSSSSCould you provide the cuisine type or dish?,"cuisine type, dish type"
+RequestInformation,SSSSSSSSSGreat! Is there anything else I can help with?,
