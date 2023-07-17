@@ -10,6 +10,7 @@ class VectorDatabaseSearchEngine(SearchEngine):
     Class that is responsible for searching for topk most relevant items using BERT_model.
 
     :param embedder: BERT_model to embed query
+    :param database: Database that stores the embeddings, id and review
     """
     _database: VectorDataBase
 

@@ -6,12 +6,11 @@ class VectorDataBase():
     """
     This class functions as a vector database
 
-    :param _storage: Stores the vector database
-    :param _id: Stores the item id of each vector
-    :param _review: Stores the review for each vector
-    :param _ntotal: Stores the number of vectors in vector database
+    :param database_file_path: Stores the path towards vector database
+    :param id_file_path: Stores the path towards id numpy array
+    :param review_file_path: Stores the path towards review numpy array
     """
-    _storage: faiss.swigfaiss_avx2
+    _storage: faiss.swigfaiss_avx2.IndexFlatIP
     _id: np.ndarray
     _review: np.ndarray
     _ntotal: int

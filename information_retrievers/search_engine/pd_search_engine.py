@@ -10,16 +10,21 @@ class PDSearchEngine(SearchEngine):
     Class that is responsible for searching for topk most relevant items using BERT_model.
 
     :param embedder: BERT_model to embed query
+    :param path_to_items_id: Stores the path towards item id numpy array
+    :param path_to_items_review_embeddings: Stores the path towards review embedding file
+    :param path_to_reviews_embedding_matrix: Stores the path towards the matrix that contains all the embedding
+    for all the reviews
+    :param path_to_item_review_count: Stores the path towards item tensor that stores how many reviews for each item
     """
-    _items_meta_data: np.ndarray
+    _items_id: np.ndarray
     _items_reviews_embedding: pd.DataFrame
     _reviews_embedding_matrix: torch.Tensor
     _num_of_reviews_per_restaurant: torch.Tensor
 
-    def __init__(self, embedder: BERT_model, path_to_items_meta_data: str, path_to_items_review_embeddings: str,
+    def __init__(self, embedder: BERT_model, path_to_items_id: str, path_to_items_review_embeddings: str,
                  path_to_reviews_embedding_matrix: str, path_to_item_review_count: str):
         super().__init__(embedder)
-        self._items_meta_data = np.load(path_to_items_meta_data)
+        self._items_id = np.load(path_to_items_id)
         self._items_reviews_embedding = pd.read_csv(path_to_items_review_embeddings)
         self._reviews_embedding_matrix = torch.load(path_to_reviews_embedding_matrix)
         self._num_of_reviews_per_restaurant = torch.load(path_to_item_review_count)
@@ -62,7 +67,7 @@ class PDSearchEngine(SearchEngine):
         indices = []
 
         for id in ids_to_keep:
-            indices.append(np.where(self._items_meta_data == id)[0][0])
+            indices.append(np.where(self._items_id == id)[0][0])
 
         return indices
 
