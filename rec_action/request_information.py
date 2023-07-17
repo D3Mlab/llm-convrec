@@ -38,17 +38,6 @@ class RequestInformation(RecAction):
         """
         return "Recommender requests the user’s preference"
 
-    def get_response_info(self, state_manager: StateManager):
-        """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-        It asks for location if location isn't found in the hard constraints of the state and asks for general
-        preference otherwise.
-
-        :param state_manager: current statemanager representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"predefined_response": self.get_hard_coded_response(state_manager)}
-
     def get_prompt(self, state_manager: StateManager) -> str | None:
         """
         Return prompt that can be inputted to LLM to produce recommender's response. 

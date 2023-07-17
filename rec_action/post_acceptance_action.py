@@ -30,16 +30,6 @@ class PostAcceptanceAction(RecAction):
         """
         return "Recommender responds to the user after user accepts a recommended item"
 
-    def get_response_info(self, state_manager: StateManager) -> dict:
-        """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-        It asks LLM to generate recommendation based on the current state.
-
-        :param state_manager: current state representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"predefined_response": self.get_hard_coded_response(state_manager)}
-
     def get_priority_score(self, state_manager: StateManager) -> float:
         """
         Returns the score representing how much this is appropriate recommender action for the current conversation.
