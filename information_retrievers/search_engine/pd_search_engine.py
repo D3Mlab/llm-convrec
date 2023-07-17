@@ -16,14 +16,14 @@ class PDSearchEngine(SearchEngine):
     _embedder: BERT_model
     _items_id: np.ndarray
     _item_review_count: torch.Tensor
-    _items_reviews_embedding: pd.DataFrame
+    _items_reviews: pd.DataFrame
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
         self._embedder = embedder
         domain_specific_config_loader = DomainSpecificConfigLoader()
         self._item_review_count = domain_specific_config_loader.load_item_review_count()
-        self._items_id, self._items_reviews_embedding, self._reviews_embedding_matrix\
+        self._items_id, self._items_reviews, self._reviews_embedding_matrix\
             = domain_specific_config_loader.load_data_for_pd_search_engine()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
@@ -52,9 +52,9 @@ class PDSearchEngine(SearchEngine):
         similarity_score_item[~mask] = 0
 
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
-        list_of_item_id = self._get_topk_item_item_id(most_similar_item_index, self._items_reviews_embedding)
+        list_of_item_id = self._get_topk_item_item_id(most_similar_item_index, self._items_reviews)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review,
-                                          self._items_reviews_embedding)
+                                          self._items_reviews)
 
         return list_of_item_id, list_of_review
 
@@ -120,7 +120,7 @@ class PDSearchEngine(SearchEngine):
             for j in most_similar_review_list:
                 # if not -1, which was padded to make sure the size each row matches with each other
                 if j != -1:
-                    review_list_item.append(items_reviews_embedding["review"][j])
+                    review_list_item.append(items_reviews_embedding["Review"][j])
 
             review_list.append(review_list_item)
         return review_list

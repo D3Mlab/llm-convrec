@@ -281,7 +281,7 @@ class Recommend(RecAction):
         """
         metadata = f"""location: at {recommended_restaurant.get('address')}, """
         attributes = ', '.join(
-            [f'{key}: {val}' for key, val in recommended_restaurant.get("attributes").items()])
+            [f'{key}: {val}' for key, val in recommended_restaurant.get_optional_data().items()])
         metadata += attributes
         return metadata
 

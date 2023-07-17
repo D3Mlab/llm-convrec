@@ -70,7 +70,7 @@ class InformationRetrieval:
         """
         recommended_items = []
         for index in range(len(item_ids)):
-            item_dict = self._metadata_wrapper.get_item_dict_from_index(index)
+            item_dict = self._metadata_wrapper.get_item_dict_from_id(item_ids[index])
             recommended_item = self._item_loader.create_recommended_item(query, item_dict,
                                                                          items_most_relevant_reviews[index])
             recommended_items.append(recommended_item)
