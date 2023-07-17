@@ -70,6 +70,8 @@ class ConvRecSystem(WarningObserver):
         constraints = config['ALL_CONSTRAINTS']
         self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
+        
+        model = config["MODEL"]
                 
         if not isinstance(openai_api_key_or_gradio_url, str):
             raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
@@ -79,7 +81,6 @@ class ConvRecSystem(WarningObserver):
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
             
-        model = config["MODEL"]
 
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
