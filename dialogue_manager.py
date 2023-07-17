@@ -95,8 +95,7 @@ class DialogueManager:
 
             # If could not create a hard coded response (need LLM to do additonal work to get response) or the response isn't hard coded
             if hard_coded_resp == "" or not action.is_response_hard_coded() or hard_coded_resp == hard_coded_llm_resp:
-                prompt = action.get_prompt(self.state_manager)
-                rec_response = self._llm_wrapper.make_request(prompt)
+                rec_response = action.get_prompt_response(self.state_manager)
 
                 if '"' in rec_response:
                     # get rid of double quotes (gpt sometimes outputs it)
