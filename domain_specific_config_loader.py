@@ -11,6 +11,9 @@ from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import Goog
 import torch
 import numpy as np
 from information_retrievers.vector_database import VectorDataBase
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 
 class DomainSpecificConfigLoader:

@@ -10,7 +10,7 @@ class VectorDataBase:
     :param id_file_path: Stores the path towards id numpy array
     :param review_file_path: Stores the path towards review numpy array
     """
-    _storage: faiss.swigfaiss_avx2.IndexFlatIP
+    _storage: faiss
     _id: np.ndarray
     _review: np.ndarray
     _ntotal: int

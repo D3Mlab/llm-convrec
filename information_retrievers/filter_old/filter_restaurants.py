@@ -4,7 +4,7 @@ from state.state_manager import StateManager
 from information_retrievers.filter.check_location import CheckLocation
 from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.data_holder import DataHolder
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 import ast

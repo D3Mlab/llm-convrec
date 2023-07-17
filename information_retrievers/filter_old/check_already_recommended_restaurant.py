@@ -1,4 +1,4 @@
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.recommended_item import RecommendedItem
 
 
 class CheckAlreadyRecommendedRestaurant:

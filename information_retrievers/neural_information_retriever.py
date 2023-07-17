@@ -1,13 +1,11 @@
 from information_retrievers.information_retriever import InformationRetriever
-from information_retrievers.item import Item
-from information_retrievers.item_loader import ItemLoader
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
+from information_retrievers.item.item_loader import ItemLoader
+from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.ir.search_engine_old import NeuralSearchEngine
-from information_retrievers.filter_old.filter_restaurants import FilterRestaurants
 from information_retrievers.data_holder import DataHolder
 import pandas as pd
 import torch
-import ast
 
 
 class NeuralInformationRetriever(InformationRetriever):
