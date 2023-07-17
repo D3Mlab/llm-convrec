@@ -1,6 +1,6 @@
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.item import Item
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
 import pytest
 
 check_already_recommended_restaurant = CheckAlreadyRecommendedRestaurant()

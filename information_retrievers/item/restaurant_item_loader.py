@@ -1,5 +1,5 @@
-from information_retrievers.item import Item
-from information_retrievers.item_loader import ItemLoader
+from information_retrievers.item.item import Item
+from information_retrievers.item.item_loader import ItemLoader
 import ast
 
 

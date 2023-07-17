@@ -5,7 +5,7 @@ from user_intent.inquire import Inquire
 from state.message import Message
 from decimal import Decimal
 from string import ascii_letters
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
