@@ -39,8 +39,8 @@ from state.constraints.three_steps_constraints_updater import ThreeStepsConstrai
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
 from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
-from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
-from information_retrievers.filter import Filter
+from information_retrievers.metadata_wrapper import MetadataWrapper
+from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 
 

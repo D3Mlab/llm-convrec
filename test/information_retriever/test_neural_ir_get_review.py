@@ -1,9 +1,9 @@
 from rec_action.answer import Answer
 from state.common_state_manager import CommonStateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
-from information_retrievers.filter.check_location import CheckLocation
-from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
+from information_retrievers.filter.filter import CheckLocation
+from information_retrievers.filter.filter import CheckCuisineDishType
+from information_retrievers.filter.filter import FilterRestaurants
 from information_retrievers.embedder.bert_embedder import BERT_model
 from information_retrievers.embedder.statics import *
 from information_retrievers.ir.search_engine_old import NeuralSearchEngine
@@ -13,7 +13,7 @@ from information_retrievers.item.item import Item
 from information_retrievers.item.recommended_item import RecommendedItem
 from user_intent.inquire import Inquire
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
-from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
+from information_retrievers.filter.filter import CheckAlreadyRecommendedRestaurant
 from domain_specific.classes.restaurants.geocoding.nominatim_wrapper import NominatimWrapper
 
 from information_retrievers.data_holder import DataHolder

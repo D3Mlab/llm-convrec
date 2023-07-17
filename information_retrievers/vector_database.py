@@ -10,7 +10,7 @@ class VectorDataBase:
     :param id_file_path: Stores the path towards id numpy array
     :param review_file_path: Stores the path towards review numpy array
     """
-    _storage: faiss
+    _storage: faiss.IndexFlat
     _id: np.ndarray
     _review: np.ndarray
     _ntotal: int
@@ -20,6 +20,7 @@ class VectorDataBase:
         self._id = np.load(id_file_path, allow_pickle=True)
         self._review = np.load(review_file_path)
         self._ntotal = self._storage.ntotal
+        print(type(self._storage))
 
     def filter_with_id(self, target_id: np.ndarray = None) -> np.ndarray:
         """

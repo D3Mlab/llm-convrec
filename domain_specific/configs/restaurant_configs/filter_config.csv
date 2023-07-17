@@ -1,4 +1,4 @@
 type_of_filter,key_in_state,metadata_field,default_max_distance_in_km,distance_type
-location,location,"latitude, longitude",2,geodesic
 word in,"cuisine type, dish type",categories
 item,already_recommended_item,name
+location,location,"latitude, longitude",2,geodesic

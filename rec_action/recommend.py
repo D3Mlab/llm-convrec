@@ -5,7 +5,7 @@ from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
 from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.filter import Filter
+from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 from state.message import Message
 from intelligence.llm_wrapper import LLMWrapper

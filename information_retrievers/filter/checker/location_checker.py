@@ -1,4 +1,4 @@
-from information_retrievers.checker.checker import Checker
+from information_retrievers.filter.checker.checker import Checker
 from state.state_manager import StateManager
 from geopy.distance import geodesic
 from geopy.distance import great_circle

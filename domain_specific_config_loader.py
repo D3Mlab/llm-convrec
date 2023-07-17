@@ -1,12 +1,12 @@
 import re
 import pandas as pd
 import yaml
-from information_retrievers.checker.checker import Checker
-from information_retrievers.checker.exact_word_matching_checker import ExactWordMatchingChecker
-from information_retrievers.checker.item_checker import ItemChecker
-from information_retrievers.checker.location_checker import LocationChecker
-from information_retrievers.checker.value_range_checker import ValueRangeChecker
-from information_retrievers.checker.word_in_checker import WordInChecker
+from information_retrievers.filter.checker.checker import Checker
+from information_retrievers.filter.checker.exact_word_matching_checker import ExactWordMatchingChecker
+from information_retrievers.filter.checker.item_checker import ItemChecker
+from information_retrievers.filter.checker.location_checker import LocationChecker
+from information_retrievers.filter.checker.value_range_checker import ValueRangeChecker
+from information_retrievers.filter.checker.word_in_checker import WordInChecker
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 import torch
 import numpy as np

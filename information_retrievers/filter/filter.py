@@ -1,6 +1,6 @@
 import numpy as np
-from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
-from information_retrievers.checker.checker import Checker
+from information_retrievers.metadata_wrapper import MetadataWrapper
+from information_retrievers.filter.checker.checker import Checker
 from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 

@@ -1,0 +1,1008 @@
+2023-07-17 15:31:14,437 - dialogue_manager - DEBUG - user_input="I want Italian near jasper avenue"
+2023-07-17 15:31:14,438 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+
+For example:
+
+User input: Is there patio
+Response: True
+
+User input: Whats the price range?
+Response: True
+
+User input: Is it nearby? Is it in Toronto?
+Response: True
+
+User input: can you please recommend some menu items 
+Response: True
+
+User input: compare them, list the pros and cons of them
+Response: True
+
+User input: Do they have pizza?
+Response: True
+
+User input: Boulevard, Edmonton
+Response: False
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i would like some vegetarian food.
+Response: False
+
+User input: I am allergic to seafood, i want to find a restaurant.
+Response: False
+
+User input: Can you give me a recommendation?
+Response: False
+
+User input: i want a restaurant in (location)
+Response: False
+
+User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
+Response: False
+
+User input: i want kid's menu
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: I want Italian near jasper avenue
+Response: "
+2023-07-17 15:31:14,921 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:31:14,921 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: I want Italian near jasper avenue
+Response: "
+2023-07-17 15:31:15,235 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:31:15,236 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+
+For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: I want Italian near jasper avenue
+Response: "
+2023-07-17 15:31:16,057 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:31:16,057 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x000001F6697FE380>]
+2023-07-17 15:31:16,059 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+- location: The desired location of the restaurants.
+- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
+- dish type: The desired menu item or dish in the restaurant that user shows interests.
+- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+- price range: The preferred range of prices for the restaurants specified by the user.
+- wait times: The acceptable wait time for the user when dining at the restaurants.
+- atmosphere: The preferred atmosphere or ambience of the restaurants.
+- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+- others: Any additional constraints or preferred features.
+
+For example:
+
+Old Hard Constraints:
+- location: "toronto"
+Old Soft Constraints:
+None
+User’s Current Input: "pizza and pasta"
+New Hard Constraints:
+- location: "toronto"
+- cuisine type: "italian"
+- dish type: "pizza", "pasta"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+Old Soft Constraints:
+- price range: "moderate"
+- others: "free parking"
+User’s Current Input: "does it have a patio?"
+New Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+New Soft Constraints:
+- price range: "moderate"
+- others: "free parking", "patio"
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+Old Soft Constraints:
+None
+User’s Current Input: "What kind of menu does I Love Sushi offer?"
+New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want sushi and miso soup"
+New Hard Constraints:
+- cuisine type: "japanese"
+- dish type: "sushi", "miso soup"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Edmonton"
+New Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+Old Soft Constraints:
+None
+User’s Current Input: "Is it expensive?"
+New Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+New Soft Constraints:
+- price range: "affordable"
+
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want Italian near jasper avenue""
+2023-07-17 15:31:17,255 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "italian"
+
+New Soft Constraints:
+None"
+2023-07-17 15:31:17,389 - dialogue_manager - DEBUG - rec_actions=[<rec_action.recommend.Recommend object at 0x000001F6697E7E80>]
+2023-07-17 15:31:17,390 - gpt_wrapper - DEBUG - gpt_input="Convert the following constraints for restaurants into a natural English search query that sounds like a review using past tense and only output the query.
+Hard constraints:{'location': ['jasper avenue'], 'cuisine type': ['italian']}
+Soft preferences:None"
+2023-07-17 15:31:17,897 - gpt_wrapper - DEBUG - gpt_output="Were there any Italian restaurants on Jasper Avenue?"
+2023-07-17 15:31:17,898 - recommend - DEBUG - Query: Were there any Italian restaurants on Jasper Avenue?
+2023-07-17 15:31:25,082 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Sicilian Pasta Kitchen - SPK Downtown that has the following features and information.
+Features: location: at 11239 Jasper Avenue NW, NoiseLevel: average, Caters: False, BikeParking: True, HasTV: True, Alcohol: full_bar, BusinessParking: {garage: False, street: True, validated: False, lot: False, valet: False}, WiFi: free, GoodForKids: False, OutdoorSeating: True, Ambience: {touristy: False, hipster: False, romantic: False, intimate: False, trendy: False, upscale: False, classy: True, casual: False}, HappyHour: False, HasReservations: True, PriceRange: 2, HasTakeOut: True, Attire: casual, HasDelivery: False, GoodForGroups: True
+Information: ["Let's see, driving Jasper ave with a friend, both could eat.  She recommended Sicilian Pasta Kitchen.  Parked in the reserve parking.  Walked in around 8pm, table for 2 per favor!  She had a glass of white, myself it was red.  She ordered pasta with white sauce.  Myself, a true favourite with Bolognese.  Oh man, they do it right.  I will say though, I've had better.  I really enjoy the Bolognese sauce at Craft.  But overall nice night, good food, great company.", "As if the South End location didn't end up scaring me out of SPK for good. \n\nSunday night with grumbling stomachs led us downtown in need of some sustenance. First thought was to visit Jang again but they weren't open so our next closest spot was of course SPK Downtown. I mean being on Jasper for so long, it's hard not to know how iconic and familiar SPK is. Offering more of a sophisticated dining experience with some traditional well rounded Italian dishes. \n\nThe space is dated, with exposed brick paired with white leather back cushions, dark wooden tables and chairs layered with white linen tablecloths dressed with white paper on top. The space was trying to feel formal and sophisticated but the detailing didn't seem elevated. MUCH better compared to their south location though, so I'm fine. \n\nService was amazing, she knew her food and definitely knew her wine. She ended up suggesting the Murcatto wine, a white wine, ended up really enjoying how light this was. She was also diligent in coming by throughout the dinner for refills and clearing plates and dishes. diligent and friendly service. \n\nSalsiccia - ($15) - Italian sausages with bell peppers and mushrooms mixed in with tomato sauce. I mean this was okay, the tomato sauce wasn't as flavorful as I'd want it to be and the Italian sausages weren't at all spicy. \n\nBruschetta - ($10) - Felt like the crostini could have been toasted a little more for more of a crunch. \n\u200b\nInsalata Arugula - ($9) - Way waaaay too much dressing. Balsamic is already super strong and this was swimming in it. We probably had a few bites each and didn't end up taking any of it home. Maybe just get it on the side or something but man, this was like balsamic shallot vinaigrette soup. \n\nManzo - ($38) - We ended up sharing this as our main, the 10oz grilled tenderloin was actually two slabs of 5oz placed on top of each other. Which worked out well for us. We asked for medium rare and it came out perfectly. This was a really good piece of meat. The porcini mushroom glaze was an awesome accompaniment, thick enough to coat each bite. The truffle oil roasted potatoes are another thing completely! Boiled and then pan fried I suppose making the outer corners crispy and beautifully browned while the inside was moist and creamy. Not each piece was consistent in getting the same sear though. \n\nSo, clearly between the two of us we over ordered. Ended up taking a bunch of it home for left overs and they heated up well, still tasted good the next day! Portions were huge, definitely didn't expect that much food but it seems like their dishes are meant to be more family style dining. So i'd say pretty good value. As for, would I recommend? Maybe just for the mains and a bottle of wine. Even with the friendly service and how delicious the manzo was, wouldn't be enough for me to come back.", 'Just had a late lunch here with my husband. The restaurant was clean with a relaxed quiet atmosphere. Service was excellent with one waitress to about 6 tables. The menu is full on classic Italian dishes. I went with the crab and scallop with a cream sauce on fettuccine. It was light but filling. The plate was full enough for two for sure. \nWe left to full for dessert but will be back because they have the best tirramiso in Edmonton.']
+Using a few concise sentences, tell me whether Sicilian Pasta Kitchen - SPK Downtown is good for the following context. If the Sicilian Pasta Kitchen - SPK Downtown are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
+Hard constraints: {'location': [], 'cuisine type': ['italian']}
+Soft constraints: None"
+2023-07-17 15:31:26,557 - gpt_wrapper - DEBUG - gpt_output="Sicilian Pasta Kitchen - SPK Downtown is good for a casual Italian dinner with good company. It may not be the best choice for a romantic or intimate dining experience."
+2023-07-17 15:31:26,558 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Famoso Neapolitan Pizzeria that has the following features and information.
+Features: location: at 11750 Jasper Avenue NW, NoiseLevel: average, GoodForKids: True, BusinessParking: {garage: False, street: False, validated: False, lot: True, valet: False}, OutdoorSeating: True, HasTV: True, WiFi: free, BikeParking: True, HappyHour: True, Ambience: {romantic: False, intimate: False, classy: False, hipster: False, divey: False, touristy: False, trendy: False, upscale: False, casual: True}, Caters: False, WheelchairAccessible: True, GoodForMeal: {dessert: False, latenight: False, lunch: True, dinner: True, brunch: False, breakfast: False}, DogsAllowed: False, Alcohol: beer_and_wine, Corkage: True, PriceRange: 2, Attire: casual, HasReservations: True, HasDelivery: True, GoodForGroups: True, HasTakeOut: True, HasTableService: True
+Information: ["I absolutely love going here. Visited the Jasper Ave location today with my Mom & sister after a spa morning. I find the service to be quick & friendly and the food so fresh and flavourful. I get in a rut and order the same thing everytime, but I enjoy it so much! Mmm...walnut gorgonzola salad!\nIt was the first time that Mom has tried it, and it's Mom approved!", "Famoso has always been a good spot to have a casual dinner and a bottle of wine.  The Jasper Ave location is our typically stop.  The service has always been ok, especially since it's somewhat of a cafeteria style.  However; last Thursday night I was impressed by how attentive the staff was during the waiting for a table to ensuring we had everything we required throughout the entire time we were there. Plus the timing of the food being delivered between appy's & main was right on.\nThanks Nate and to your staff for such an enjoyable experience.", 'Oh my goodness and the goodness is the menu, staff and atmosphere.  Love this place, just sad my bests sold his nearby condo across Jasper Ave from here.  Will still visit of course cause the whole visit is worth the trek always.']
+Using a few concise sentences, tell me whether Famoso Neapolitan Pizzeria is good for the following context. If the Famoso Neapolitan Pizzeria are not good for the given context, just say it's not good. Hard constraints is more important than soft constraints. Do not use the words, constraint or features, in the response. Do not talk about anything that is not related to the context.
+Hard constraints: {'location': [], 'cuisine type': ['italian']}
+Soft constraints: None"
+2023-07-17 15:31:27,994 - gpt_wrapper - DEBUG - gpt_output="Famoso Neapolitan Pizzeria is good for casual dining, lunch, and dinner. It is not good for dessert, late-night meals, brunch, or breakfast."
+2023-07-17 15:31:27,995 - gpt_wrapper - DEBUG - gpt_input="You are recommending restaurants called Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria.
+Below are the explanation on why each of them is good for the user.
+Sicilian Pasta Kitchen - SPK Downtown: Sicilian Pasta Kitchen - SPK Downtown is good for a casual Italian dinner with good company. It may not be the best choice for a romantic or intimate dining experience., Famoso Neapolitan Pizzeria: Famoso Neapolitan Pizzeria is good for casual dining, lunch, and dinner. It is not good for dessert, late-night meals, brunch, or breakfast.
+Respond to the user in a few sentences starting with "How about Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria" without using the word 'constraints'."
+2023-07-17 15:31:31,367 - gpt_wrapper - DEBUG - gpt_output="How about Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria? Sicilian Pasta Kitchen is a great option for a casual Italian dinner with friends, while Famoso Neapolitan Pizzeria is perfect for casual dining any time, whether it's lunch or dinner. However, keep in mind that neither of them is ideal for romantic or intimate dining experiences, and Famoso is not the best choice for dessert or late-night meals."
+2023-07-17 15:31:31,367 - dialogue_manager - DEBUG - rec_response="How about Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria? Sicilian Pasta Kitchen is a great option for a casual Italian dinner with friends, while Famoso Neapolitan Pizzeria is perfect for casual dining any time, whether it's lunch or dinner. However, keep in mind that neither of them is ideal for romantic or intimate dining experiences, and Famoso is not the best choice for dessert or late-night meals."
+2023-07-17 15:31:31,367 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000001F6671C0250>, <state.message.Message object at 0x000001F6697E49A0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000001F6697E6E60>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'location': True, 'cuisine type': True}}, 'hard_constraints': {'location': ['jasper avenue'], 'cuisine type': ['italian']}, 'soft_constraints': None, 'location_type': 'specific', 'current_rec_actions': [<rec_action.recommend.Recommend object at 0x000001F6697E7E80>], 'recommended_items': [[<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>]], 'curr_items': [<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>]}
+2023-07-17 15:31:59,590 - dialogue_manager - DEBUG - user_input="Do they have patio?"
+2023-07-17 15:31:59,590 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+
+For example:
+
+User input: Is there patio
+Response: True
+
+User input: Whats the price range?
+Response: True
+
+User input: Is it nearby? Is it in Toronto?
+Response: True
+
+User input: can you please recommend some menu items 
+Response: True
+
+User input: compare them, list the pros and cons of them
+Response: True
+
+User input: Do they have pizza?
+Response: True
+
+User input: Boulevard, Edmonton
+Response: False
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i would like some vegetarian food.
+Response: False
+
+User input: I am allergic to seafood, i want to find a restaurant.
+Response: False
+
+User input: Can you give me a recommendation?
+Response: False
+
+User input: i want a restaurant in (location)
+Response: False
+
+User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
+Response: False
+
+User input: i want kid's menu
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: Do they have patio?
+Response: "
+2023-07-17 15:31:59,885 - gpt_wrapper - DEBUG - gpt_output="True"
+2023-07-17 15:31:59,886 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: Do they have patio?
+Response: "
+2023-07-17 15:32:00,223 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:32:00,223 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+
+For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: Do they have patio?
+Response: "
+2023-07-17 15:32:00,511 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:32:00,511 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x000001F669653A30>, <user_intent.provide_preference.ProvidePreference object at 0x000001F6697FE380>]
+2023-07-17 15:32:00,512 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+If you cannot extract a restaurants name respond with "None.".
+
+The user may use short forms or 'slang' when referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
+
+User Input: I don't like thai express, starbucks or subway.
+Response: Thai Express, Starbucks, Subway.
+
+User Input: I like that they have a patio.
+Response: None.
+
+User Input: Does thai express have a balcony?
+Response: Thai Express.
+
+User Input: where is timmy's?
+Response: Tim Hortons.
+
+User Input: Do they have patio?
+Response:"
+2023-07-17 15:32:00,854 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-17 15:32:00,854 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+If you cannot extract a restaurants name respond with "None.".
+
+The user may use short forms or 'slang' when referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
+
+User Input: I don't like thai express, starbucks or subway.
+Response: Thai Express, Starbucks, Subway.
+
+User Input: I like that they have a patio.
+Response: None.
+
+User Input: Does thai express have a balcony?
+Response: Thai Express.
+
+User Input: where is timmy's?
+Response: Tim Hortons.
+
+User Input: Do they have patio?
+Response:"
+2023-07-17 15:32:01,170 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-17 15:32:01,171 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+- location: The desired location of the restaurants.
+- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
+- dish type: The desired menu item or dish in the restaurant that user shows interests.
+- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+- price range: The preferred range of prices for the restaurants specified by the user.
+- wait times: The acceptable wait time for the user when dining at the restaurants.
+- atmosphere: The preferred atmosphere or ambience of the restaurants.
+- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+- others: Any additional constraints or preferred features.
+
+For example:
+
+Old Hard Constraints:
+- location: "toronto"
+Old Soft Constraints:
+None
+User’s Current Input: "pizza and pasta"
+New Hard Constraints:
+- location: "toronto"
+- cuisine type: "italian"
+- dish type: "pizza", "pasta"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+Old Soft Constraints:
+- price range: "moderate"
+- others: "free parking"
+User’s Current Input: "does it have a patio?"
+New Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+New Soft Constraints:
+- price range: "moderate"
+- others: "free parking", "patio"
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+Old Soft Constraints:
+None
+User’s Current Input: "What kind of menu does I Love Sushi offer?"
+New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want sushi and miso soup"
+New Hard Constraints:
+- cuisine type: "japanese"
+- dish type: "sushi", "miso soup"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Edmonton"
+New Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+Old Soft Constraints:
+None
+User’s Current Input: "Is it expensive?"
+New Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+New Soft Constraints:
+- price range: "affordable"
+
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Do they have patio?""
+2023-07-17 15:32:02,487 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "italian"
+New Soft Constraints:
+- others: "patio""
+2023-07-17 15:32:02,488 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x000001F669699E70>]
+2023-07-17 15:32:02,488 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
+
+Question: Do they have wine?
+Individual Questions: Do they have wine?
+
+Question: What are dishes, cocktails and types of wine do you recommend?
+Individual Questions: What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend?
+
+Question: Does starbucks serve bubble tea or coffee?
+Individual Questions: Does starbucks serve bubble tea?\nDoes starbucks serve coffee?
+
+Question: Are they busy, if so, what days are the busiest and which servers are the best?
+Individual Questions: Are they busy?\nIf they are busy, what days are busiest?\nIf they are busy, which servers are the best?
+
+Question: Do they take reservations or is it first-come, first-served?
+Individual Questions: Do they take reservations?\nAre the reservations first-come, first-served?
+
+Question: Do they have patio?
+Individual Questions:"
+2023-07-17 15:32:03,010 - gpt_wrapper - DEBUG - gpt_output="Do they have a patio?"
+2023-07-17 15:32:03,010 - answer - DEBUG - The question is Do they have a patio?
+2023-07-17 15:32:03,010 - answer - DEBUG - The recommended restaurant is Sicilian Pasta Kitchen - SPK Downtown
+2023-07-17 15:32:03,011 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Sicilian Pasta Kitchen - SPK Downtown.
+
+Please classify it into one of the following categories: 
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, Caters, BikeParking, HasTV, Alcohol, BusinessParking, WiFi, GoodForKids, OutdoorSeating, Ambience, HappyHour, HasReservations, PriceRange, HasTakeOut, Attire, HasDelivery, GoodForGroups, or none
+Only respond with the name of the category. 
+
+Input: What's their addresses?
+Output: address
+
+Input: Can you recommend any dishes or specialties?
+Output: none
+
+Input: Can I make a reservation?
+Output: HasReservations
+
+Input: What are the meals it's known for?
+Output: PopularMeals
+
+Input: Do they have a patio?
+Output:"
+2023-07-17 15:32:03,391 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
+2023-07-17 15:32:03,391 - answer - DEBUG - The category is OutdoorSeating
+2023-07-17 15:32:03,392 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
+2023-07-17 15:32:03,392 - answer - DEBUG - Metadata question!
+2023-07-17 15:32:03,393 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
+
+Question: "Do they have a high chair?"
+Answer: "Subway is kid friendly."
+Response: No.
+
+Question: "Do they serve vodka?"
+Answer: "They have a full bar."
+Response: No.
+
+Question: "Are there gluten free options?"
+Answer: "Yes, there are gluten free options."
+Response: Yes.
+
+Question: "Do they have a patio?"
+Answer: "Sicilian Pasta Kitchen - SPK Downtown does have outdoor seating."
+Response:"
+2023-07-17 15:32:03,692 - gpt_wrapper - DEBUG - gpt_output="Yes."
+2023-07-17 15:32:03,692 - answer - DEBUG - The recommended restaurant is Famoso Neapolitan Pizzeria
+2023-07-17 15:32:03,693 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Famoso Neapolitan Pizzeria.
+
+Please classify it into one of the following categories: 
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, GoodForKids, BusinessParking, OutdoorSeating, HasTV, WiFi, BikeParking, HappyHour, Ambience, Caters, WheelchairAccessible, best meals, DogsAllowed, Alcohol, Corkage, PriceRange, Attire, HasReservations, HasDelivery, GoodForGroups, HasTakeOut, HasTableService, or none
+Only respond with the name of the category. 
+
+Input: What's their addresses?
+Output: address
+
+Input: Can you recommend any dishes or specialties?
+Output: none
+
+Input: Can I make a reservation?
+Output: HasReservations
+
+Input: What are the meals it's known for?
+Output: PopularMeals
+
+Input: Do they have a patio?
+Output:"
+2023-07-17 15:32:04,131 - gpt_wrapper - DEBUG - gpt_output="OutdoorSeating"
+2023-07-17 15:32:04,132 - answer - DEBUG - The category is OutdoorSeating
+2023-07-17 15:32:04,132 - answer - DEBUG - Is the category the LLM classified the user input into valid: True
+2023-07-17 15:32:04,132 - answer - DEBUG - Metadata question!
+2023-07-17 15:32:04,133 - gpt_wrapper - DEBUG - gpt_input="Does the answer to the following question directly address the user's question?
+
+Question: "Do they have a high chair?"
+Answer: "Subway is kid friendly."
+Response: No.
+
+Question: "Do they serve vodka?"
+Answer: "They have a full bar."
+Response: No.
+
+Question: "Are there gluten free options?"
+Answer: "Yes, there are gluten free options."
+Response: Yes.
+
+Question: "Do they have a patio?"
+Answer: "Famoso Neapolitan Pizzeria does have outdoor seating."
+Response:"
+2023-07-17 15:32:04,611 - gpt_wrapper - DEBUG - gpt_output="Yes."
+2023-07-17 15:32:04,611 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "Do they have a patio?" referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+
+Below are the answers to the question for each restaurants.
+{'Sicilian Pasta Kitchen - SPK Downtown: Sicilian Pasta Kitchen - SPK Downtown does have outdoor seating., Famoso Neapolitan Pizzeria: Famoso Neapolitan Pizzeria does have outdoor seating.'}
+
+Format the response to the user."
+2023-07-17 15:32:06,095 - gpt_wrapper - DEBUG - gpt_output="Both Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria have outdoor seating available."
+2023-07-17 15:32:06,096 - dialogue_manager - DEBUG - rec_response="Both Sicilian Pasta Kitchen - SPK Downtown and Famoso Neapolitan Pizzeria have outdoor seating available."
+2023-07-17 15:32:06,096 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000001F6671C0250>, <state.message.Message object at 0x000001F6697E49A0>, <state.message.Message object at 0x000001F6671738B0>, <state.message.Message object at 0x000001F6697E7190>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000001F6697E6E60>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x000001F669653A30>, 'utterance_index': 2}], 'updated_keys': {}, 'hard_constraints': {'location': ['jasper avenue'], 'cuisine type': ['italian']}, 'soft_constraints': {'others': ['patio']}, 'location_type': 'specific', 'current_rec_actions': [<rec_action.answer.Answer object at 0x000001F669699E70>], 'recommended_items': [[<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>]], 'curr_items': [<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>]}
+2023-07-17 15:32:19,386 - dialogue_manager - DEBUG - user_input="What kind of meu do they offer?"
+2023-07-17 15:32:19,386 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+
+For example:
+
+User input: Is there patio
+Response: True
+
+User input: Whats the price range?
+Response: True
+
+User input: Is it nearby? Is it in Toronto?
+Response: True
+
+User input: can you please recommend some menu items 
+Response: True
+
+User input: compare them, list the pros and cons of them
+Response: True
+
+User input: Do they have pizza?
+Response: True
+
+User input: Boulevard, Edmonton
+Response: False
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i would like some vegetarian food.
+Response: False
+
+User input: I am allergic to seafood, i want to find a restaurant.
+Response: False
+
+User input: Can you give me a recommendation?
+Response: False
+
+User input: i want a restaurant in (location)
+Response: False
+
+User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
+Response: False
+
+User input: i want kid's menu
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: What kind of meu do they offer?
+Response: "
+2023-07-17 15:32:19,647 - gpt_wrapper - DEBUG - gpt_output="True"
+2023-07-17 15:32:19,648 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: What kind of meu do they offer?
+Response: "
+2023-07-17 15:32:19,900 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:32:19,901 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+
+For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: What kind of meu do they offer?
+Response: "
+2023-07-17 15:32:20,250 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 15:32:20,251 - dialogue_manager - DEBUG - user_intents=[<user_intent.inquire.Inquire object at 0x000001F669653A30>, <user_intent.provide_preference.ProvidePreference object at 0x000001F6697FE380>]
+2023-07-17 15:32:20,251 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+If you cannot extract a restaurants name respond with "None.".
+
+The user may use short forms or 'slang' when referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
+
+User Input: I don't like thai express, starbucks or subway.
+Response: Thai Express, Starbucks, Subway.
+
+User Input: I like that they have a patio.
+Response: None.
+
+User Input: Does thai express have a balcony?
+Response: Thai Express.
+
+User Input: where is timmy's?
+Response: Tim Hortons.
+
+User Input: What kind of meu do they offer?
+Response:"
+2023-07-17 15:32:20,584 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-17 15:32:20,585 - gpt_wrapper - DEBUG - gpt_input="Extract the restaurants names from the user input and respond only with the names of the restaurants separated by commas and ending with a period.
+If you cannot extract a restaurants name respond with "None.".
+
+The user may use short forms or 'slang' when referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+If this is the case then respond with the entire restaurants name, not the slang or short form the user referred to.
+
+User Input: I don't like thai express, starbucks or subway.
+Response: Thai Express, Starbucks, Subway.
+
+User Input: I like that they have a patio.
+Response: None.
+
+User Input: Does thai express have a balcony?
+Response: Thai Express.
+
+User Input: where is timmy's?
+Response: Tim Hortons.
+
+User Input: What kind of meu do they offer?
+Response:"
+2023-07-17 15:32:20,964 - gpt_wrapper - DEBUG - gpt_output="None."
+2023-07-17 15:32:20,965 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+- location: The desired location of the restaurants.
+- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
+- dish type: The desired menu item or dish in the restaurant that user shows interests.
+- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+- price range: The preferred range of prices for the restaurants specified by the user.
+- wait times: The acceptable wait time for the user when dining at the restaurants.
+- atmosphere: The preferred atmosphere or ambience of the restaurants.
+- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+- others: Any additional constraints or preferred features.
+
+For example:
+
+Old Hard Constraints:
+- location: "toronto"
+Old Soft Constraints:
+None
+User’s Current Input: "pizza and pasta"
+New Hard Constraints:
+- location: "toronto"
+- cuisine type: "italian"
+- dish type: "pizza", "pasta"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+Old Soft Constraints:
+- price range: "moderate"
+- others: "free parking"
+User’s Current Input: "does it have a patio?"
+New Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+New Soft Constraints:
+- price range: "moderate"
+- others: "free parking", "patio"
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+Old Soft Constraints:
+None
+User’s Current Input: "What kind of menu does I Love Sushi offer?"
+New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want sushi and miso soup"
+New Hard Constraints:
+- cuisine type: "japanese"
+- dish type: "sushi", "miso soup"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Edmonton"
+New Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+Old Soft Constraints:
+None
+User’s Current Input: "Is it expensive?"
+New Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+New Soft Constraints:
+- price range: "affordable"
+
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "italian"
+Old Soft Constraints:
+- others: "patio"
+User’s Current Input: "What kind of meu do they offer?""
+2023-07-17 15:32:22,465 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "italian"
+New Soft Constraints:
+- others: "patio""
+2023-07-17 15:32:22,465 - dialogue_manager - DEBUG - rec_actions=[<rec_action.answer.Answer object at 0x000001F669699E70>]
+2023-07-17 15:32:22,466 - gpt_wrapper - DEBUG - gpt_input="You are given a question that must be broken down into distinct individual questions or formatted into one question. Each individual question will be told to a random person and they must be able to understand each individual question and answer it.
+
+Question: Do they have wine?
+Individual Questions: Do they have wine?
+
+Question: What are dishes, cocktails and types of wine do you recommend?
+Individual Questions: What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend?
+
+Question: Does starbucks serve bubble tea or coffee?
+Individual Questions: Does starbucks serve bubble tea?\nDoes starbucks serve coffee?
+
+Question: Are they busy, if so, what days are the busiest and which servers are the best?
+Individual Questions: Are they busy?\nIf they are busy, what days are busiest?\nIf they are busy, which servers are the best?
+
+Question: Do they take reservations or is it first-come, first-served?
+Individual Questions: Do they take reservations?\nAre the reservations first-come, first-served?
+
+Question: What kind of meu do they offer?
+Individual Questions:"
+2023-07-17 15:32:23,260 - gpt_wrapper - DEBUG - gpt_output="What kind of menu do they offer?"
+2023-07-17 15:32:23,260 - answer - DEBUG - The question is What kind of menu do they offer?
+2023-07-17 15:32:23,260 - answer - DEBUG - The recommended restaurant is Sicilian Pasta Kitchen - SPK Downtown
+2023-07-17 15:32:23,261 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Sicilian Pasta Kitchen - SPK Downtown.
+
+Please classify it into one of the following categories: 
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, Caters, BikeParking, HasTV, Alcohol, BusinessParking, WiFi, GoodForKids, OutdoorSeating, Ambience, HappyHour, HasReservations, PriceRange, HasTakeOut, Attire, HasDelivery, GoodForGroups, or none
+Only respond with the name of the category. 
+
+Input: What's their addresses?
+Output: address
+
+Input: Can you recommend any dishes or specialties?
+Output: none
+
+Input: Can I make a reservation?
+Output: HasReservations
+
+Input: What are the meals it's known for?
+Output: PopularMeals
+
+Input: What kind of menu do they offer?
+Output:"
+2023-07-17 15:32:23,560 - gpt_wrapper - DEBUG - gpt_output="none"
+2023-07-17 15:32:23,561 - answer - DEBUG - The category is none
+2023-07-17 15:32:23,561 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
+2023-07-17 15:32:23,561 - answer - DEBUG - Non metadata question!
+2023-07-17 15:32:23,562 - answer - DEBUG - Query: What kind of menu do they offer?
+2023-07-17 15:32:24,005 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Sicilian Pasta Kitchen - SPK Downtown based on provided information.
+
+Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
+
+Question: Do they have a slide in the restaurant?
+Information: ['I really like this place. They have great food.']
+Answer: I do not know.
+
+Question: What kind of menu do they offer?
+Information: ["Awesome!! My wife and I have heard great things about SPK and finally booked in with a group of friends. We started with the ceasar salad, crostini, bruschetta, arrancini (wow). If I never ordered a meal after this I would've been happy enough. I then indulged in the Penne alla diavola which has baby lobster and chicken mmmm. Finished off my experience with Nutella donuts. Who would have though those two would go together so well? \n\nWe had such a good time that I'll now bring my staff in for our quarterly dinner!! The service was excellent and the wine even better. \n\nWe'll be back!", 'Just had a late lunch here with my husband. The restaurant was clean with a relaxed quiet atmosphere. Service was excellent with one waitress to about 6 tables. The menu is full on classic Italian dishes. I went with the crab and scallop with a cream sauce on fettuccine. It was light but filling. The plate was full enough for two for sure. \nWe left to full for dessert but will be back because they have the best tirramiso in Edmonton.', "I've been going to SPK for probably 10 years now and I, overall, really enjoy the food here. The menu has changed over the course of the 10 years but it's still one of my go to places. One of the best options on the SPK menu is probably their half and half, which allows you choose two different pastas on the menu. It's a nice way to get to try two different pastas, especially if you're having a hard time deciding. SPK's tiramisu dessert is also one on the best I've had - it's creamy and rich without being I really heavy and is perfect for sharing. Service is usually really great too and in the summer their patio is the perfect spot to have dinner and drinks."]
+Answer:"
+2023-07-17 15:32:27,397 - gpt_wrapper - DEBUG - gpt_output="The menu at Sicilian Pasta Kitchen - SPK Downtown offers a variety of classic Italian dishes including ceasar salad, crostini, bruschetta, arrancini, Penne alla diavola with baby lobster and chicken, Nutella donuts, crab and scallop with cream sauce on fettuccine, and tiramisu. They also have a half and half option where customers can choose two different pastas from the menu."
+2023-07-17 15:32:27,397 - answer - DEBUG - The recommended restaurant is Famoso Neapolitan Pizzeria
+2023-07-17 15:32:27,397 - gpt_wrapper - DEBUG - gpt_input="Does the following input mention any one of the following categories? They are referring to the restaurants Famoso Neapolitan Pizzeria.
+
+Please classify it into one of the following categories: 
+address, city, state, postal_code, stars, review_count, hours, NoiseLevel, GoodForKids, BusinessParking, OutdoorSeating, HasTV, WiFi, BikeParking, HappyHour, Ambience, Caters, WheelchairAccessible, best meals, DogsAllowed, Alcohol, Corkage, PriceRange, Attire, HasReservations, HasDelivery, GoodForGroups, HasTakeOut, HasTableService, or none
+Only respond with the name of the category. 
+
+Input: What's their addresses?
+Output: address
+
+Input: Can you recommend any dishes or specialties?
+Output: none
+
+Input: Can I make a reservation?
+Output: HasReservations
+
+Input: What are the meals it's known for?
+Output: PopularMeals
+
+Input: What kind of menu do they offer?
+Output:"
+2023-07-17 15:32:27,756 - gpt_wrapper - DEBUG - gpt_output="none"
+2023-07-17 15:32:27,756 - answer - DEBUG - The category is none
+2023-07-17 15:32:27,757 - answer - DEBUG - Is the category the LLM classified the user input into valid: False
+2023-07-17 15:32:27,757 - answer - DEBUG - Non metadata question!
+2023-07-17 15:32:27,758 - answer - DEBUG - Query: What kind of menu do they offer?
+2023-07-17 15:32:28,217 - gpt_wrapper - DEBUG - gpt_input="You are a question answering bot that is asked questions about the restaurants Famoso Neapolitan Pizzeria based on provided information.
+
+Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
+
+Question: Do they have a slide in the restaurant?
+Information: ['I really like this place. They have great food.']
+Answer: I do not know.
+
+Question: What kind of menu do they offer?
+Information: ["Back again last night. Yes, its a fave, and yes I eat out this often!\n\nFood and service was great! The restaurant was BUSY with tons of people waiting for tables. Went with a friend I hadn't seen in a while, and we just wanted to catch up. We were in no way rushed by staff to turn over the table.\n\nI had the usual (Walnut Gorgonzola Salad & Sweet BBQ Chicken Pizza) and my friend tried something new (Napoli Salad & Conforto Pizza). For dessert, I the Blueberry Gelato, and her the Tiramisu. Both of us left happy and full. Prices are right too!!", "Went here for a fast and informal business lunch. Although I still don't quite understand why orders are not taken at the table, the small pizza and Caesar salad combo I had was terrific. Wait staff was attentive with drink refills and such but not inteusive. Just might go back next time I am in town.", 'Famoso is a solid place to meet up with a friend or many friends.  They have wonderful thin crust pizza or pizzettas (think smaller) with a wonderful variety of topping options that fail to meet your tiring regulars.  That being said you can still get your all meat, or hawaiian, they just may be a little more adventuresome that the regular \'order it to the front door\' variety.  \n\nI was there because a colleague won a business card draw from the last time we visited.  7 of us were treated to free appies, meals, desserts and non-alcoholic bevies.  Wonderful service, wonderful food and if you go you MUST MUST MUST try the Nutella Mocha.  Did I mention you MUST MUST MUST try the Nutella Mocha?  \n\nEnjoy this little slice of Italy! (Did you see what I did there? "Slice" and it\'s a pizza place! Yeah I know, I\'m killing these reviews this morning!)']
+Answer:"
+2023-07-17 15:32:29,169 - gpt_wrapper - DEBUG - gpt_output="They offer a variety of thin crust pizzas with a variety of topping options, as well as salads and desserts."
+2023-07-17 15:32:29,169 - gpt_wrapper - DEBUG - gpt_input="A user asked a question "What kind of menu do they offer?" referring to the following restaurants: Sicilian Pasta Kitchen - SPK Downtown, Famoso Neapolitan Pizzeria.
+
+Below are the answers to the question for each restaurants.
+{'Sicilian Pasta Kitchen - SPK Downtown: The menu at Sicilian Pasta Kitchen - SPK Downtown offers a variety of classic Italian dishes including ceasar salad, crostini, bruschetta, arrancini, Penne alla diavola with baby lobster and chicken, Nutella donuts, crab and scallop with cream sauce on fettuccine, and tiramisu. They also have a half and half option where customers can choose two different pastas from the menu., Famoso Neapolitan Pizzeria: They offer a variety of thin crust pizzas with a variety of topping options, as well as salads and desserts.'}
+
+Format the response to the user."
+2023-07-17 15:32:33,926 - gpt_wrapper - DEBUG - gpt_output="The menu at Sicilian Pasta Kitchen - SPK Downtown offers a variety of classic Italian dishes including ceasar salad, crostini, bruschetta, arrancini, Penne alla diavola with baby lobster and chicken, Nutella donuts, crab and scallop with cream sauce on fettuccine, and tiramisu. They also have a half and half option where customers can choose two different pastas from the menu.
+
+Famoso Neapolitan Pizzeria offers a variety of thin crust pizzas with a variety of topping options, as well as salads and desserts."
+2023-07-17 15:32:33,927 - dialogue_manager - DEBUG - rec_response="The menu at Sicilian Pasta Kitchen - SPK Downtown offers a variety of classic Italian dishes including ceasar salad, crostini, bruschetta, arrancini, Penne alla diavola with baby lobster and chicken, Nutella donuts, crab and scallop with cream sauce on fettuccine, and tiramisu. They also have a half and half option where customers can choose two different pastas from the menu.
+
+Famoso Neapolitan Pizzeria offers a variety of thin crust pizzas with a variety of topping options, as well as salads and desserts."
+2023-07-17 15:32:33,927 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000001F6671C0250>, <state.message.Message object at 0x000001F6697E49A0>, <state.message.Message object at 0x000001F6671738B0>, <state.message.Message object at 0x000001F6697E7190>, <state.message.Message object at 0x000001F6697E6980>, <state.message.Message object at 0x000001F6697E70D0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000001F6697E6E60>, 'utterance_index': 0}, {'user_intent': <user_intent.inquire.Inquire object at 0x000001F669653A30>, 'utterance_index': 4}], 'updated_keys': {}, 'hard_constraints': {'location': ['jasper avenue'], 'cuisine type': ['italian']}, 'soft_constraints': {'others': ['patio']}, 'location_type': 'specific', 'current_rec_actions': [<rec_action.answer.Answer object at 0x000001F669699E70>], 'recommended_items': [[<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>]], 'curr_items': [<information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E63B0>, <information_retrievers.item.recommended_item.RecommendedItem object at 0x000001F6697E65F0>], 'satisfied_goals': [{'user_intent': <user_intent.inquire.Inquire object at 0x000001F669653A30>, 'utterance_index': 2}]}

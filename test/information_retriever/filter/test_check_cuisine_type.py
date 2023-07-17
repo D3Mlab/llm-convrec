@@ -1,4 +1,4 @@
-from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
+from information_retrievers.filter.filter import CheckCuisineDishType
 import pytest
 
 check_cuisine_type = CheckCuisineDishType()
