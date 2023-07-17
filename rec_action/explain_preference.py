@@ -27,13 +27,12 @@ class ExplainPreference(RecAction):
         """
         return "Recommender explains recommendations based on the user's said preference"
 
-    def get_prompt(self, state_manager: StateManager) -> str | None:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         return f"Give me an explanation of why you made this recommendation based on this state, but do not " \
             f"mention the state {str(state_manager)}"

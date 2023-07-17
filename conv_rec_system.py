@@ -42,6 +42,8 @@ from information_retrievers.search_engine.vector_database_search_engine import V
 from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
+from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
+from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 
 
 class ConvRecSystem(WarningObserver):
@@ -55,7 +57,6 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-
     def __init__(self, config: dict, user_defined_constraint_mergers: list,
                  user_constraint_status_objects: list,
                  openai_api_key_or_gradio_url: str,
@@ -63,9 +64,6 @@ class ConvRecSystem(WarningObserver):
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
-        
-        model = config["MODEL"]
-
 
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
 
@@ -74,6 +72,8 @@ class ConvRecSystem(WarningObserver):
         self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
 
+        model = config["MODEL"]
+
         if not isinstance(openai_api_key_or_gradio_url, str):
             raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
 
@@ -81,7 +81,7 @@ class ConvRecSystem(WarningObserver):
             llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
-        
+
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
@@ -179,10 +179,12 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain),
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
+        
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_item, information_retrieval, domain, user_constraint_status_objects,
-                                 config, constraints_categories),
+                       Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
                        RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
                        PostAcceptanceAction()]
         
@@ -196,11 +198,11 @@ class ConvRecSystem(WarningObserver):
             self.user_interface = GradioInterface()
         else:
             self.user_interface = Terminal()
+
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
-
 
     def run(self) -> None:
         """

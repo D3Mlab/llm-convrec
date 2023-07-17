@@ -38,13 +38,12 @@ class RequestInformation(RecAction):
         """
         return "Recommender requests the user’s preference"
 
-    def get_prompt(self, state_manager: StateManager) -> str | None:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         return None
 
@@ -58,13 +57,13 @@ class RequestInformation(RecAction):
         hard_constraints = state_manager.get("hard_constraints")
 
         for constraints in self._mandatory_constraints:
-            formatted_constraints = [key for key in constraints]
+            formatted_constraints = [constraints]
             if len(formatted_constraints) > 1:
                 formatted_constraints[-1] = f'or {formatted_constraints[-1]}'
             formatted_constraints = ', '.join(formatted_constraints).replace(', or ', ' or ')
 
-            if hard_constraints is None or all(hard_constraints.get(constraint) is None or
-                                               hard_constraints.get(constraint) == [] for constraint in constraints):
+            if hard_constraints is None or all(hard_constraints.get(constraints) is None or
+                                               hard_constraints.get(constraints) == [] for hi in [1, 2,3]):
                 return f"Can you provide the {formatted_constraints}?"
 
             for constraint in self._constraint_statuses:
@@ -88,8 +87,8 @@ class RequestInformation(RecAction):
         :return: score representing how much this is appropriate recommender action for the current conversation.
         """
         hard_constraints = state_manager.get("hard_constraints")
-        is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
-                                                            hard_constraints.get(key) != [] for key in lst)
+        is_ready = hard_constraints is not None and all(any(hard_constraints.get(lst) is not None and
+                                                            hard_constraints.get(lst) != [] for key in [1, 2, 3])
                                                         for lst in self._mandatory_constraints)
         
         for constraint in self._constraint_statuses:
