@@ -15,12 +15,14 @@ class PDSearchEngine(SearchEngine):
 
     _embedder: BERT_model
     _items_id: np.ndarray
+    _item_review_count: torch.Tensor
     _items_reviews_embedding: pd.DataFrame
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
-        super().__init__(embedder)
+        self._embedder = embedder
         domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._item_review_count = domain_specific_config_loader.load_item_review_count()
         self._items_id, self._items_reviews_embedding, self._reviews_embedding_matrix\
             = domain_specific_config_loader.load_data_for_pd_search_engine()
 
@@ -88,7 +90,7 @@ class PDSearchEngine(SearchEngine):
         :return: A list of business id of the most similar items. Beginning from the most
             similar to the least.
         """
-        unique_values = df["Item_ID"].unique()
+        unique_values = df["item_id"].unique()
         list_of_item_id = []
         most_similar_item_index = most_similar_item_index.tolist()
         for i in most_similar_item_index:
@@ -118,7 +120,7 @@ class PDSearchEngine(SearchEngine):
             for j in most_similar_review_list:
                 # if not -1, which was padded to make sure the size each row matches with each other
                 if j != -1:
-                    review_list_item.append(items_reviews_embedding["Review"][j])
+                    review_list_item.append(items_reviews_embedding["review"][j])
 
             review_list.append(review_list_item)
         return review_list

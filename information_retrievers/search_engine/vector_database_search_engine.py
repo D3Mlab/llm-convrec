@@ -15,11 +15,13 @@ class VectorDatabaseSearchEngine(SearchEngine):
 
     _embedder: BERT_model
     _database: VectorDataBase
+    _item_review_count: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
-        super().__init__(embedder)
+        self._embedder = embedder
         domain_specific_config_loader = DomainSpecificConfigLoader()
         self._database = domain_specific_config_loader.load_vector_database()
+        self._item_review_count = domain_specific_config_loader.load_item_review_count()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:

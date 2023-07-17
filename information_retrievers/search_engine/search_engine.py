@@ -11,6 +11,9 @@ class SearchEngine:
     :param embedder: BERT_model to embed query
     """
 
+    _embedder: BERT_model
+    _item_review_count: torch.Tensor
+
     def __init__(self, embedder: BERT_model):
         self._embedder = embedder
         domain_specific_config_loader = DomainSpecificConfigLoader()

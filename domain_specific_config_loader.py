@@ -231,7 +231,8 @@ class DomainSpecificConfigLoader:
 
             elif row['type_of_filter'].strip() == "location":
                 checkers_list.append(LocationChecker(
-                    row['key_in_state'], row['metadata_field'].split(","), row['default_max_distance_in_km'],
+                    row['key_in_state'], [field.strip() for field in row['metadata_field'].split(",")],
+                    row['default_max_distance_in_km'],
                     row['distance_type'], GoogleV3Wrapper()))
 
             elif row['type_of_filter'].strip() == "value range":
@@ -260,7 +261,7 @@ class DomainSpecificConfigLoader:
         path_to_item_review_embeddings = f'{path_to_domain}/{item_review_embeddings_filename}'
         reviews_embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
         path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
-        return np.load(path_to_items_id), pd.read_csv(path_to_item_review_embeddings), \
+        return np.load(path_to_items_id, allow_pickle=True), pd.read_csv(path_to_item_review_embeddings), \
             torch.load(path_to_reviews_embedding_matrix)
 
     def load_vector_database(self) -> VectorDataBase:

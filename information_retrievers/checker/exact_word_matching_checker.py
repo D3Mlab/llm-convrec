@@ -36,7 +36,7 @@ class ExactWordMatchingChecker(Checker):
         for constraint_key in self._constraint_keys:
             constraint_value = state_manager.get('hard_constraints').get(constraint_key)
             if constraint_value is not None:
-                constraint_values.append(constraint_value)
+                constraint_values.extend(constraint_value)
 
         item_metadata_field_values = item_metadata[self._metadata_field]
 
