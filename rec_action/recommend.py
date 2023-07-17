@@ -5,7 +5,7 @@ from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
 from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.filter.filter import Filter
+from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
 from state.message import Message
 from intelligence.llm_wrapper import LLMWrapper
@@ -33,7 +33,7 @@ class Recommend(RecAction):
     _topk_restautants: int
     _topk_reviews: int
     _current_recommended_restaurants: list[RecommendedItem]
-    _filter_items: Filter
+    _filter_items: FilterApplier
     _env: Environment
     _convert_state_to_query_prompt: jinja2.Template
     _explain_recommendation_prompt: jinja2.Template
@@ -42,7 +42,7 @@ class Recommend(RecAction):
     _summarize_review_prompt: jinja2.Template
     _observers: list[WarningObserver]
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_items: Filter,
+    def __init__(self, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str,
                  observers=None, mandatory_constraints: str = None,
                  priority_score_range=(1, 10), specific_location_required: bool = True):

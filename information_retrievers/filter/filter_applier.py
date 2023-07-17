@@ -5,7 +5,7 @@ from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 
 
-class Filter:
+class FilterApplier:
     """
     Responsible to return item ids that must be kept.
 

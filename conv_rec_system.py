@@ -40,7 +40,7 @@ from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
 from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
 from information_retrievers.metadata_wrapper import MetadataWrapper
-from information_retrievers.filter.filter import Filter
+from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
 
 
@@ -129,7 +129,7 @@ class ConvRecSystem(WarningObserver):
 
         checkers = domain_specific_config_loader.load_checkers()
         metadata_wrapper = MetadataWrapper()
-        filter_item = Filter(metadata_wrapper, checkers)
+        filter_item = FilterApplier(metadata_wrapper, checkers)
         BERT_name = config["BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]

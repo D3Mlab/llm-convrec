@@ -6,7 +6,7 @@ from state.message import Message
 from decimal import Decimal
 from string import ascii_letters
 from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.filter.filter import Filter
+from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
@@ -27,13 +27,13 @@ class Answer(RecAction):
     """
 
     _num_of_reviews_to_return: int
-    _filter_restaurants: Filter
+    _filter_restaurants: FilterApplier
     _information_retriever: InformationRetrieval
     _llm_wrapper: LLMWrapper
     _prompt: str
     _observers: list[WarningObserver]
 
-    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: Filter,
+    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str,
                  observers=None,
                  priority_score_range: tuple[float, float] = (1, 10)) -> None:
