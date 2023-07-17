@@ -92,6 +92,7 @@ class AcceptRecommendation(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input)
-
+        prompt = self.template.render(user_input=user_input, few_shots=self._few_shots,domain=self._domain)
         return prompt
+
+        

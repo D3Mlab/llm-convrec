@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager

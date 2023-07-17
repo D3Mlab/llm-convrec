@@ -1,0 +1,45 @@
+/* Modified based on https://github.com/project-baize/baize-chatbot/blob/main/demo/assets/custom.css */
+
+
+:root{
+    --font-size: 15px;
+    --padding: 8px;
+    --line-height: 1.8;
+    --msg-max-width: 85%;
+    --msg-border-width: 2px;
+}
+
+
+#llm_conv_rec {
+    background-color: #f5f5f5 !important;
+}
+[data-testid = "bot"] {
+    background-color: #FFFFFF !important;
+}
+[data-testid = "user"] {
+    background-color: #f7d790 !important;
+}
+
+
+[class *= "message"] {
+    border-radius: 10px !important;
+    font-size: var(--font-size) !important;
+    padding: var(--padding) !important;
+    line-height: var(--line-height);
+    min-height: calc(var(--font-size)*var(--line-height) + 2*var(--padding));
+    min-width: calc(var(--font-size)*var(--line-height) + 2*var(--padding));
+}
+[data-testid = "bot"] {
+    width: auto !important;
+    max-width: var(--msg-max-width);
+    border-color: #d3d3d3 !important;
+    border-width: var(--msg-border-width) !important;
+    border-bottom-left-radius: 0 !important;
+}
+[data-testid = "user"] {
+    width: auto !important;
+    max-width: var(--msg-max-width);
+    border-color: #f7c758 !important;
+    border-width: var(--msg-border-width) !important;
+    border-bottom-right-radius: 0 !important;
+}
