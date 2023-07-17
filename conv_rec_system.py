@@ -144,7 +144,7 @@ class ConvRecSystem(WarningObserver):
         # Initialize Filters
         metadata_wrapper = MetadataWrapper()
         filter_item = FilterApplier(metadata_wrapper)
-        BERT_name = config["BERT_MODEL_NAME"]
+        BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
@@ -153,9 +153,6 @@ class ConvRecSystem(WarningObserver):
         else:
             search_engine = VectorDatabaseSearchEngine(embedder)
         information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
-
-        default_location = config.get('DEFAULT_LOCATION') if config.get(
-            'DEFAULT_LOCATION') != 'None' else None
         
         # Initialize User Intent
         inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
@@ -182,9 +179,9 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
+        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, user_constraint_status_objects,
+                       Recommend(llm_wrapper, filter_item, information_retrieval, domain, user_constraint_status_objects,
                                  config, constraints_categories),
                        RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
                        PostAcceptanceAction()]

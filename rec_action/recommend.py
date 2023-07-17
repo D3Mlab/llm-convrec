@@ -62,11 +62,11 @@ class Recommend(RecAction):
         self._constraint_statuses = constraint_statuses
 
 
-        if config["TOPK_RESTAURANTS"] and config["TOPK_REVIEWS"] and config["RECOMMEND_PROMPTS_PATH"] \
+        if config["TOPK_ITEMS"] and config["TOPK_REVIEWS"] and config["RECOMMEND_PROMPTS_PATH"] \
                 and config["CONVERT_STATE_TO_QUERY_PROMPT_FILENAME"] \
                 and config["EXPLAIN_RECOMMENDATION_PROMPT_FILENAME"] and config["FORMAT_RECOMMENDATION_PROMPT_FILENAME"]\
-                and config["NO_MATCHING_RESTAURANT_PROMPT_FILENAME"] and config["SUMMARIZE_REVIEW_PROMPT_FILENAME"]:
-            self._topk_restautants = int(config["TOPK_RESTAURANTS"])
+                and config["NO_MATCHING_ITEM_PROMPT_FILENAME"] and config["SUMMARIZE_REVIEW_PROMPT_FILENAME"]:
+            self._topk_restautants = int(config["TOPK_ITEMS"])
             self._topk_reviews = int(config["TOPK_REVIEWS"])
             
             self._env = Environment(loader=FileSystemLoader(
@@ -78,7 +78,7 @@ class Recommend(RecAction):
             self._format_recommendation_prompt = self._env.get_template(
                 config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
             self._no_matching_restaurant_prompt = self._env.get_template(
-                config['NO_MATCHING_RESTAURANT_PROMPT_FILENAME'])
+                config['NO_MATCHING_ITEM_PROMPT_FILENAME'])
             self._summarize_review_prompt = self._env.get_template(
                 config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
 
