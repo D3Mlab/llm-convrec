@@ -268,8 +268,8 @@ class DomainSpecificConfigLoader:
         path_to_domain = self._get_path_to_domain()
         database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
         path_to_database = f'{path_to_domain}/{database_filename}'
-        item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
-        path_to_items_id = f'{path_to_domain}/{item_id_filename}'
+        review_id_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_ID']
+        path_to_items_id = f'{path_to_domain}/{review_id_filename}'
         item_reviews_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
         return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)

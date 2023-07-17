@@ -31,7 +31,7 @@ class MetadataWrapper:
         :param index: index to the item in the metadata
         :return: item metadata
         """
-        return self._items_metadata.iloc[index]
+        return self._items_metadata.loc[index]
 
     def get_num_item(self) -> int:
         """
