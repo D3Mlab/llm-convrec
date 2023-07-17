@@ -1,8 +1,10 @@
 import numpy as np
 from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.checker.checker import Checker
+from information_retrievers.filter.location_filter import LocationFilter
 from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class FilterApplier:
@@ -10,15 +12,16 @@ class FilterApplier:
     Responsible to return item ids that must be kept.
 
     :param metadata_wrapper: metadata wrapper
-    :param checkers: check whether the item match constraints
     """
 
     _metadata_wrapper: MetadataWrapper
     _checkers: list[Checker]
+    _location_filter: LocationFilter | None
 
-    def __init__(self, metadata_wrapper: MetadataWrapper, checkers: list[Checker]) -> None:
+    def __init__(self, metadata_wrapper: MetadataWrapper) -> None:
         self._metadata_wrapper = metadata_wrapper
-        self._checkers = checkers
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._checkers, self._location_filter = domain_specific_config_loader.load_filters()
 
     def filter_by_checkers(self, state_manager: StateManager) -> np.ndarray:
         """
@@ -35,7 +38,10 @@ class FilterApplier:
             if self._should_keep_item(state_manager, item_metadata_dict):
                 item_id_to_keep.append(item_metadata_dict['item_id'])
 
-        return np.array(item_id_to_keep)
+        if self._location_filter is None:
+            return np.array(item_id_to_keep)
+        else:
+            return np.array(self._location_filter.filter(state_manager, self._metadata_wrapper, item_id_to_keep))
 
     @staticmethod
     def filter_by_current_item(current_items: list[RecommendedItem]) -> np.ndarray:
