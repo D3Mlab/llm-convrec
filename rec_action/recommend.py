@@ -61,16 +61,6 @@ class Recommend(RecAction):
         :param state_manager: current state representing the conversation
         :return: prompt recommender's response corresponding to this action
         """
-        return {"prompt": self.get_prompt(state_manager)}
-
-    def get_prompt(self, state_manager: StateManager) -> str | None:
-        """
-        Return prompt that can be inputted to LLM to produce recommender's response.
-        Return None if it doesn't exist.
-
-        :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist.
-        """
         return self._prompt_based_resp.get_response(state_manager)
 
     def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
