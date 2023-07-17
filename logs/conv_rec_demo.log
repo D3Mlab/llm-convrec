@@ -1,0 +1,448 @@
+2023-07-17 17:41:09,172 - dialogue_manager - DEBUG - user_input="hi"
+2023-07-17 17:41:09,173 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+
+For example:
+
+User input: Is there patio
+Response: True
+
+User input: Whats the price range?
+Response: True
+
+User input: Is it nearby? Is it in Toronto?
+Response: True
+
+User input: can you please recommend some menu items 
+Response: True
+
+User input: compare them, list the pros and cons of them
+Response: True
+
+User input: Do they have pizza?
+Response: True
+
+User input: Boulevard, Edmonton
+Response: False
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i would like some vegetarian food.
+Response: False
+
+User input: I am allergic to seafood, i want to find a restaurant.
+Response: False
+
+User input: Can you give me a recommendation?
+Response: False
+
+User input: i want a restaurant in (location)
+Response: False
+
+User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
+Response: False
+
+User input: i want kid's menu
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: hi
+Response: "
+2023-07-17 17:41:10,529 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:10,530 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: hi
+Response: "
+2023-07-17 17:41:11,594 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:11,594 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+
+For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: hi
+Response: "
+2023-07-17 17:41:12,466 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:12,467 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x000002B749ECAE50>]
+2023-07-17 17:41:12,468 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+- location: The desired location of the restaurants.
+- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
+- dish type: The desired menu item or dish in the restaurant that user shows interests.
+- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+- price range: The preferred range of prices for the restaurants specified by the user.
+- wait times: The acceptable wait time for the user when dining at the restaurants.
+- atmosphere: The preferred atmosphere or ambience of the restaurants.
+- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+- others: Any additional constraints or preferred features.
+
+For example:
+
+Old Hard Constraints:
+- location: "toronto"
+Old Soft Constraints:
+None
+User’s Current Input: "pizza and pasta"
+New Hard Constraints:
+- location: "toronto"
+- cuisine type: "italian"
+- dish type: "pizza", "pasta"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+Old Soft Constraints:
+- price range: "moderate"
+- others: "free parking"
+User’s Current Input: "does it have a patio?"
+New Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+New Soft Constraints:
+- price range: "moderate"
+- others: "free parking", "patio"
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+Old Soft Constraints:
+None
+User’s Current Input: "What kind of menu does I Love Sushi offer?"
+New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want sushi and miso soup"
+New Hard Constraints:
+- cuisine type: "japanese"
+- dish type: "sushi", "miso soup"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Edmonton"
+New Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+Old Soft Constraints:
+None
+User’s Current Input: "Is it expensive?"
+New Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+New Soft Constraints:
+- price range: "affordable"
+
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "hi""
+2023-07-17 17:41:13,660 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+None
+New Soft Constraints:
+None"
+2023-07-17 17:41:13,660 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x000002B763C79E10>]
+2023-07-17 17:41:13,660 - dialogue_manager - DEBUG - rec_response="SSSSSSSSCould you provide the location?"
+2023-07-17 17:41:13,661 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000002B767546950>, <state.message.Message object at 0x000002B7676D74D0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000002B763456B10>, 'utterance_index': 0}], 'updated_keys': {}, 'hard_constraints': None, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x000002B763C79E10>]}
+2023-07-17 17:41:19,726 - dialogue_manager - DEBUG - user_input="jasper avenue"
+2023-07-17 17:41:19,726 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+
+For example:
+
+User input: Is there patio
+Response: True
+
+User input: Whats the price range?
+Response: True
+
+User input: Is it nearby? Is it in Toronto?
+Response: True
+
+User input: can you please recommend some menu items 
+Response: True
+
+User input: compare them, list the pros and cons of them
+Response: True
+
+User input: Do they have pizza?
+Response: True
+
+User input: Boulevard, Edmonton
+Response: False
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i would like some vegetarian food.
+Response: False
+
+User input: I am allergic to seafood, i want to find a restaurant.
+Response: False
+
+User input: Can you give me a recommendation?
+Response: False
+
+User input: i want a restaurant in (location)
+Response: False
+
+User input: i want restaurants with delicious pizza in jasper avenue that has great patio.
+Response: False
+
+User input: i want kid's menu
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: jasper avenue
+Response: "
+2023-07-17 17:41:20,569 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:20,570 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+
+For example:
+
+User input: Sure, I will go there then
+Response: True
+
+User input: That place sounds good, do i need reservation?
+Response: True
+
+User input: I will try (Restaurant name). It sounds good!
+Response: True
+
+User input: Thanks
+Response: True
+
+User input: (Restaurant name) sounds good, what dishes do they have?
+Response: True
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: No, give me another recommendation
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: jasper avenue
+Response: "
+2023-07-17 17:41:21,396 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:21,397 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+
+For example:
+
+User input: I dont like (restaurant name)
+Response: True
+
+User input: I have been to (restaurant name) so I won't go there
+Response: True
+
+User input: Can you tell me somewhere to eat?
+Response: False
+
+User input: i like vegetarian food.
+Response: False
+
+User input: Whats the price range?
+Response: False
+
+User input: I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes
+Response: False
+
+User input: Sure, I will go there then.
+Response: False
+
+User input: That place sounds good!
+Response: False
+
+
+Now, provide a response to the actual user input:
+User input: jasper avenue
+Response: "
+2023-07-17 17:41:21,810 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-17 17:41:21,810 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x000002B749ECAE50>]
+2023-07-17 17:41:21,811 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+
+Here are the descriptions of each constraint categories that you have to extract:
+- location: The desired location of the restaurants.
+- cuisine type: The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza").
+- dish type: The desired menu item or dish in the restaurant that user shows interests.
+- type of meal: The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner").
+- price range: The preferred range of prices for the restaurants specified by the user.
+- wait times: The acceptable wait time for the user when dining at the restaurants.
+- atmosphere: The preferred atmosphere or ambience of the restaurants.
+- dietary restrictions: Any specific dietary limitations or restrictions the user may have.
+- others: Any additional constraints or preferred features.
+
+For example:
+
+Old Hard Constraints:
+- location: "toronto"
+Old Soft Constraints:
+None
+User’s Current Input: "pizza and pasta"
+New Hard Constraints:
+- location: "toronto"
+- cuisine type: "italian"
+- dish type: "pizza", "pasta"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+Old Soft Constraints:
+- price range: "moderate"
+- others: "free parking"
+User’s Current Input: "does it have a patio?"
+New Hard Constraints:
+- location: "jasper avenue, edmonton"
+- cuisine type: "japanese"
+New Soft Constraints:
+- price range: "moderate"
+- others: "free parking", "patio"
+
+Old Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+Old Soft Constraints:
+None
+User’s Current Input: "What kind of menu does I Love Sushi offer?"
+New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "japanese"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "I want sushi and miso soup"
+New Hard Constraints:
+- cuisine type: "japanese"
+- dish type: "sushi", "miso soup"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+Old Soft Constraints:
+None
+User’s Current Input: "Edmonton"
+New Hard Constraints:
+- location: "edmonton"
+- cuisine type: "italian"
+New Soft Constraints:
+None
+
+Old Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+Old Soft Constraints:
+None
+User’s Current Input: "Is it expensive?"
+New Hard Constraints:
+- location: "spadina"
+- cuisine type: "european"
+New Soft Constraints:
+- price range: "affordable"
+
+Now use the following input to solve the task:
+
+Old Hard Constraints:
+None
+Old Soft Constraints:
+None
+User’s Current Input: "jasper avenue""
+2023-07-17 17:41:23,706 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- location: "jasper avenue"
+New Soft Constraints:
+None"
+2023-07-17 17:41:23,988 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x000002B763C79E10>]
+2023-07-17 17:41:23,988 - dialogue_manager - DEBUG - rec_response="SSSSSSSSSCould you provide the cuisine type or dish?"
+2023-07-17 17:41:23,988 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000002B767546950>, <state.message.Message object at 0x000002B7676D74D0>, <state.message.Message object at 0x000002B7668F7F50>, <state.message.Message object at 0x000002B749F2F450>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000002B763456B10>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'location': True}}, 'hard_constraints': {'location': ['jasper avenue']}, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x000002B763C79E10>]}
