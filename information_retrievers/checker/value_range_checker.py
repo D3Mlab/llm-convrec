@@ -33,7 +33,7 @@ class ValueRangeChecker(Checker):
         if constraint_values is None:
             return True
 
-        item_metadata_field_values = item_metadata[self._metadata_field].split(",")
+        item_metadata_field_values = item_metadata[self._metadata_field]
 
         for value_range in constraint_values:
             value_range_list = value_range.replace("$", "").replace(" ", "").split("-")

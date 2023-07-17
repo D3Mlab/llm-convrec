@@ -12,7 +12,7 @@ class MetadataWrapper:
     def __init__(self) -> None:
         domain_specific_config_loader = DomainSpecificConfigLoader()
         path_to_items_metadata = domain_specific_config_loader.get_path_to_item_metadata()
-        self._items_metadata = pd.read_json(path_to_items_metadata)
+        self._items_metadata = pd.read_json(path_to_items_metadata, orient='records', lines=True)
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
         """

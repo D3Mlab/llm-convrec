@@ -37,7 +37,7 @@ class WordInChecker(Checker):
             if constraint_value is not None:
                 constraint_values.append(constraint_value)
 
-        item_metadata_field_values = item_metadata[self._metadata_field].split(",")
+        item_metadata_field_values = item_metadata[self._metadata_field]
 
         if constraint_values is None:
             return True
