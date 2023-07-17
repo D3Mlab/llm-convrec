@@ -45,6 +45,9 @@ from user_intent.reject_recommendation import RejectRecommendation
 from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from domain_specific_config_loader import DomainSpecificConfigLoader
+from rec_action.type_response.recommend_hard_coded_based_resp import ReccomendHardCodedBasedResponse
+from rec_action.type_response.recommend_prompt_based_resp import ReccomendPromptBasedResponse
+
 
 
 class ConvRecSystem(GPTWrapperObserver):
@@ -169,10 +172,13 @@ class ConvRecSystem(GPTWrapperObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
+        
+        recc_hard_code_resp = ReccomendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
+        recc_prompt_resp = ReccomendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
+        
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, user_constraint_status_objects,
-                                 config, constraints_categories),
+                       Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
                        RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
                        PostAcceptanceAction()]
         
