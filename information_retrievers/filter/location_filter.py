@@ -1,11 +1,10 @@
-from information_retrievers.filter.checker.checker import Checker
 from state.state_manager import StateManager
 from geopy.distance import geodesic
 from geopy.distance import great_circle
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+from typing import Any
 
-
-class LocationChecker(Checker):
+class LocationFilter:
     """
     Responsible to check whether the item match the constraint by checking
     whether the item is within max_distance from the location ( or one of the location)
@@ -33,29 +32,35 @@ class LocationChecker(Checker):
         self._distance_type = distance_type
         self._geocoder_wrapper = geocoder_wrapper
 
-    def check(self, state_manager: StateManager, item_metadata: dict) -> bool:
+    def filter(self, state_manager: StateManager,
+               metadata_wrapper: Any, item_ids: list) -> list[str]:
         """
         Return true if the item is close enough to the location, false otherwise.
         If the value for the constraint key of interest is empty or none of the location is valid,
         it will return true.
 
         :param state_manager: current state
-        :param item_metadata: item's metadata
+        :param metadata_wrapper: holds metadata
+        :param item_ids: item ids remained after all other filters by checkers
         :return: true if the item is close enough to the location, false otherwise
         """
         location_names = state_manager.get('hard_constraints').get(self._constraint_key)
         if not location_names:
-            return True
+            return item_ids
 
         lat_lon_of_locations, max_distances_in_km = self._get_lat_lon_and_max_distance(location_names)
         if not lat_lon_of_locations or not max_distances_in_km:
-            return True
+            return item_ids
 
-        lat_lon_of_item = (float(item_metadata[self._metadata_field[0]]),
-                           float(item_metadata[self._metadata_field[1]]))
+        item_id_to_keep = []
+        for item_id in item_ids:
+            item_metadata_dict = metadata_wrapper.get_item_dict_from_id(item_id)
+            lat_lon_of_item = (item_metadata_dict[self._metadata_field[0]], item_metadata_dict[self._metadata_field[1]])
 
-        return self._is_item_close_enough_to_loc(
-            lat_lon_of_locations, lat_lon_of_item, max_distances_in_km)
+            if self._is_item_close_enough_to_loc(lat_lon_of_locations, lat_lon_of_item, max_distances_in_km):
+                item_id_to_keep.append(item_id)
+
+        return item_id_to_keep
 
     def _get_lat_lon_and_max_distance(self, location_names: list[str]) -> tuple[list, list]:
         """

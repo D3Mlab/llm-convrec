@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Any
 from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
@@ -14,7 +15,7 @@ class MetadataWrapper:
         path_to_items_metadata = domain_specific_config_loader.get_path_to_item_metadata()
         self._items_metadata = pd.read_json(path_to_items_metadata, orient='records', lines=True)
 
-    def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
+    def get_item_dict_from_id(self, item_id: str) -> dict[str, Any]:
         """
         Return item metadata as a dictionary from item id.
 
@@ -24,7 +25,7 @@ class MetadataWrapper:
         item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
         return item_metadata
 
-    def get_item_dict_from_index(self, index: int) -> dict[str, str]:
+    def get_item_dict_from_index(self, index: int) -> dict[str, Any]:
         """
         Return item metadata as a dictionary from index.
 

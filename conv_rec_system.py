@@ -127,9 +127,8 @@ class ConvRecSystem(WarningObserver):
         rejected_restaurants_extractor = RejectedItemsExtractor(
             llm_wrapper, domain)
 
-        checkers = domain_specific_config_loader.load_checkers()
         metadata_wrapper = MetadataWrapper()
-        filter_item = FilterApplier(metadata_wrapper, checkers)
+        filter_item = FilterApplier(metadata_wrapper)
         BERT_name = config["BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]

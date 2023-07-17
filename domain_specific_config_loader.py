@@ -4,9 +4,9 @@ import yaml
 from information_retrievers.filter.checker.checker import Checker
 from information_retrievers.filter.checker.exact_word_matching_checker import ExactWordMatchingChecker
 from information_retrievers.filter.checker.item_checker import ItemChecker
-from information_retrievers.filter.checker.location_checker import LocationChecker
 from information_retrievers.filter.checker.value_range_checker import ValueRangeChecker
 from information_retrievers.filter.checker.word_in_checker import WordInChecker
+from information_retrievers.filter.location_filter import LocationFilter
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 import torch
 import numpy as np
@@ -215,11 +215,13 @@ class DomainSpecificConfigLoader:
         ]
         return reject_classification_fewshots
 
-    def load_checkers(self) -> list[Checker]:
+    def load_filters(self) -> tuple[list[Checker], LocationFilter | None]:
         filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         filter_config_df = pd.read_csv(path_to_csv, encoding='latin1')
         checkers_list = []
+        location_filter = None
+
         for row in filter_config_df.to_dict("records"):
             if row['type_of_filter'].strip() == "exact word matching":
                 checkers_list.append(ExactWordMatchingChecker(
@@ -230,10 +232,10 @@ class DomainSpecificConfigLoader:
                     row['key_in_state'], row['metadata_field']))
 
             elif row['type_of_filter'].strip() == "location":
-                checkers_list.append(LocationChecker(
+                location_filter = LocationFilter(
                     row['key_in_state'], [field.strip() for field in row['metadata_field'].split(",")],
                     row['default_max_distance_in_km'],
-                    row['distance_type'], GoogleV3Wrapper()))
+                    row['distance_type'], GoogleV3Wrapper())
 
             elif row['type_of_filter'].strip() == "value range":
                 checkers_list.append(ValueRangeChecker(row['key_in_state'], row['metadata_field']))
@@ -242,7 +244,7 @@ class DomainSpecificConfigLoader:
                 checkers_list.append(WordInChecker(
                     row['key_in_state'].split(","), row['metadata_field']))
 
-        return checkers_list
+        return checkers_list, location_filter
 
     def get_path_to_item_metadata(self) -> str:
         filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
