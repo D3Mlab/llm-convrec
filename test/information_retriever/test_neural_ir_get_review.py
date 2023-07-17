@@ -9,8 +9,8 @@ from information_retrievers.embedder.statics import *
 from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.neural_information_retriever import NeuralInformationRetriever
 from intelligence.llm_wrapper import LLMWrapper
-from information_retrievers.item.item import Item
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.item import Item
+from information_retrievers.recommended_item import RecommendedItem
 from user_intent.inquire import Inquire
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant

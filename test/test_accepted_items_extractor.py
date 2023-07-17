@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
 
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item import Item
 from intelligence.gpt_wrapper import GPTWrapper
 from state.message import Message
 from user_intent.extractors.accepted_items_extractor import AcceptedItemsExtractor

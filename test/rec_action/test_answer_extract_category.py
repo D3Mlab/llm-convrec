@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 import yaml
 
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item import Item
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.answer import Answer
 

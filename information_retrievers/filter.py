@@ -2,7 +2,7 @@ import numpy as np
 from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
 from information_retrievers.checker.checker import Checker
 from state.state_manager import StateManager
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.recommended_item import RecommendedItem
 
 
 class Filter:

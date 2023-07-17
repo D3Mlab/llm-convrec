@@ -2,8 +2,8 @@ from information_retrievers.filter.check_location import CheckLocation
 from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
 from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
 from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item import Item
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from state.common_state_manager import CommonStateManager
@@ -11,6 +11,7 @@ import dotenv
 import pandas as pd
 import torch
 import pytest
+from itertools import chain
 
 dotenv.load_dotenv()
 geocoder_wrapper = GoogleV3Wrapper()
