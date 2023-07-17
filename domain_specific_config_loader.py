@@ -8,6 +8,9 @@ from information_retrievers.checker.location_checker import LocationChecker
 from information_retrievers.checker.value_range_checker import ValueRangeChecker
 from information_retrievers.checker.word_in_checker import WordInChecker
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+import torch
+import numpy as np
+from information_retrievers.vector_database import VectorDataBase
 
 
 class DomainSpecificConfigLoader:
@@ -236,3 +239,34 @@ class DomainSpecificConfigLoader:
                     row['key_in_state'].split(","), row['metadata_field']))
 
         return checkers_list
+
+    def get_path_to_item_metadata(self) -> str:
+        filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
+        return f'{self._get_path_to_domain()}/{filename}'
+
+    def load_item_review_count(self) -> torch.Tensor:
+        filename = self.load_domain_specific_config()['PATH_TO_ITEM_REVIEW_COUNT']
+        path_to_item_review_count = f'{self._get_path_to_domain()}/{filename}'
+        return torch.load(path_to_item_review_count)
+
+    def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, pd.DataFrame, torch.Tensor]:
+        path_to_domain = self._get_path_to_domain()
+        item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
+        path_to_items_id = f'{path_to_domain}/{item_id_filename}'
+        item_review_embeddings_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        path_to_item_review_embeddings = f'{path_to_domain}/{item_review_embeddings_filename}'
+        reviews_embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
+        path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
+        return np.load(path_to_items_id), pd.read_csv(path_to_item_review_embeddings), \
+            torch.load(path_to_reviews_embedding_matrix)
+
+    def load_vector_database(self) -> VectorDataBase:
+        path_to_domain = self._get_path_to_domain()
+        database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
+        path_to_database = f'{path_to_domain}/{database_filename}'
+        item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
+        path_to_items_id = f'{path_to_domain}/{item_id_filename}'
+        item_reviews_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
+        path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
+        return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)
+

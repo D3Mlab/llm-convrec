@@ -1,5 +1,5 @@
 from information_retrievers.embedder.bert_embedder import BERT_model
-from information_retrievers.ir.vector_database import VectorDataBase
+from information_retrievers.vector_database import VectorDataBase
 import pandas as pd
 import torch
 

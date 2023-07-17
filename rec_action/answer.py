@@ -6,8 +6,8 @@ from state.message import Message
 from decimal import Decimal
 from string import ascii_letters
 from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.neural_information_retriever import InformationRetriever
+from information_retrievers.filter import Filter
+from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
@@ -27,18 +27,18 @@ class Answer(RecAction):
     """
 
     _num_of_reviews_to_return: int
-    _filter_restaurants: FilterRestaurants
-    _information_retriever: InformationRetriever
+    _filter_restaurants: Filter
+    _information_retriever: InformationRetrieval
     _llm_wrapper: LLMWrapper
     _prompt: str
     _observers: list[WarningObserver]
 
-    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str,
+    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: Filter,
+                 information_retriever: InformationRetrieval, domain: str,
                  observers=None,
                  priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
-        self._filter_restaurants = filter_restaurants
+        self._filter_items = filter_items
         self._domain = domain
         self._observers = observers
 
@@ -252,29 +252,24 @@ class Answer(RecAction):
 
         return resp.split('\n')
 
-    def _create_resp_from_ir(self, question: str, curr_mentioned_restaurant: RecommendedItem):
+    def _create_resp_from_ir(self, question: str, curr_mentioned_item: RecommendedItem):
         """
         Returns the string to be returned to the user when using information retrieval
         :param question: the question extracted from the users input
-        :param curr_mentioned_restaurant: one of the recommended restaurants user is currently referring to
+        :param curr_mentioned_item: one of the recommended item user is currently referring to
         :returns: resp to user.
         """
         query = self.convert_state_to_query(
-            question, curr_mentioned_restaurant)
+            question, curr_mentioned_item)
 
         logger.debug(f'Query: {query}')
 
-        filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant, \
-            filtered_restaurants_review_embeddings = \
-            self._filter_restaurants.filter_by_restaurant_name(
-                [curr_mentioned_restaurant.get_name()])
+        item_ids_to_keep = self._filter_items.filter_by_current_item(curr_mentioned_item)
         reviews = self._information_retriever.get_best_matching_reviews_of_item(
-            query, [curr_mentioned_restaurant.get_name()], self._num_of_reviews_to_return,
-            filtered_restaurants_review_embeddings,
-            filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant)[0]
+            query, self._num_of_reviews_to_return, item_ids_to_keep)[0]
 
         return self._format_review_resp(
-            question, reviews, curr_mentioned_restaurant)
+            question, reviews, curr_mentioned_item)
 
     def _is_category_valid(self, classified_category: str, recommended_restaurant: RecommendedItem) -> bool:
         """

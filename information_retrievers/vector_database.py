@@ -2,7 +2,7 @@ import faiss
 import numpy as np
 
 
-class VectorDataBase():
+class VectorDataBase:
     """
     This class functions as a vector database
 

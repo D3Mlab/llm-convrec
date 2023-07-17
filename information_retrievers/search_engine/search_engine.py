@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from information_retrievers.embedder.bert_embedder import BERT_model
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class SearchEngine:
@@ -10,9 +11,10 @@ class SearchEngine:
     :param embedder: BERT_model to embed query
     """
 
-    def __init__(self, embedder: BERT_model, item_review_count: torch.Tensor):
+    def __init__(self, embedder: BERT_model):
         self._embedder = embedder
-        self._item_review_count = item_review_count
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._item_review_count = domain_specific_config_loader.load_item_review_count()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:

@@ -1,17 +1,18 @@
 import numpy as np
 from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class NumpyMetadataWrapper(MetadataWrapper):
     """
     Numpy metadata wrapper that is responsible to get item metadata as dictionary.
-
-    :param path_to_items_metadata: path to items metadata file
     """
 
     _items_metadata: np.ndarray
 
-    def __init__(self, path_to_items_metadata: str) -> None:
+    def __init__(self) -> None:
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        path_to_items_metadata = domain_specific_config_loader.get_path_to_item_metadata()
         self._items_metadata = np.load(path_to_items_metadata)
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:

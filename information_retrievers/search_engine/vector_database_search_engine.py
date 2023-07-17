@@ -1,8 +1,9 @@
 import torch
 import numpy as np
 from information_retrievers.embedder.bert_embedder import BERT_model
-from information_retrievers.ir.vector_database import VectorDataBase
+from information_retrievers.vector_database import VectorDataBase
 from information_retrievers.search_engine.search_engine import SearchEngine
+from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class VectorDatabaseSearchEngine(SearchEngine):
@@ -10,13 +11,15 @@ class VectorDatabaseSearchEngine(SearchEngine):
     Class that is responsible for searching for topk most relevant items using BERT_model.
 
     :param embedder: BERT_model to embed query
-    :param database: Database that stores the embeddings, id and review
     """
+
+    _embedder: BERT_model
     _database: VectorDataBase
 
-    def __init__(self, embedder: BERT_model, item_review_count: torch.Tensor, database: VectorDataBase):
-        super().__init__(embedder, item_review_count)
-        self._database = database
+    def __init__(self, embedder: BERT_model):
+        super().__init__(embedder)
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self._database = domain_specific_config_loader.load_vector_database()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:

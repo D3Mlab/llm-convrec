@@ -1,7 +1,7 @@
 import openai.error
 
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
-from information_retrievers.restaurant_item_loader import RestaurantItemLoader
+from information_retrievers.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
 from warning_observer import WarningObserver
@@ -31,18 +31,16 @@ from user_intent.classifiers.prompt_based_user_intents_classifier import PromptB
 from user_intent.classifiers.multilabel_user_intents_classifier import MultilabelUserIntentsClassifier
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from rec_action.common_rec_actions_classifier import CommonRecActionsClassifier
-from information_retrievers.neural_information_retriever import NeuralInformationRetriever
-from information_retrievers.filter_old.check_location import CheckLocation
-from information_retrievers.filter_old.check_cuisine_dish_type import CheckCuisineDishType
-from information_retrievers.filter_old.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from information_retrievers.filter_old.filter_restaurants import FilterRestaurants
-from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.embedder.statics import *
 from information_retrievers.embedder.bert_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
-from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from domain_specific_config_loader import DomainSpecificConfigLoader
+from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
+from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
+from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWrapper
+from information_retrievers.filter import Filter
+from information_retrievers.information_retrieval import InformationRetrieval
 
 
 class ConvRecSystem(WarningObserver):
@@ -116,21 +114,18 @@ class ConvRecSystem(WarningObserver):
         rejected_restaurants_extractor = RejectedItemsExtractor(
             llm_wrapper, domain)
 
-        check_location = CheckLocation(
-            config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
-        check_cuisine_type = CheckCuisineDishType()
-        check_already_recommended_restaurant = CheckAlreadyRecommendedRestaurant()
-        data_holder = DataHolder(config["PATH_TO_RESTAURANT_METADATA"], config["PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS"],
-                                 config["PATH_TO_RESTAURANT_REVIEW_EMBEDDING_MATRIX"],
-                                 config["PATH_TO_NUM_OF_REVIEWS_PER_RESTAURANT"])
-        filter_restaurant = FilterRestaurants(geocoder_wrapper, check_location, check_cuisine_type, check_already_recommended_restaurant,
-                                              data_holder, config["FILTER_CONSTRAINTS"])
+        checkers = domain_specific_config_loader.load_checkers()
+        metadata_wrapper = MetadataWrapper()
+        filter_item = Filter(metadata_wrapper, checkers)
         BERT_name = config["BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-        engine = NeuralSearchEngine(embedder)
-        information_retriever = NeuralInformationRetriever(engine, data_holder, RestaurantItemLoader())
+        if config['SEARCH_ENGINE'] == "pandas":
+            search_engine = PDSearchEngine(embedder)
+        else:
+            search_engine = VectorDatabaseSearchEngine(embedder)
+        information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
 
         default_location = config.get('DEFAULT_LOCATION') if config.get(
             'DEFAULT_LOCATION') != 'None' else None
@@ -152,9 +147,9 @@ class ConvRecSystem(WarningObserver):
         else:
             self.user_interface = Terminal()
 
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
+        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self],
+                       Recommend(llm_wrapper, filter_item, information_retrieval, domain, observers=[self],
                                  mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
                                  specific_location_required=specific_location_required),
                        RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],

@@ -4,9 +4,9 @@ import yaml
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
-from information_retrievers.neural_information_retriever import InformationRetriever
 from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
+from information_retrievers.filter import Filter
+from information_retrievers.information_retrieval import InformationRetrieval
 from state.message import Message
 from intelligence.llm_wrapper import LLMWrapper
 import logging
@@ -29,11 +29,11 @@ class Recommend(RecAction):
 
     _llm_wrapper: LLMWrapper
     _mandatory_constraints: list[list[str]]
-    _information_retriever: InformationRetriever
+    _information_retriever: InformationRetrieval
     _topk_restautants: int
     _topk_reviews: int
     _current_recommended_restaurants: list[RecommendedItem]
-    _filter_restaurants: FilterRestaurants
+    _filter_items: Filter
     _env: Environment
     _convert_state_to_query_prompt: jinja2.Template
     _explain_recommendation_prompt: jinja2.Template
@@ -42,15 +42,15 @@ class Recommend(RecAction):
     _summarize_review_prompt: jinja2.Template
     _observers: list[WarningObserver]
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str,
+    def __init__(self, llm_wrapper: LLMWrapper, filter_items: Filter,
+                 information_retriever: InformationRetrieval, domain: str,
                  observers=None, mandatory_constraints: str = None,
                  priority_score_range=(1, 10), specific_location_required: bool = True):
         super().__init__(priority_score_range)
         if mandatory_constraints is None:
             mandatory_constraints = [['location']]
         self._mandatory_constraints = mandatory_constraints
-        self._filter_restaurants = filter_restaurants
+        self._filter_items = filter_items
         self._information_retriever = information_retriever
         self._current_recommended_restaurants = []
         self._specific_location_required = specific_location_required
@@ -122,13 +122,13 @@ class Recommend(RecAction):
 
         logger.debug(f'Query: {query}')
 
-        filtered_embedding_matrix = \
-            self._filter_restaurants.filter_by_constraints(state_manager)
+        item_ids_to_keep = \
+            self._filter_items.filter_by_checkers(state_manager)
 
         try:
             self._current_recommended_restaurants = \
-                self._information_retriever.get_best_matching_items(query, self._topk_restautants,
-                                                                    self._topk_reviews, filtered_embedding_matrix)
+                self._information_retriever.get_best_matching_items(
+                    query, self._topk_restautants, self._topk_reviews, item_ids_to_keep)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
             loc_name = self._get_all_loc_name_in_text(state_manager)
@@ -148,13 +148,13 @@ class Recommend(RecAction):
 
         logger.debug(f'Query: {query}')
 
-        filtered_embedding_matrix = \
-            self._filter_restaurants.filter_by_constraints(state_manager)
+        item_ids_to_keep = \
+            self._filter_items.filter_by_checkers(state_manager)
 
         try:
             self._current_recommended_restaurants = \
-                self._information_retriever.get_best_matching_items(query, self._topk_restautants,
-                                                                    self._topk_reviews, filtered_embedding_matrix)
+                self._information_retriever.get_best_matching_items(
+                    query, self._topk_restautants, self._topk_reviews, item_ids_to_keep)
             return self._format_hard_coded_resp(self._current_recommended_restaurants)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
