@@ -77,3 +77,4 @@ ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
 
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"
+LLM: "GPT"

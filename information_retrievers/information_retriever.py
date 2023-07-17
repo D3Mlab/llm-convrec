@@ -2,6 +2,10 @@ from information_retrievers.recommended_item import RecommendedItem
 import torch
 import pandas as pd
 
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+
 class InformationRetriever:
     """
     Abstract class of information retriever that is responsible of retrieving restaurants based on query.

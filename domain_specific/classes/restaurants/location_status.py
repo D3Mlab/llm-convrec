@@ -33,7 +33,7 @@ class LocationStatus(Status):
             return
         geocoded_latest_location = self._geocoder_wrapper.geocode(
             locations[-1])
-        if geocoded_latest_location is None or self._geocoder_wrapper.is_location_specific(geocoded_latest_location):
+        if geocoded_latest_location is None or not self._geocoder_wrapper.is_location_specific(geocoded_latest_location):
             self._curr_status = "invalid"
             return
         

@@ -12,6 +12,7 @@ from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 import yaml
+from warning_observer import WarningObserver
 
 logger = logging.getLogger('answer')
 
@@ -30,13 +31,16 @@ class Answer(RecAction):
     _information_retriever: InformationRetriever
     _llm_wrapper: LLMWrapper
     _prompt: str
+    _observers: list[WarningObserver]
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
                  information_retriever: InformationRetriever, domain: str,
+                 observers=None,
                  priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._filter_restaurants = filter_restaurants
         self._domain = domain
+        self._observers = observers
 
         if config["NUM_REVIEWS_TO_RETURN"]:
             self._num_of_reviews_to_return = int(
@@ -126,15 +130,14 @@ class Answer(RecAction):
                     return self.priority_score_range[0] + goal["utterance_index"] / len(state_manager.get("conv_history")) * (self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def get_prompt(self, state_manager: StateManager) -> str | None:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
-        return self._prompt
+        return self._llm_wrapper.make_request(self._prompt)
 
     def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
         """
@@ -688,11 +691,11 @@ class Answer(RecAction):
             prompt = self.ir_template.render(
                 curr_item=curr_restaurant, question=question, reviews=reviews, domain=self._domain,
                 few_shots=self._ir_prompt_few_shots)
+
             resp = self._llm_wrapper.make_request(prompt)
         except:
             # this is very slow
-            print(
-                'Sorry.. running into some difficulties, this is going to take longer than ususal.')
+            self._notify_observers()
 
             logger.debug("Reviews are too long, summarizing...")
 
@@ -710,6 +713,13 @@ class Answer(RecAction):
             return self._llm_wrapper.make_request(prompt)
 
         return resp
+
+    def _notify_observers(self) -> None:
+        """
+        Notify observers that there are some difficulties.
+        """
+        for observer in self._observers:
+            observer.notify_warning()
 
     def is_response_hard_coded(self) -> bool:
         """

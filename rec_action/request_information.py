@@ -39,13 +39,12 @@ class RequestInformation(RecAction):
         """
         return "Recommender requests the user’s preference"
 
-    def get_prompt(self, state_manager: StateManager) -> str | None:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         return None
 
@@ -88,8 +87,8 @@ class RequestInformation(RecAction):
         :return: score representing how much this is appropriate recommender action for the current conversation.
         """
         hard_constraints = state_manager.get("hard_constraints")
-        is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
-                                                            hard_constraints.get(key) != [] for key in lst)
+        is_ready = hard_constraints is not None and all(any(hard_constraints.get(lst) is not None and
+                                                            hard_constraints.get(lst) != [] for key in [1, 2, 3])
                                                         for lst in self._mandatory_constraints)
         
         for constraint in self._constraint_statuses:
