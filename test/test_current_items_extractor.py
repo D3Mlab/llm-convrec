@@ -34,7 +34,7 @@ for col in test_df.to_dict("records"):
                                "stars": 0,
                                "review_count": 0,
                                "is_open": True,
-                               "attributes": {},
+                               "optional": {},
                                "categories": [],
                                "hours": {}}
             recommended_restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])

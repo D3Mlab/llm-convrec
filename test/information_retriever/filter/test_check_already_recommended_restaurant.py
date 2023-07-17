@@ -15,7 +15,7 @@ dictionary_info1 = {"name": "Famoso Neapolitan Pizzeria",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant1 = Item("0CLCzdedGT2DPjkYM52Tqg", dictionary_info1)
@@ -31,7 +31,7 @@ dictionary_info2 = {"name": "Famoso Neapolitan Pizzeria",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant2 = Item("0IG9w6YCkh-z5pnfSip6Nw", dictionary_info2)
@@ -47,7 +47,7 @@ dictionary_info3 = {"name": "Uccellino",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant3 = Item("2Z8LWDUbrUbe-o3KZE2r7Q", dictionary_info3)
@@ -63,7 +63,7 @@ dictionary_info4 = {"name": "Pazzo Pazzo Italian Cuisine",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant4 = Item("2fTfpN5SggLgW4LlzptMPg", dictionary_info4)
@@ -79,7 +79,7 @@ dictionary_info5 = {"name": "Cafe Amore Bistro",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant5 = Item("3gTZAOmML02T1L5gYIHYqQ", dictionary_info5)
