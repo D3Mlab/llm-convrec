@@ -14,22 +14,21 @@ class VectorDatabaseSearchEngine(SearchEngine):
     """
     _database: VectorDataBase
 
-    def __init__(self, embedder: BERT_model, database: VectorDataBase):
-        super().__init__(embedder)
+    def __init__(self, embedder: BERT_model, item_review_count: torch.Tensor, database: VectorDataBase):
+        super().__init__(embedder, item_review_count)
         self._database = database
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_review_count: torch.Tensor,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         query_embedding = self._embedder.get_tensor_embedding(query)
         filtered_id = self._database.filter_with_id(item_ids_to_keep)
         similarity_score_review = self._database.find_similarity_vector(query_embedding, filtered_id)
         similarity_score_review = torch.tensor(similarity_score_review)
-        similarity_score_item, index_most_similar_review = self._similarity_score_each_item(similarity_score_review,
-                                                                                            item_review_count,
-                                                                                            topk_reviews)
+        similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
+            similarity_score_review, topk_reviews)
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
-        list_of_business_id = self._get_topk_item_business_id(most_similar_item_index, index_most_similar_review)
+        list_of_business_id = self._get_topk_item_business_id(
+            most_similar_item_index, index_most_similar_review)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review)
 
         return list_of_business_id, list_of_review

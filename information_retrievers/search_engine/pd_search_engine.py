@@ -10,6 +10,7 @@ class PDSearchEngine(SearchEngine):
     Class that is responsible for searching for topk most relevant items using BERT_model.
 
     :param embedder: BERT_model to embed query
+    :param item_review_count: A pytorch tensor that contains the amount of reviews each item have
     :param path_to_items_id: Stores the path towards item id numpy array
     :param path_to_items_review_embeddings: Stores the path towards review embedding file
     :param path_to_reviews_embedding_matrix: Stores the path towards the matrix that contains all the embedding
@@ -21,16 +22,16 @@ class PDSearchEngine(SearchEngine):
     _reviews_embedding_matrix: torch.Tensor
     _num_of_reviews_per_restaurant: torch.Tensor
 
-    def __init__(self, embedder: BERT_model, path_to_items_id: str, path_to_items_review_embeddings: str,
+    def __init__(self, embedder: BERT_model, item_review_count: torch.Tensor,
+                 path_to_items_id: str, path_to_items_review_embeddings: str,
                  path_to_reviews_embedding_matrix: str, path_to_item_review_count: str):
-        super().__init__(embedder)
+        super().__init__(embedder, item_review_count)
         self._items_id = np.load(path_to_items_id)
         self._items_reviews_embedding = pd.read_csv(path_to_items_review_embeddings)
         self._reviews_embedding_matrix = torch.load(path_to_reviews_embedding_matrix)
         self._num_of_reviews_per_restaurant = torch.load(path_to_item_review_count)
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_review_count: torch.Tensor,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
@@ -39,17 +40,16 @@ class PDSearchEngine(SearchEngine):
         :param query: The input information retriever gets
         :param topk_items: Number of items to be returned
         :param topk_reviews: Number of reviews for each item
-        :param item_review_count: A pytorch tensor that contains the amount of reviews each item have
         :param item_ids_to_keep: Stores the item id to keep in a numpy array
         :return: Return a tuple with element 0 being a list[str] a list of string containing the most similar item's
         item_id and element 1 being list[list[str]] with Dim 0 has the top k most similar item, Dim 1 has the top k
         reviews for the corresponding item
         """
         query_embedding = self._embedder.get_tensor_embedding(query)
-        similarity_score_review = self._similarity_score_each_review(query_embedding, self._reviews_embedding_matrix)
-        similarity_score_item, index_most_similar_review = self._similarity_score_each_item(similarity_score_review,
-                                                                                            item_review_count,
-                                                                                            topk_reviews)
+        similarity_score_review = self._similarity_score_each_review(
+            query_embedding, self._reviews_embedding_matrix)
+        similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
+            similarity_score_review, topk_reviews)
         # Finds the indexes of the ids to count
         id_index = self._find_index(item_ids_to_keep)
         mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
@@ -66,8 +66,8 @@ class PDSearchEngine(SearchEngine):
     def _find_index(self, ids_to_keep: np.array) -> list[int]:
         indices = []
 
-        for id in ids_to_keep:
-            indices.append(np.where(self._items_id == id)[0][0])
+        for item_id in ids_to_keep:
+            indices.append(np.where(self._items_id == item_id)[0][0])
 
         return indices
 

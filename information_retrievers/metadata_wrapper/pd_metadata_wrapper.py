@@ -4,7 +4,7 @@ from information_retrievers.metadata_wrapper.metadata_wrapper import MetadataWra
 
 class PDMetadataWrapper(MetadataWrapper):
     """
-    Pandas dataframe metadata wrapper that is responsible to do filter and get item metadata as dictionary.
+    Pandas dataframe metadata wrapper that is responsible to get item metadata as dictionary.
 
     :param path_to_items_metadata: path to items metadata file
     """

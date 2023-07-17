@@ -5,16 +5,16 @@ from information_retrievers.embedder.bert_embedder import BERT_model
 
 class SearchEngine:
     """
-    Class that seaes for topk most relevant items.
+    Class that searches for topk most relevant items.
     
     :param embedder: BERT_model to embed query
     """
 
-    def __init__(self, embedder: BERT_model):
+    def __init__(self, embedder: BERT_model, item_review_count: torch.Tensor):
         self._embedder = embedder
+        self._item_review_count = item_review_count
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_review_count: torch.Tensor,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         """
         Takes a query and returns a list of item id that is most similar to the query and the top k
@@ -23,21 +23,18 @@ class SearchEngine:
         :param query: query text
         :param topk_items: number of items to be returned
         :param topk_reviews: number of reviews for each item
-        :param item_review_count: number of reviews for each item
         :param item_ids_to_keep: The numpy array containing item ids to keep
         :return: a tuple where the first element is a list of most relevant item's id 
         and the second element is a list of top k reviews for each most relevant item
         """
         raise NotImplementedError()
 
-    @staticmethod
-    def _similarity_score_each_item(similarity_score: torch.Tensor, item_review_count: torch.Tensor,
+    def _similarity_score_each_item(self, similarity_score: torch.Tensor,
                                     k: int) -> tuple[torch.Tensor, torch.Tensor]:
         """
         This function finds and returns a tensor that contains the similarity score for each item
 
         :param similarity_score: A tensor of similarity score between each review and the query
-        :param item_review_count: A tensor containing how many review each item has
         :param k: A number that tells the number of most similar tensors to look at when doing late fusion(k)
         :return: Returning a tuple with element 0 being a tensor that contains the similarity score for each item
                 and element 1 being a tensor that contains the index of top k reviews for each item
@@ -45,17 +42,17 @@ class SearchEngine:
 
         index = 0
         # size records how many items are in the matrix
-        size = item_review_count.size(0)
+        size = self._item_review_count.size(0)
 
         item_score = []
         item_index = []
 
         for i in range(size):
             # Mask out the review scores related to one item
-            similarity_score_item = similarity_score[index:index + item_review_count[i]]
+            similarity_score_item = similarity_score[index:index + self._item_review_count[i]]
 
             # Get the top k review scores or all review scores if the number of reviews is less than k
-            k_actual = min(item_review_count[i], k)
+            k_actual = min(self._item_review_count[i], k)
 
             values, index_topk = similarity_score_item.topk(k_actual)
 
@@ -70,7 +67,7 @@ class SearchEngine:
                 index_topk = torch.cat((index_topk, padding), dim=0)
             item_index.append(index_topk)
 
-            index += item_review_count[i]
+            index += self._item_review_count[i]
 
         item_score = torch.stack(item_score)
         item_index = torch.stack(item_index)

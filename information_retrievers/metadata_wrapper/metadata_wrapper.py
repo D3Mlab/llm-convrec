@@ -1,7 +1,17 @@
+import pandas as pd
+
+
 class MetadataWrapper:
     """
     Metadata wrapper that is responsible to get item metadata as dictionary.
+
+    :param path_to_items_metadata: path to items metadata file
     """
+
+    _items_metadata: pd.DataFrame
+
+    def __init__(self, path_to_items_metadata: str) -> None:
+        self._items_metadata = pd.read_json(path_to_items_metadata)
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, str]:
         """
@@ -10,7 +20,8 @@ class MetadataWrapper:
         :param item_id: item id
         :return: item metadata
         """
-        raise NotImplementedError()
+        item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
+        return item_metadata.to_dict("records")
 
     def get_item_dict_from_index(self, index: int) -> dict[str, str]:
         """
@@ -19,7 +30,7 @@ class MetadataWrapper:
         :param index: index to the item in the metadata
         :return: item metadata
         """
-        raise NotImplementedError()
+        return self._items_metadata.iloc[index].to_dict("records")
 
     def get_num_item(self) -> int:
         """
@@ -27,5 +38,5 @@ class MetadataWrapper:
 
         :return: number of items
         """
-        raise NotImplementedError()
+        return self._items_metadata.shape[0]
 
