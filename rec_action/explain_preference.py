@@ -27,15 +27,6 @@ class ExplainPreference(RecAction):
         """
         return "Recommender explains recommendations based on the user's said preference"
 
-    def get_response_info(self, state_manager: StateManager) -> dict:
-        """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-
-        :param state_manager: current state representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"prompt": self.get_prompt(state_manager)}
-
     def get_prompt(self, state_manager: StateManager) -> str | None:
         """
         Return prompt that can be inputted to LLM to produce recommender's response. 

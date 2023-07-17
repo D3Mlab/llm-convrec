@@ -28,17 +28,7 @@ class PostAcceptanceAction(RecAction):
 
         :return: description of this recommender action
         """
-        return "Recommender responds to the user after user accepts a recommended restaurant"
-
-    def get_response_info(self, state_manager: StateManager) -> dict:
-        """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-        It asks LLM to generate recommendation based on the current state.
-
-        :param state_manager: current state representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"predefined_response": self.get_hard_coded_response(state_manager)}
+        return "Recommender responds to the user after user accepts a recommended item"
 
     def get_priority_score(self, state_manager: StateManager) -> float:
         """
@@ -70,7 +60,7 @@ class PostAcceptanceAction(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        return "Great! Enjoy your meal! If you need any more assistance, feel free to ask."
+        return "Great! If you need any more assistance, feel free to ask."
 
     def is_response_hard_coded(self) -> bool:
         """

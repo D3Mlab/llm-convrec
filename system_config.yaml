@@ -1,6 +1,6 @@
-TOPK_RESTAURANTS: 2
+TOPK_ITEMS: 2
 TOPK_REVIEWS: 3
-BERT_MODEL_NAME: "TASB"
+IR_BERT_MODEL_NAME: "TASB"
 USER_INTENTS_CLASSIFIER: "MultilabelUserIntentsClassifier"
 PATH_TO_RESTAURANT_METADATA: "information_retrievers/data/All-Edmonton-Restaurants/top_all_restaurants_sorted.csv"
 PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS: "information_retrievers/data/All-Edmonton-Restaurants/large_files/top_all_restaurants_review_embedding_sorted.csv"
@@ -48,7 +48,7 @@ RECOMMEND_PROMPTS_PATH: "prompt_files/gpt/recaction_prompts/recommend_prompts"
 CONVERT_STATE_TO_QUERY_PROMPT_FILENAME: "convert_state_to_query_prompt.jinja"
 EXPLAIN_RECOMMENDATION_PROMPT_FILENAME: "explain_recommendation_prompt.jinja"
 FORMAT_RECOMMENDATION_PROMPT_FILENAME: "format_recommendation_prompt.jinja"
-NO_MATCHING_RESTAURANT_PROMPT_FILENAME: "no_matching_restaurant_prompt.jinja"
+NO_MATCHING_ITEM_PROMPT_FILENAME: "no_matching_item_prompt.jinja"
 SUMMARIZE_REVIEW_PROMPT_FILENAME: "summarize_review_prompt.jinja"
 ENABLE_LOCATION_MERGE: True
 ENABLE_CONSTRAINTS_REMOVAL: True

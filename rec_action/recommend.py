@@ -1,6 +1,5 @@
 from typing import Any
 
-import yaml
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
@@ -13,6 +12,8 @@ import logging
 import jinja2
 from jinja2 import Environment, FileSystemLoader
 from warning_observer import WarningObserver
+from state.status import Status
+
 
 logger = logging.getLogger('recommend')
 
@@ -41,25 +42,25 @@ class Recommend(RecAction):
     _no_matching_restaurant_prompt: jinja2.Template
     _summarize_review_prompt: jinja2.Template
     _observers: list[WarningObserver]
+    _constraint_statuses: list[Status]
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str,
-                 observers=None, mandatory_constraints: str = None,
-                 priority_score_range=(1, 10), specific_location_required: bool = True):
+                 constraint_statuses: list, config: dict,
+                 constraints_categories: list, observers=None,
+                 priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
-        if mandatory_constraints is None:
-            mandatory_constraints = [['location']]
-        self._mandatory_constraints = mandatory_constraints
+        self._mandatory_constraints = [constraint_category['key'] for constraint_category in
+                                       constraints_categories if constraint_category['is_mandatory']]
+        print(self._mandatory_constraints)
         self._filter_items = filter_items
         self._information_retriever = information_retriever
         self._current_recommended_restaurants = []
-        self._specific_location_required = specific_location_required
         self._llm_wrapper = llm_wrapper
         self._domain = domain
         self._observers = observers
+        self._constraint_statuses = constraint_statuses
 
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
 
         if config["TOPK_RESTAURANTS"] and config["TOPK_REVIEWS"] and config["RECOMMEND_PROMPTS_PATH"] \
                 and config["CONVERT_STATE_TO_QUERY_PROMPT_FILENAME"] \
@@ -67,6 +68,7 @@ class Recommend(RecAction):
                 and config["NO_MATCHING_RESTAURANT_PROMPT_FILENAME"] and config["SUMMARIZE_REVIEW_PROMPT_FILENAME"]:
             self._topk_restautants = int(config["TOPK_RESTAURANTS"])
             self._topk_reviews = int(config["TOPK_REVIEWS"])
+            
             self._env = Environment(loader=FileSystemLoader(
                 config['RECOMMEND_PROMPTS_PATH']))
             self._convert_state_to_query_prompt = self._env.get_template(
@@ -319,10 +321,12 @@ class Recommend(RecAction):
         is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
                                                             hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
-        if state_manager.get('location_type') is None or state_manager.get('location_type') == 'invalid' or \
-                state_manager.get('location_type') == 'valid' and self._specific_location_required and \
-                not state_manager.get("specific_location_asked"):
-            is_ready = False
+        
+        for constraint in self._constraint_statuses:
+            if constraint.get_status() is None or constraint.get_status() == 'invalid':
+                is_ready = False
+                break
+        
         if state_manager.get("unsatisfied_goals") is not None:
             for goal in state_manager.get("unsatisfied_goals"):
                 if isinstance(goal["user_intent"], AskForRecommendation) and is_ready:

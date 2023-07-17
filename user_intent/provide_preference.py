@@ -1,6 +1,8 @@
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+from domain_specific.classes.restaurants.location_status import Status
 
 from state.state_manager import StateManager
+from state.status import Status
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
@@ -13,26 +15,20 @@ class ProvidePreference(UserIntent):
     Class representing Provide Preference user intent.
 
     :param constraints_updater: object used to update constraints based on the user's input
-    :param current_restaurants_extractor: object used to extract the restaurant that the user is referring to from the users input
-    :param geocoder_wrapper: wrapper used to geocode location
-    :param default_location: default location to use
+    :param current_items_extractor: object used to extract the items that the user is referring to from the users input
+    :param constraint_statuses: list of status objects used to represent the status of constraints
     """
 
     _constraints_updater: ConstraintsUpdater
-    _current_restaurants_extractor: CurrentItemsExtractor
-    _geocoder_wrapper: GeocoderWrapper
-    _default_location: str | None
+    _current_items_extractor: CurrentItemsExtractor
+    _constraint_statuses: list[Status]
 
     def __init__(self, constraints_updater: ConstraintsUpdater,
-                 current_restaurants_extractor: CurrentItemsExtractor,
-                 geocoder_wrapper: GeocoderWrapper, default_location=None):
+                 current_items_extractor: CurrentItemsExtractor, constraint_statuses: list[Status], config: dict):
         self._constraints_updater = constraints_updater
-        self._current_restaurants_extractor = current_restaurants_extractor
-        self._geocoder_wrapper = geocoder_wrapper
-        self._default_location = default_location
-
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+        self._current_items_extractor = current_items_extractor
+                
+        self._constraint_statuses = constraint_statuses
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
@@ -53,7 +49,7 @@ class ProvidePreference(UserIntent):
 
         :return: description of this recommender action
         """
-        return "User provides background information for the restaurant search, provides specific preference for " \
+        return "User provides background information for the item search, provides specific preference for " \
                "the desired item, or improves over-constrained/under-constrained preferences"
 
     def update_state(self, curr_state: StateManager) -> StateManager:
@@ -65,30 +61,23 @@ class ProvidePreference(UserIntent):
         :return: new updated state
         """
 
-        # Update current restaurant
-        reccommended_restaurants = curr_state.get("recommended_items")
+        # Update current item
+        reccommended_items = curr_state.get("recommended_items")
 
-        if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(
-                reccommended_restaurants, curr_state.get("conv_history"))
+        if reccommended_items is not None and reccommended_items != []:
+            curr_item = self._current_items_extractor.extract(
+                reccommended_items, curr_state.get("conv_history"))
 
-            # If current restaurant is [] then just keep it the same
-            if curr_res != []:
-                curr_state.update("curr_items", curr_res)
+            # If current items are [] then just keep it the same
+            if curr_item != []:
+                curr_state.update("curr_items", curr_item)
 
         # Update constraints
         self._constraints_updater.update_constraints(curr_state)
-
-        # If user did not specify a location in query make it the default value
-        if self._default_location is not None and curr_state.get('hard_constraints') and \
-                curr_state.get('hard_constraints').get('location') is None \
-                and curr_state.get('hard_constraints').get('location') != []:
-            curr_hard_constraints = curr_state.get('hard_constraints')
-            curr_hard_constraints['location'] = [self._default_location]
-            curr_state.update('hard_constraints', curr_hard_constraints)
-
-        if 'location' in curr_state.get("updated_keys").get("hard_constraints", {}):
-            self._update_location_type(curr_state)
+        
+        # Update constraint status
+        for constraint in self._constraint_statuses:
+            constraint.update_status(curr_state)
 
         return curr_state
 
@@ -104,27 +93,3 @@ class ProvidePreference(UserIntent):
         prompt = self.template.render(user_input=user_input)
 
         return prompt
-
-    def _update_location_type(self, curr_state: StateManager):
-        """
-        update the location type in the state to None, 'invalid', 'valid', or 'specific'.
-
-        :param curr_state: current state of the conversation
-        """
-        hard_constraints = curr_state.get('hard_constraints')
-        if hard_constraints is None or hard_constraints.get('location') is None:
-            curr_state.update('location_type', None)
-            return
-        locations = hard_constraints.get('location')
-        if len(locations) == 0:
-            curr_state.update('location_type', None)
-            return
-        geocoded_latest_location = self._geocoder_wrapper.geocode(
-            locations[-1])
-        if geocoded_latest_location is None:
-            curr_state.update('location_type', 'invalid')
-            return
-        if self._geocoder_wrapper.is_location_specific(geocoded_latest_location):
-            curr_state.update('location_type', 'specific')
-            return
-        curr_state.update('location_type', 'valid')

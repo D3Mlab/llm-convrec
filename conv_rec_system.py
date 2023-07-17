@@ -55,22 +55,23 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
+
     def __init__(self, config: dict, user_defined_constraint_mergers: list,
+                 user_constraint_status_objects: list,
                  openai_api_key_or_gradio_url: str,
                  user_interface_str: str=None):
-        constraints = config['ALL_CONSTRAINTS']
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
-        constraints_categories = domain_specific_config_loader.load_constraints_categories()
-        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         domain = domain_specific_config_loader.load_domain()
         
         model = config["MODEL"]
 
 
-        self._constraints = constraints
         specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
+
         # TEMP
+        constraints = config['ALL_CONSTRAINTS']
+        self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
 
         if not isinstance(openai_api_key_or_gradio_url, str):
@@ -80,7 +81,12 @@ class ConvRecSystem(WarningObserver):
             llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
-        curr_restaurant_extractor = CurrentItemsExtractor(llm_wrapper, domain)
+        
+        # Constraints
+        constraints_categories = domain_specific_config_loader.load_constraints_categories()
+        constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+        
+        #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
@@ -96,6 +102,7 @@ class ConvRecSystem(WarningObserver):
                 constraints_remover=constraints_remover,
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+        #TODO: generalize
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 llm_wrapper, constraints)
@@ -111,6 +118,7 @@ class ConvRecSystem(WarningObserver):
                 constraints_remover=constraints_remover,
                 cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+       
         else:
             if config['LLM'] == "alpaca lora":
                 temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
@@ -121,12 +129,19 @@ class ConvRecSystem(WarningObserver):
             constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                             constraints_categories,
                                                             constraints_fewshots, domain,
-                                                            user_defined_constraint_mergers)
-        accepted_restaurants_extractor = AcceptedItemsExtractor(
-            llm_wrapper, domain)
-        rejected_restaurants_extractor = RejectedItemsExtractor(
-            llm_wrapper, domain)
+                                                            user_defined_constraint_mergers, config)
+        # Initialize Extractors
+        accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
+        rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        curr_items_fewshots = domain_specific_config_loader.load_current_items_fewshots()
+        
+        accepted_items_extractor = AcceptedItemsExtractor(
+            llm_wrapper, domain, accepted_items_fewshots, config)
+        rejected_items_extractor = RejectedItemsExtractor(
+            llm_wrapper, domain, rejected_items_fewshots, config)
+        curr_items_extractor = CurrentItemsExtractor(llm_wrapper, domain, curr_items_fewshots, config)
 
+        # Initialize Filters
         metadata_wrapper = MetadataWrapper()
         filter_item = FilterApplier(metadata_wrapper)
         BERT_name = config["BERT_MODEL_NAME"]
@@ -142,48 +157,53 @@ class ConvRecSystem(WarningObserver):
         default_location = config.get('DEFAULT_LOCATION') if config.get(
             'DEFAULT_LOCATION') != 'None' else None
         
-
+        # Initialize User Intent
         inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
         accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
         reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
-        user_intents = [Inquire(curr_restaurant_extractor, inquire_classification_fewshots,domain),
-                        ProvidePreference(constraints_updater, curr_restaurant_extractor, geocoder_wrapper,
-                                          default_location=default_location),
+        user_intents = [Inquire(curr_items_extractor, inquire_classification_fewshots,domain, config),
+                        ProvidePreference(constraints_updater, curr_items_extractor, user_constraint_status_objects, config),
                         AcceptRecommendation(
-                            accepted_restaurants_extractor, curr_restaurant_extractor, accept_classification_fewshots, domain),
-                        RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
+                            accepted_items_extractor, curr_items_extractor, accept_classification_fewshots, domain, config),
+                        RejectRecommendation(rejected_items_extractor, curr_items_extractor, reject_classification_fewshots, domain, config)]
 
-        if user_interface_str == "demo":
-            self.user_interface = GradioInterface()
-        else:
-            self.user_interface = Terminal()
-
-        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self]),
-                       ExplainPreference(),
-                       Recommend(llm_wrapper, filter_item, information_retrieval, domain, observers=[self],
-                                 mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
-                                 specific_location_required=specific_location_required),
-                       RequestInformation(mandatory_constraints=config['MANDATORY_CONSTRAINTS'],
-                                          specific_location_required=specific_location_required), PostRejectionAction(),
-                       PostAcceptanceAction()]
         if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
             user_intents_classifier = MultilabelUserIntentsClassifier(
                 user_intents, llm_wrapper, True)
         else:
             user_intents_classifier = PromptBasedUserIntentsClassifier(
                 user_intents, llm_wrapper)
+        
+        # Initialize State
+        state = CommonStateManager(
+            {AskForRecommendation(config), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation(config))
+        state.update("unsatisfied_goals", [
+            {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
+        
+        # Initialize Rec Action
+        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain),
+                       ExplainPreference(),
+                       Recommend(llm_wrapper, filter_restaurant, information_retriever, domain, user_constraint_status_objects,
+                                 config, constraints_categories),
+                       RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
+                       PostAcceptanceAction()]
+        
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
-        state = CommonStateManager(
-            {AskForRecommendation(), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation())
-        state.update("unsatisfied_goals", [
-            {"user_intent": AskForRecommendation(), "utterance_index": 0}])
+
+        self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
+        
+        # Initialize system
+        if user_interface_str == "demo":
+            self.user_interface = GradioInterface()
+        else:
+            self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
-        self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
+
 
     def run(self) -> None:
         """

@@ -38,7 +38,7 @@ class DomainSpecificConfigLoader:
             'CONSTRAINTS_CATEGORIES']
 
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
-        constraints_df = pd.read_csv(path_to_csv, encoding='latin1')
+        constraints_df = pd.read_csv(path_to_csv, encoding='latin1',keep_default_na=False)
         return constraints_df.to_dict("records")
 
     def load_accepted_items_fewshots(self) -> list[dict]:

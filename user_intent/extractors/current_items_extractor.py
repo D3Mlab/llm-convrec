@@ -9,45 +9,43 @@ from jinja2 import Environment, FileSystemLoader
 
 class CurrentItemsExtractor:
     """
-    Class used to extract the current restaurant the user is referring to from the most recent user's input.
+    Class used to extract the current item the user is referring to from the most recent user's input.
 
-    :param llm_wrapper: LLMWrapper used to extract restaurants
+    :param llm_wrapper: LLMWrapper used to extract items
     :param domain: domain of recommendation
     """
     _llm_wrapper: LLMWrapper
     _domain: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, domain: str) -> None:
+    def __init__(self, llm_wrapper: LLMWrapper, domain: str, curr_items_fewshots: list, config: dict) -> None:
         self._llm_wrapper = llm_wrapper
         self._domain = domain
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+        self._few_shots = curr_items_fewshots
+   
         env = Environment(loader=FileSystemLoader(config['ITEMS_EXTRACTOR_PROMPT_PATH']),
                           trim_blocks=True, lstrip_blocks=True)
         self.template = env.get_template(config['CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._few_shots = domain_specific_config_loader.load_current_items_fewshots()
 
 
-    def extract(self, recommended_restaurants: list[list[RecommendedItem]], conv_history: list[Message]) -> RecommendedItem | None:
+    def extract(self, recommended_items: list[list[RecommendedItem]], conv_history: list[Message]) -> RecommendedItem | None:
         """
-        Extract the current restaurant from the most recent user's input in the conv_history and
+        Extract the current item from the most recent user's input in the conv_history and
         return it.
 
-        :param recommended_restaurants: current recommended restaurants as a list of lists where each sublist are recommendations made in one turn.
+        :param recommended_items: current recommended items as a list of lists where each sublist are recommendations made in one turn.
         :param conv_history: current conversation history
         :return current restaurant
 
         """
         prompt = self._generate_restaurants_update_prompt(
-            conv_history, recommended_restaurants)
+            conv_history, recommended_items)
 
         llm_response = self._llm_wrapper.make_request(prompt)
         llm_response = self._clean_string(llm_response)
-        curr_mentioned_restaurants = self._get_objects_from_llm_response(
-            recommended_restaurants, llm_response)
+        curr_mentioned_items = self._get_objects_from_llm_response(
+            recommended_items, llm_response)
 
-        return curr_mentioned_restaurants
+        return curr_mentioned_items
 
     def _generate_restaurants_update_prompt(self, conv_history: list[Message], recommended_restaurants: list[list[RecommendedItem]]) -> str:
         """
