@@ -2,18 +2,19 @@ import numpy as np
 import torch
 from information_retrievers.embedder.bert_embedder import BERT_model
 
+
 class SearchEngine:
     """
     Class that seaes for topk most relevant items.
     
     :param embedder: BERT_model to embed query
     """
-    
+
     def __init__(self, embedder: BERT_model):
         self._embedder = embedder
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_review_count: torch.Tensor, 
+                        item_review_count: torch.Tensor,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:
         """
         Takes a query and returns a list of item id that is most similar to the query and the top k
@@ -22,13 +23,15 @@ class SearchEngine:
         :param query: query text
         :param topk_items: number of items to be returned
         :param topk_reviews: number of reviews for each item
-        :param item_review_count: number of reviews for each item 
+        :param item_review_count: number of reviews for each item
+        :param item_ids_to_keep: The numpy array containing item ids to keep
         :return: a tuple where the first element is a list of most relevant item's id 
         and the second element is a list of top k reviews for each most relevant item
         """
         raise NotImplementedError()
-    
-    def _similarity_score_each_item(self, similarity_score: torch.Tensor, item_review_count: torch.Tensor,
+
+    @staticmethod
+    def _similarity_score_each_item(similarity_score: torch.Tensor, item_review_count: torch.Tensor,
                                     k: int) -> tuple[torch.Tensor, torch.Tensor]:
         """
         This function finds and returns a tensor that contains the similarity score for each item
@@ -53,7 +56,7 @@ class SearchEngine:
 
             # Get the top k review scores or all review scores if the number of reviews is less than k
             k_actual = min(item_review_count[i], k)
-            
+
             values, index_topk = similarity_score_item.topk(k_actual)
 
             index_topk += index
@@ -72,8 +75,9 @@ class SearchEngine:
         item_score = torch.stack(item_score)
         item_index = torch.stack(item_index)
         return item_score, item_index
-    
-    def _most_similar_item(self, similarity_score_item: torch.Tensor, top_k_items: int) -> torch.Tensor:
+
+    @staticmethod
+    def _most_similar_item(similarity_score_item: torch.Tensor, top_k_items: int) -> torch.Tensor:
         """
         This function returns the most similar item's index given the item similarity score
 

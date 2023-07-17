@@ -1,11 +1,15 @@
 import faiss
 import numpy as np
 
+
 class VectorDataBase():
     """
     This class functions as a vector database
 
     :param _storage: Stores the vector database
+    :param _id: Stores the item id of each vector
+    :param _review: Stores the review for each vector
+    :param _ntotal: Stores the number of vectors in vector database
     """
     _storage: faiss.swigfaiss_avx2
     _id: np.ndarray
@@ -27,20 +31,20 @@ class VectorDataBase():
         :return: A numpy array with the same shape as id, with elements set to true
         if the corresponding review is one for one of the items in the target_id
         """
-        if(not isinstance(target_id, np.ndarray)):
-            return np.ones((self._ntotal), dtype=bool)
-        id_filter = np.zeros((self._ntotal), dtype=bool)
+        if not isinstance(target_id, np.ndarray):
+            return np.ones(self._ntotal, dtype=bool)
+        id_filter = np.zeros(self._ntotal, dtype=bool)
         for id in target_id:
             id_filter_requirement = self._id == id
             id_filter = np.logical_or(id_filter, id_filter_requirement)
-            
+
         return id_filter
 
     def find_similarity_vector(self, query: np.ndarray, target_id: np.ndarray) -> np.ndarray:
         query = query.reshape(-1, self._storage.d)
         D, I = self._storage.search(query, self._storage.ntotal)
         D = D[0]
-        I = I[0] #For some reason FAISS return a numpy within a numpy that contains all the answer.
+        I = I[0]  # For some reason FAISS return a numpy within a numpy that contains all the answer.
 
         output = [False] * self._ntotal
         for i, index in enumerate(I):
@@ -51,3 +55,9 @@ class VectorDataBase():
         # Filter with id
         output = output * target_id
         return output
+
+    def get_id(self):
+        return self._id
+
+    def get_review(self):
+        return self._review
