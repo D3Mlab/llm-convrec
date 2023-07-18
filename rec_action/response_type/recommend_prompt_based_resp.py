@@ -150,8 +150,6 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                print(
-                    'Sorry.. running into some difficulties, this is going to take longer than ususal.')
 
                 self._notify_observers()
                 
