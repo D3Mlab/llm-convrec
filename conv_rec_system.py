@@ -41,6 +41,7 @@ from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
 from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
 from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
@@ -57,10 +58,11 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list,
-                 user_constraint_status_objects: list,
-                 openai_api_key_or_gradio_url: str,
-                 user_interface_str: str=None):
+    def __init__(self, config: dict, openai_api_key_or_gradio_url: str,
+                 user_defined_constraint_mergers: list = None,
+                 user_constraint_status_objects: list = None,
+                 user_defined_filter: list[Filter] = None,
+                 user_interface_str: str = None):
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
@@ -144,6 +146,9 @@ class ConvRecSystem(WarningObserver):
         # Initialize Filters
         metadata_wrapper = MetadataWrapper()
         filter_item = FilterApplier(metadata_wrapper)
+        if user_defined_filter is not None and not user_defined_filter:
+            filter_item.filters.extend(user_defined_filter)
+
         BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
