@@ -65,11 +65,9 @@ class ConvRecSystem(WarningObserver):
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
 
-        specific_location_required = config["SPECIFIC_LOCATION_REQUIRED"]
-
         # TEMP
-        constraints = config['ALL_CONSTRAINTS']
-        self._constraints = constraints
+        # constraints = config['ALL_CONSTRAINTS']
+        # self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
 
         model = config["MODEL"]
@@ -85,38 +83,40 @@ class ConvRecSystem(WarningObserver):
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-        
+        self._constraints = [constraints_category['key'] for constraints_category in constraints_categories]
+        cumulative_constraints = [constraints_category['key'] for constraints_category in constraints_categories
+                                  if constraints_category['is_cumulative']]
         #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = ConstraintsRemover(
-                    llm_wrapper, constraints)
+                    llm_wrapper, self._constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
                 constraints_extractor, constraints_classifier, geocoder_wrapper,
                 constraints_remover=constraints_remover,
-                cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
+                cumulative_constraints=set(cumulative_constraints),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         #TODO: generalize
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = SafeConstraintsRemover(
-                    llm_wrapper, default_keys=constraints)
+                    llm_wrapper, default_keys=self._constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
                 constraints_extractor, constraints_classifier, geocoder_wrapper,
                 constraints_remover=constraints_remover,
-                cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
+                cumulative_constraints=set(cumulative_constraints),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
        
         else:

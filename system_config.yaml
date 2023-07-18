@@ -3,32 +3,7 @@ TOPK_REVIEWS: 3
 IR_BERT_MODEL_NAME: "TASB"
 USER_INTENTS_CLASSIFIER: "MultilabelUserIntentsClassifier"
 NUM_REVIEWS_TO_RETURN: 3
-DEFAULT_LOCATION: None
-ALL_CONSTRAINTS:
-  [
-    "location",
-    "cuisine type",
-    "dish type",
-    "type of meal",
-    "price range",
-    "wait times",
-    "atmosphere",
-    "dietary restrictions",
-    "others",
-  ]
 CONSTRAINTS_UPDATER: "one_step_constraints_updater"
-MANDATORY_CONSTRAINTS: [["location"], ["cuisine type", "dish type"]]
-CUMULATIVE_CONSTRAINTS:
-  [
-    "dish type",
-    "type of meal",
-    "price range",
-    "wait times",
-    "atmosphere",
-    "dietary restrictions",
-    "others",
-  ]
-SPECIFIC_LOCATION_REQUIRED: True
 INTENT_PROMPTS_PATH: "prompt_files/gpt/user_intent_prompts"
 INQUIRE_PROMPT_FILENAME: "inquire_prompt.jinja"
 PROVIDE_PREFERENCE_PROMPT_FILENAME: "provide_preference_prompt.jinja"
@@ -67,7 +42,7 @@ ANSWER_MULT_QS_PROMPT: "seperate_questions_prompt.jinja"
 ANSWER_GPT_PROMPT: "gpt_prompt.jinja"
 ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
 
-PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
+PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/clothing_configs"
 MODEL: "gpt-3.5-turbo"
 SEARCH_ENGINE: "vector database"
 LLM: "GPT"
