@@ -203,17 +203,15 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             [f'{key}: {val}' for key, val in constraints.items()])
         return self._summarize_review_prompt.render(constraints=constraints_str, review=review, domain=self._domain)
 
-    #TODO: generalize once metadata stuff is done
     def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem):
         """
         Get metadata of an item used for recommend
         :param recommended_item: recommended item whose metadata to be returned
         """
-        metadata = f"""location: at {recommended_item.get('address')}, """
         attributes = ', '.join(
+            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items()] +
             [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items()])
-        metadata += attributes
-        return metadata
+        return attributes
     
     def _notify_observers(self) -> None:
         """

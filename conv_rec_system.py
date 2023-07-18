@@ -68,8 +68,6 @@ class ConvRecSystem(WarningObserver):
         domain = domain_specific_config_loader.load_domain()
 
         # TEMP
-        # constraints = config['ALL_CONSTRAINTS']
-        # self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
 
         model = config["MODEL"]
