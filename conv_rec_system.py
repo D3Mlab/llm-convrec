@@ -208,7 +208,7 @@ class ConvRecSystem(WarningObserver):
         # Initialize system
         self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
-            state, user_intents_classifier, rec_action_classifier, llm_wrapper)
+            state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
         
