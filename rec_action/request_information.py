@@ -9,18 +9,14 @@ class RequestInformation(RecAction):
     """
     Class representing Request Information recommender action.
 
-    :param mandatory_constraints: set of constraints that are mandatory to recommend
     """
     _mandatory_constraints: list[list[str]]
     _constraint_statuses: list[Status]
 
-
-    def __init__(self, constraint_statuses: list[Status], constraints_categories: list, hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, constraint_statuses: list[Status], mandatory_constraints: list[list[str]], hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._constraint_statuses = constraint_statuses
-        
-        self._mandatory_constraints = [constraint_category['key'] for constraint_category in
-                                             constraints_categories if constraint_category['is_mandatory']]
+        self._mandatory_constraints = mandatory_constraints
         self._hard_coded_responses = hard_coded_responses
 
     def get_name(self):
@@ -87,8 +83,8 @@ class RequestInformation(RecAction):
         :return: score representing how much this is appropriate recommender action for the current conversation.
         """
         hard_constraints = state_manager.get("hard_constraints")
-        is_ready = hard_constraints is not None and all(any(hard_constraints.get(lst) is not None and
-                                                            hard_constraints.get(lst) != [] for key in [1, 2, 3])
+        is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
+                                                            hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
         
         for constraint in self._constraint_statuses:

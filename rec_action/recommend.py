@@ -28,13 +28,11 @@ class Recommend(RecAction):
     _prompt_based_resp: PromptBasedResponse
 
     def __init__(self,  constraint_statuses: list,
-                 constraints_categories: list, hard_coded_based_resp: HardCodedBasedResponse, prompt_based_resp: PromptBasedResponse,
+                 mandatory_constraints: list[list[str]], hard_coded_based_resp: HardCodedBasedResponse, prompt_based_resp: PromptBasedResponse,
                  priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
-       
-        self._mandatory_constraints = [constraint_category['key'] for constraint_category in
-                                             constraints_categories if constraint_category['is_mandatory']]
-             
+
+        self._mandatory_constraints = mandatory_constraints
         self._constraint_statuses = constraint_statuses
         self._hard_coded_based_resp = hard_coded_based_resp
         self._prompt_based_resp = prompt_based_resp
@@ -89,8 +87,8 @@ class Recommend(RecAction):
         :return: score representing how much this is appropriate recommender action for the current conversation.
         """
         hard_constraints = state_manager.get("hard_constraints")
-        is_ready = hard_constraints is not None and all(any(hard_constraints.get(lst) is not None and
-                                                            hard_constraints.get(lst) != [] for key in [1, 2, 3])
+        is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
+                                                            hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
         
         for constraint in self._constraint_statuses:
