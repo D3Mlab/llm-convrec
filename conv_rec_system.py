@@ -193,8 +193,8 @@ class ConvRecSystem(WarningObserver):
         # Initialize Rec Action
         hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
         
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses, observers=[self])
         
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
