@@ -31,7 +31,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _summarize_review_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str, config: dict, observers = None):
+                 information_retriever: InformationRetriever, domain: str, config: dict, hard_coded_responses, observers = None):
         
         super().__init__(domain)
         
@@ -39,6 +39,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
+        self._hard_coded_responses = hard_coded_responses
 
 
         self._topk_items = int(config["TOPK_ITEMS"])
@@ -69,6 +70,10 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
 
         filtered_embedding_matrix = \
             self._filter_restaurants.filter_by_constraints(state_manager)
+        
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'NoRecommendation':
+                no_recom_response = response_dict['response']
 
         try:
             self._current_recommended_items = \
@@ -76,8 +81,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                                                                     self._topk_reviews, filtered_embedding_matrix)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            return f"Sorry, there is no {self._domain} that match your constraints."
-
+            return no_recom_response 
         explanation = self._get_explanation_for_each_item(state_manager)
         prompt = self._get_prompt_to_format_recommendation(explanation)
         resp = self._llm_wrapper.make_request(prompt)

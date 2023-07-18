@@ -11,8 +11,9 @@ class PostAcceptanceAction(RecAction):
     Class representing Answer recommender action.
     """
 
-    def __init__(self, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
+        self._hard_coded_responses = hard_coded_responses
 
     def get_name(self) -> str:
         """
@@ -59,7 +60,10 @@ class PostAcceptanceAction(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        return "Great! If you need any more assistance, feel free to ask."
+        
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'PostAcceptanceAction':
+                return response_dict['response']
 
     def is_response_hard_coded(self) -> bool:
         """

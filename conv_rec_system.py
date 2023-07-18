@@ -82,10 +82,15 @@ class ConvRecSystem(WarningObserver):
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
             
 
+        hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
+
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-        
+        mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_responses
+                                       if response_dict['action'] == 'RequestInformation'
+                                       and response_dict['constraints'] != []]
+
         #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
@@ -192,22 +197,21 @@ class ConvRecSystem(WarningObserver):
         
         # Initialize Rec Action
         
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, observers=[self])
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses, observers=[self])
         
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
-                       RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
-                       PostAcceptanceAction()]
-        
+                       Recommend(user_constraint_status_objects, mandatory_constraints, recc_hard_code_resp, recc_prompt_resp),
+                       RequestInformation(user_constraint_status_objects, mandatory_constraints, hard_coded_responses), PostRejectionAction(hard_coded_responses),
+                       PostAcceptanceAction(hard_coded_responses)]
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         
         # Initialize system
         self.user_interface = Terminal()
         self.dialogue_manager = DialogueManager(
-            state, user_intents_classifier, rec_action_classifier, llm_wrapper)
+            state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
         
