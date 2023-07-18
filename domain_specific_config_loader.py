@@ -275,3 +275,17 @@ class DomainSpecificConfigLoader:
         path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
         return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)
 
+
+    def load_hard_coded_responses(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        responses_df = pd.read_csv(path_to_csv, encoding='latin1')
+        responses = [
+            {
+                'action': row['action'],
+                'response': row['response'],
+                'constraints': row['constraints'].split(', ') if isinstance(row['constraints'], str) else []
+            }
+            for row in responses_df.to_dict("records")
+        ]
+        return responses
