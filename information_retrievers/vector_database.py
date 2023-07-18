@@ -18,7 +18,7 @@ class VectorDataBase:
     def __init__(self, database_file_path: str, id_file_path: str, review_file_path: str):
         self._storage = faiss.read_index(database_file_path)
         self._id = np.load(id_file_path, allow_pickle=True)
-        self._review = np.load(review_file_path)
+        self._review = np.load(review_file_path, allow_pickle=True)
         self._ntotal = self._storage.ntotal
 
     def filter_with_id(self, target_id: np.ndarray = None) -> np.ndarray:
