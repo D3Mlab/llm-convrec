@@ -3,8 +3,11 @@ from geopy.distance import geodesic
 from geopy.distance import great_circle
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 from typing import Any
+from information_retrievers.filter.filter import Filter
+import pandas as pd
 
-class LocationFilter:
+
+class LocationFilter(Filter):
     """
     Responsible to check whether the item match the constraint by checking
     whether the item is within max_distance from the location ( or one of the location)
@@ -33,34 +36,30 @@ class LocationFilter:
         self._geocoder_wrapper = geocoder_wrapper
 
     def filter(self, state_manager: StateManager,
-               metadata_wrapper: Any, item_ids: list) -> list[str]:
+               filtered_metadata: pd.DataFrame) -> pd.DataFrame:
         """
         Return true if the item is close enough to the location, false otherwise.
         If the value for the constraint key of interest is empty or none of the location is valid,
         it will return true.
 
         :param state_manager: current state
-        :param metadata_wrapper: holds metadata
-        :param item_ids: item ids remained after all other filters by checkers
+        :param filtered_metadata:
         :return: true if the item is close enough to the location, false otherwise
         """
         location_names = state_manager.get('hard_constraints').get(self._constraint_key)
         if not location_names:
-            return item_ids
+            return filtered_metadata
 
         lat_lon_of_locations, max_distances_in_km = self._get_lat_lon_and_max_distance(location_names)
         if not lat_lon_of_locations or not max_distances_in_km:
-            return item_ids
+            return filtered_metadata
 
-        item_id_to_keep = []
-        for item_id in item_ids:
-            item_metadata_dict = metadata_wrapper.get_item_dict_from_id(item_id)
-            lat_lon_of_item = (item_metadata_dict[self._metadata_field[0]], item_metadata_dict[self._metadata_field[1]])
+        filtered_metadata['is_close_enough'] = filtered_metadata.apply(
+            self._is_item_close_enough_to_loc, args=(lat_lon_of_locations, max_distances_in_km), axis=1)
+        filtered_metadata = filtered_metadata.loc[filtered_metadata['is_close_enough']]
+        filtered_metadata.drop('is_close_enough', axis=1)
 
-            if self._is_item_close_enough_to_loc(lat_lon_of_locations, lat_lon_of_item, max_distances_in_km):
-                item_id_to_keep.append(item_id)
-
-        return item_id_to_keep
+        return filtered_metadata
 
     def _get_lat_lon_and_max_distance(self, location_names: list[str]) -> tuple[list, list]:
         """
@@ -81,19 +80,19 @@ class LocationFilter:
 
         return lat_lon_of_loc, max_distance_in_km
 
-    def _is_item_close_enough_to_loc(self, lat_lon_of_loc: list[tuple[float, float]],
-                                     lat_lon_of_item: tuple[float, float],
+    def _is_item_close_enough_to_loc(self, row_of_df: pd.Series,
+                                     lat_lon_of_loc: list[tuple[float, float]],
                                      max_distance_in_km: list[float]) -> bool:
         """
         Check whether the distance between the item and the location is within max distance.
 
         :param lat_lon_of_loc: tuple where the first element is latitude and the second element is
         longitude of the location
-        :param lat_lon_of_item: tuple where the first element is latitude and the second element is
-        longitude of the item
         :param max_distance_in_km: maximum allowable distance
         :return: true or false on whether the distance between the item and the location is within max distance
         """
+        lat_lon_of_item = (row_of_df[self._metadata_field[0]], row_of_df[self._metadata_field[1]])
+
         for index in range(len(lat_lon_of_loc)):
             if self._distance_type == "geodesic":
                 distance_btw_loc_and_item_in_km \
@@ -146,3 +145,4 @@ class LocationFilter:
         :return: great circle distance between the location and the item in km
         """
         return great_circle(lat_lon_of_loc, lat_lon_of_item).km
+

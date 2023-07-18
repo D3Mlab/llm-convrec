@@ -42,3 +42,10 @@ class MetadataWrapper:
         """
         return self._items_metadata.shape[0]
 
+    def get_metadata(self) -> pd.DataFrame:
+        """
+        Return the metadata dataframe.
+
+        :return: metadata dataframe
+        """
+        return self._items_metadata
