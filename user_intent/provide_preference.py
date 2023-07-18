@@ -76,8 +76,9 @@ class ProvidePreference(UserIntent):
         self._constraints_updater.update_constraints(curr_state)
         
         # Update constraint status
-        for constraint in self._constraint_statuses:
-            constraint.update_status(curr_state)
+        if self._constraint_statuses is not None:
+            for constraint in self._constraint_statuses:
+                constraint.update_status(curr_state)
 
         return curr_state
 
