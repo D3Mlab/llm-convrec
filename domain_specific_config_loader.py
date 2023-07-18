@@ -224,7 +224,7 @@ class DomainSpecificConfigLoader:
         for row in filter_config_df.to_dict("records"):
             if row['type_of_filter'].strip() == "exact word matching":
                 filters_list.append(ExactWordMatchingFilter(
-                    row['key_in_state'].split(","), row['metadata_field']))
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
 
             elif row['type_of_filter'].strip() == "item":
                 filters_list.append(ItemFilter(
@@ -241,7 +241,7 @@ class DomainSpecificConfigLoader:
 
             elif row['type_of_filter'].strip() == "word in":
                 filters_list.append(WordInFilter(
-                    row['key_in_state'].split(","), row['metadata_field']))
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
 
         return filters_list
 

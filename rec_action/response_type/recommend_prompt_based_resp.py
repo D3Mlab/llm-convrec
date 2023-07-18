@@ -68,7 +68,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         logger.debug(f'Query: {query}')
 
         item_ids_to_keep = \
-            self._filter_restaurants.filter_by_checkers(state_manager)
+            self._filter_restaurants.apply_filter(state_manager)
 
         try:
             self._current_recommended_items = \

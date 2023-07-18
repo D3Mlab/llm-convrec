@@ -6,7 +6,7 @@ import pandas as pd
 
 class ItemFilter(Filter):
     """
-    Responsible to check the item is not in the item list in interest in state manager.
+    Responsible to do filtering by checking the item is not in the item list in interest in state manager.
 
     :param key_in_state_manager: key of interest in state manager
     :param metadata_field: metadata field of interest
@@ -20,16 +20,23 @@ class ItemFilter(Filter):
         self._metadata_field = metadata_field
 
     def filter(self, state_manager: StateManager,
-               filtered_metadata: pd.DataFrame) -> pd.DataFrame:
+               metadata: pd.DataFrame) -> pd.DataFrame:
+        """
+        Return a filtered version of metadata pandas dataframe.
+
+        :param state_manager: current state
+        :param metadata: items' metadata
+        :return: filtered version of metadata pandas dataframe
+        """
         item_list = state_manager.get(self._key_in_state_manager)
 
-        if item_list is None:
-            return filtered_metadata
+        if item_list is None or not item_list:
+            return metadata
 
-        filtered_metadata['is_item_not_in_item_list'] = filtered_metadata.apply(
-            self._is_item_not_in_item_list, args=tuple(item_list), axis=1)
-        filtered_metadata = filtered_metadata.loc[filtered_metadata['is_item_not_in_item_list']]
-        filtered_metadata.drop('is_item_not_in_item_list', axis=1)
+        metadata['is_item_not_in_item_list'] = metadata.apply(
+            self._is_item_not_in_item_list, args=(item_list,), axis=1)
+        filtered_metadata = metadata.loc[metadata['is_item_not_in_item_list']]
+        filtered_metadata = filtered_metadata.drop('is_item_not_in_item_list', axis=1)
 
         return filtered_metadata
 

@@ -9,9 +9,8 @@ import pandas as pd
 
 class LocationFilter(Filter):
     """
-    Responsible to check whether the item match the constraint by checking
-    whether the item is within max_distance from the location ( or one of the location)
-    specified by the user
+    Responsible to do filtering by checking whether the item is within max_distance
+    from the location ( or one of the location) specified by the user
 
     :param constraint_key: constraint key of interest
     :param metadata_field: metadata field of interest
@@ -36,28 +35,26 @@ class LocationFilter(Filter):
         self._geocoder_wrapper = geocoder_wrapper
 
     def filter(self, state_manager: StateManager,
-               filtered_metadata: pd.DataFrame) -> pd.DataFrame:
+               metadata: pd.DataFrame) -> pd.DataFrame:
         """
-        Return true if the item is close enough to the location, false otherwise.
-        If the value for the constraint key of interest is empty or none of the location is valid,
-        it will return true.
+        Return a filtered version of metadata pandas dataframe.
 
         :param state_manager: current state
-        :param filtered_metadata:
-        :return: true if the item is close enough to the location, false otherwise
+        :param metadata: items' metadata
+        :return: filtered version of metadata pandas dataframe
         """
         location_names = state_manager.get('hard_constraints').get(self._constraint_key)
-        if not location_names:
-            return filtered_metadata
+        if location_names is None or not location_names:
+            return metadata
 
         lat_lon_of_locations, max_distances_in_km = self._get_lat_lon_and_max_distance(location_names)
         if not lat_lon_of_locations or not max_distances_in_km:
-            return filtered_metadata
+            return metadata
 
-        filtered_metadata['is_close_enough'] = filtered_metadata.apply(
+        metadata['is_close_enough'] = metadata.apply(
             self._is_item_close_enough_to_loc, args=(lat_lon_of_locations, max_distances_in_km), axis=1)
-        filtered_metadata = filtered_metadata.loc[filtered_metadata['is_close_enough']]
-        filtered_metadata.drop('is_close_enough', axis=1)
+        filtered_metadata = metadata.loc[metadata['is_close_enough']]
+        filtered_metadata = filtered_metadata.drop('is_close_enough', axis=1)
 
         return filtered_metadata
 

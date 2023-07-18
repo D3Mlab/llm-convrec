@@ -21,7 +21,7 @@ class FilterApplier:
         domain_specific_config_loader = DomainSpecificConfigLoader()
         self._filters = domain_specific_config_loader.load_filters()
 
-    def filter_by_checkers(self, state_manager: StateManager) -> np.ndarray:
+    def apply_filter(self, state_manager: StateManager) -> np.ndarray:
         """
         Return a numpy array that has item ids that must be kept.
 
@@ -29,11 +29,14 @@ class FilterApplier:
         :return: item ids that must be kept
         """
         metadata = self._metadata_wrapper.get_metadata()
+        item_id_list = metadata['item_id'].tolist()
+        print(len(item_id_list))
 
         for filter_obj in self._filters:
             metadata = filter_obj.filter(state_manager, metadata)
 
         item_id_list = metadata['item_id'].tolist()
+        print(len(item_id_list))
         return np.array(item_id_list)
 
     @staticmethod

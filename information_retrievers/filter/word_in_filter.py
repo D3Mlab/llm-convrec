@@ -5,9 +5,9 @@ import pandas as pd
 
 class WordInFilter(Filter):
     """
-    Responsible to check whether the item match the constraint by checking
-    whether singular / plural form of a word in the constraint is in the specified metadata field
-    or singular / plural form of a word in the specified metadata field is in the constraint.
+    Responsible to do filtering by checking whether singular / plural form of a word
+    in the constraint is in the specified metadata field or singular / plural form of
+    a word in the specified metadata field is in the constraint.
 
     :param constraint_keys: constraint key of interest
     :param metadata_field: metadata field of interest
@@ -21,21 +21,28 @@ class WordInFilter(Filter):
         self._metadata_field = metadata_field
 
     def filter(self, state_manager: StateManager,
-               filtered_metadata: pd.DataFrame) -> pd.DataFrame:
+               metadata: pd.DataFrame) -> pd.DataFrame:
+        """
+        Return a filtered version of metadata pandas dataframe.
 
+        :param state_manager: current state
+        :param metadata: items' metadata
+        :return: filtered version of metadata pandas dataframe
+        """
         constraint_values = []
         for constraint_key in self._constraint_keys:
             constraint_value = state_manager.get('hard_constraints').get(constraint_key)
+
             if constraint_value is not None:
                 constraint_values.extend(constraint_value)
 
-        if constraint_values is None:
-            return filtered_metadata
+        if not constraint_values:
+            return metadata
 
-        filtered_metadata['does_item_match_constraint'] = filtered_metadata.apply(
-            self._does_item_match_constraint, args=tuple(constraint_values), axis=1)
-        filtered_metadata = filtered_metadata.loc[filtered_metadata['does_item_match_constraint']]
-        filtered_metadata.drop('does_item_match_constraint', axis=1)
+        metadata['does_item_match_constraint'] = metadata.apply(
+            self._does_item_match_constraint, args=(constraint_values,), axis=1)
+        filtered_metadata = metadata.loc[metadata['does_item_match_constraint']]
+        filtered_metadata = filtered_metadata.drop('does_item_match_constraint', axis=1)
 
         return filtered_metadata
 
