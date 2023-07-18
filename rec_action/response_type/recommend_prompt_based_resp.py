@@ -31,14 +31,15 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _summarize_review_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, config: dict, observers = None):
-        
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses, config: dict, observers = None):
+
         super().__init__(domain)
         
         self._filter_restaurants = filter_restaurants
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
+        self._hard_coded_responses = hard_coded_responses
 
 
         self._topk_items = int(config["TOPK_ITEMS"])
@@ -70,14 +71,17 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         item_ids_to_keep = \
             self._filter_restaurants.apply_filter(state_manager)
 
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'NoRecommendation':
+                no_recom_response = response_dict['response']
+
         try:
             self._current_recommended_items = \
                 self._information_retriever.get_best_matching_items(query, self._topk_items,
                                                                     self._topk_reviews, item_ids_to_keep)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            return f"Sorry, there is no {self._domain} that match your constraints."
-
+            return no_recom_response
         explanation = self._get_explanation_for_each_item(state_manager)
         prompt = self._get_prompt_to_format_recommendation(explanation)
         resp = self._llm_wrapper.make_request(prompt)

@@ -26,7 +26,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
     _convert_state_to_query_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, config: dict):
+                 information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses):
         
         super().__init__(domain)
         
@@ -57,6 +57,9 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
 
         filtered_embedding_matrix = \
             self._filter_restaurants.filter_by_constraints(state_manager)
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'NoRecommendation':
+                no_recom_response = response_dict['response']
 
         try:
             self._current_recommended_items = \
@@ -65,7 +68,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
             return self._format_hard_coded_resp(self._current_recommended_items)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            return f"Sorry, there is no {self._domain} that match your constraints."
+            return no_recom_response
 
     def convert_state_to_query(self, state_manager: StateManager) -> str:
         """
