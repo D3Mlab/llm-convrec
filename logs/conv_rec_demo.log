@@ -1,5 +1,5 @@
-2023-07-17 19:33:36,982 - dialogue_manager - DEBUG - user_input="i want healthy food"
-2023-07-17 19:33:36,982 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
+2023-07-18 13:52:22,092 - dialogue_manager - DEBUG - user_input="i want chinese food on jasper avenue"
+2023-07-18 13:52:22,093 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “Want more information”: User wants more information regarding a specific restaurants, instead of "ask for recommendation". Return False if the user is asking for a recommendation of a restaurants.  
 
 For example:
 
@@ -47,10 +47,10 @@ Response: False
 
 
 Now, provide a response to the actual user input:
-User input: i want healthy food
+User input: i want chinese food on jasper avenue
 Response: "
-2023-07-17 19:33:37,640 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-17 19:33:37,641 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
+2023-07-18 13:52:22,963 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-18 13:52:22,963 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “accept recommended restaurants”: User agrees, accepts, likes, or reacts positively towards a recommended restaurants. If the user input is yes or ok or thanks, return True. If they ask a followup question while accepting, also return True. 
 
 For example:
 
@@ -83,10 +83,10 @@ Response: False
 
 
 Now, provide a response to the actual user input:
-User input: i want healthy food
+User input: i want chinese food on jasper avenue
 Response: "
-2023-07-17 19:33:38,225 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-17 19:33:38,225 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
+2023-07-18 13:52:23,552 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-18 13:52:23,552 - gpt_wrapper - DEBUG - gpt_input="This is a restaurants recommender. Given a user input, please respond with True or False for whether the user input contains a user intent of “reject recommended restaurants”: User disagrees, rejects, dislikes, or reacts negatively towards a recommended restaurants. 
 
 For example:
 
@@ -116,11 +116,11 @@ Response: False
 
 
 Now, provide a response to the actual user input:
-User input: i want healthy food
+User input: i want chinese food on jasper avenue
 Response: "
-2023-07-17 19:33:38,941 - gpt_wrapper - DEBUG - gpt_output="False"
-2023-07-17 19:33:38,941 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x000001FB9F084990>]
-2023-07-17 19:33:38,942 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
+2023-07-18 13:52:23,857 - gpt_wrapper - DEBUG - gpt_output="False"
+2023-07-18 13:52:23,857 - dialogue_manager - DEBUG - user_intents=[<user_intent.provide_preference.ProvidePreference object at 0x0000019900735510>]
+2023-07-18 13:52:23,858 - gpt_wrapper - DEBUG - gpt_input="You are a restaurants recommender. Please give me the updated hard and soft constraints towards restaurants based on the user’s current input. Hard constraints are any constraints that is required in all restaurants. In contrast, soft constraints are the ones that doesn't have to be satisfied but it is preferred. Do not update constraints based on previous conversations.
 
 Here are the descriptions of each constraint categories that you have to extract:
 - location: The desired location of the restaurants.
@@ -214,12 +214,13 @@ Old Hard Constraints:
 None
 Old Soft Constraints:
 None
-User’s Current Input: "i want healthy food""
-2023-07-17 19:33:41,072 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
-- dietary restrictions: "healthy"
+User’s Current Input: "i want chinese food on jasper avenue""
+2023-07-18 13:52:25,200 - gpt_wrapper - DEBUG - gpt_output="New Hard Constraints:
+- location: "jasper avenue"
+- cuisine type: "chinese"
 
 New Soft Constraints:
 None"
-2023-07-17 19:33:41,465 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x000001FB9F85DC50>]
-2023-07-17 19:33:41,465 - dialogue_manager - DEBUG - rec_response="Could you provide the cuisine type or dish?"
-2023-07-17 19:33:41,465 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x000001FB9EC17450>, <state.message.Message object at 0x000001FB9ED4E4D0>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x000001FB9F616DD0>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'dietary restrictions': True, 'location': True}}, 'hard_constraints': {'dietary restrictions': ['healthy'], 'location': ['Jasper ave.']}, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x000001FB9F85DC50>]}
+2023-07-18 13:52:25,338 - dialogue_manager - DEBUG - rec_actions=[<rec_action.request_information.RequestInformation object at 0x0000019933611510>]
+2023-07-18 13:52:25,338 - dialogue_manager - DEBUG - rec_response="Great! Is there anything else I can help with?"
+2023-07-18 13:52:25,338 - dialogue_manager - DEBUG - state_manager={'conv_history': [<state.message.Message object at 0x0000019900051AD0>, <state.message.Message object at 0x0000019933589350>], 'unsatisfied_goals': [{'user_intent': <user_intent.ask_for_recommendation.AskForRecommendation object at 0x00000199001F9A10>, 'utterance_index': 0}], 'updated_keys': {'hard_constraints': {'location': True, 'cuisine type': True}}, 'hard_constraints': {'location': ['jasper avenue'], 'cuisine type': ['chinese']}, 'soft_constraints': None, 'current_rec_actions': [<rec_action.request_information.RequestInformation object at 0x0000019933611510>]}

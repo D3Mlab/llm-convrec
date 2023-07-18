@@ -199,8 +199,8 @@ class ConvRecSystem(WarningObserver):
         rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
                        ExplainPreference(),
                        Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
-                       RequestInformation(user_constraint_status_objects, constraints_categories,hard_coded_responses), PostRejectionAction(),
-                       PostAcceptanceAction()]
+                       RequestInformation(user_constraint_status_objects, constraints_categories,hard_coded_responses), PostRejectionAction(hard_coded_responses),
+                       PostAcceptanceAction(hard_coded_responses)]
         
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)

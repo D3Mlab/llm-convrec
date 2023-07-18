@@ -11,8 +11,9 @@ class PostRejectionAction(RecAction):
     Class representing Answer recommender action.
     """
 
-    def __init__(self, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, hard_coded_responses: list[dict],priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
+        self._hard_coded_responses = hard_coded_responses
 
     def get_name(self) -> str:
         """
@@ -59,7 +60,9 @@ class PostRejectionAction(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        return "I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?"
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'PostRejectionAction':
+                return response_dict['response']
 
     def is_response_hard_coded(self) -> bool:
         """

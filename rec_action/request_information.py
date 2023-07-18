@@ -66,7 +66,7 @@ class RequestInformation(RecAction):
                 if not constraints:
                     default_response = response_dict['response']
                 else:
-                    if hard_constraints is None or any(hard_constraints.get(constraint) is None or
+                    if hard_constraints is None or all(hard_constraints.get(constraint) is None or
                                                        hard_constraints.get(constraint) == [] for constraint in constraints):
                         return response_dict['response']
 
