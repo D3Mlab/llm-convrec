@@ -12,19 +12,16 @@ class RejectRecommendation(UserIntent):
     """
     Class representing the Reject Recommendation user intent.
 
-    :param rejected_restaurants_extractor: object used to extract rejected restaurants
-    :param current_restaurants_extractor: object used to extract the restaurant that the user is referring to from the users input
+    :param rejected_items_extractor: object used to extract rejected restaurants
+    :param current_items_extractor: object used to extract the restaurant that the user is referring to from the users input
     """
 
-    _current_restaurants_extractor: CurrentItemsExtractor
-    _rejected_restaurants_extractor: RejectedItemsExtractor
+    _current_items_extractor: CurrentItemsExtractor
+    _rejected_items_extractor: RejectedItemsExtractor
 
-    def __init__(self, rejected_restaurants_extractor: RejectedItemsExtractor, current_restaurants_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str):
-        self._rejected_restaurants_extractor = rejected_restaurants_extractor
-        self._current_restaurants_extractor = current_restaurants_extractor
-
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+    def __init__(self, rejected_items_extractor: RejectedItemsExtractor, current_items_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str, config: dict):
+        self._rejected_items_extractor = rejected_items_extractor
+        self._current_items_extractor = current_items_extractor
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
@@ -56,34 +53,34 @@ class RejectRecommendation(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        # Update current restaurant
-        reccommended_restaurants = curr_state.get("recommended_items")
+        # Update current items
+        reccommended_items = curr_state.get("recommended_items")
 
-        if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(
-                reccommended_restaurants, curr_state.get("conv_history"))
+        if reccommended_items is not None and reccommended_items != []:
+            curr_items = self._current_items_extractor.extract(
+                reccommended_items, curr_state.get("conv_history"))
 
-            # If current restaurant is [] then just keep it the same
-            if curr_res != []:
-                curr_state.update("curr_items", curr_res)
+            # If current items are [] then just keep it the same
+            if curr_items != []:
+                curr_state.update("curr_items", curr_items)
 
-        # Update rejected restaurants
+        # Update rejected items
         if curr_state.get("recommended_items") is not None:
-            all_mentioned_restaurants = list(
+            all_mentioned_items = list(
                 chain.from_iterable(curr_state.get("recommended_items")))
         else:
-            all_mentioned_restaurants = []
+            all_mentioned_items = []
 
-        restaurants = self._rejected_restaurants_extractor.extract(
+        items = self._rejected_items_extractor.extract(
             curr_state.get("conv_history"),
-            all_mentioned_restaurants,
+            all_mentioned_items,
             [] if curr_state.get(
                 "curr_items") is None else curr_state.get("curr_items")
         )
 
         if curr_state.get('rejected_items') is None:
             curr_state.update('rejected_items', [])
-        curr_state.get('rejected_items').extend(restaurants)
+        curr_state.get('rejected_items').extend(items)
         curr_state.get("updated_keys")['rejected_items'] = True
         return curr_state
 

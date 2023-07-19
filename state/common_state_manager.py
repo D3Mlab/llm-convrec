@@ -173,4 +173,4 @@ class CommonStateManager(StateManager):
         """
         self._data = self._data_original.copy()
         self._data['conv_history'] = []
-        self._default_goal = copy.deepcopy(self._default_goal_original)
+        self._default_goal = self._default_goal_original

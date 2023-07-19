@@ -21,19 +21,19 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     """
 
     def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict],
-                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger]):
+                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger], config: dict):
         self._llm_wrapper = llm_wrapper
         self._constraints_categories = constraints_categories
         self._constraint_keys = [
             constraint_category['key'] for constraint_category in constraints_categories]
-        self._cumulative_constraints_keys = {constraint_category['key'] for constraint_category in
-                                             constraints_categories if constraint_category['is_cumulative']}
+        self._cumulative_constraints_keys = [constraint_category['key'] for constraint_category in
+                                             constraints_categories if constraint_category['is_cumulative']]
+        self._key_to_default_value = {constraint_category["key"]: constraint_category["default_value"] for constraint_category in constraints_categories}
         
         self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
 
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(
@@ -63,7 +63,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         if updated_hard_constraints_keys is not None and updated_hard_constraints_keys != {}:
             state_manager.get("updated_keys")[
                 "hard_constraints"] = updated_hard_constraints_keys
-        if updated_soft_constraints_keys is not None and updated_hard_constraints_keys != {}:
+        if updated_soft_constraints_keys is not None and updated_soft_constraints_keys != {}:
             state_manager.get("updated_keys")[
                 "soft_constraints"] = updated_soft_constraints_keys
 
@@ -97,6 +97,14 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             for key in set(state_manager.get("hard_constraints")):
                 if not state_manager.get("hard_constraints")[key]:
                     state_manager.get('hard_constraints').pop(key)
+        
+        #Update constraint to default value if applicable
+        for key, default_val in self._key_to_default_value.items():
+            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None:
+                # Update hard constraints 
+                state_manager.get('hard_constraints')[key] = [default_val]
+                #Update updated keys
+                state_manager.get("updated_keys")["hard_constraints"][key] = True
 
     def _generate_prompt(self, state_manager: StateManager) -> str:
         """
@@ -200,12 +208,13 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :param new_constraints: new hard or soft constraints
         :param updated_keys: updated keys in this constraints
         """
-        for constraint_merger in self._user_defined_constraint_mergers:
-            if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
-                new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
-                    old_constraints.get(constraint_merger.get_constraint()),
-                    new_constraints.get(constraint_merger.get_constraint())
-                )
+        if self._user_defined_constraint_mergers is not None:
+            for constraint_merger in self._user_defined_constraint_mergers:
+                if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
+                    new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
+                        old_constraints.get(constraint_merger.get_constraint()),
+                        new_constraints.get(constraint_merger.get_constraint())
+                    )
         
         for key in new_constraints:
             if key not in self._cumulative_constraints_keys and key in updated_keys and key in old_constraints:

@@ -11,8 +11,9 @@ class PostAcceptanceAction(RecAction):
     Class representing Answer recommender action.
     """
 
-    def __init__(self, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
+        self._hard_coded_responses = hard_coded_responses
 
     def get_name(self) -> str:
         """
@@ -28,17 +29,7 @@ class PostAcceptanceAction(RecAction):
 
         :return: description of this recommender action
         """
-        return "Recommender responds to the user after user accepts a recommended restaurant"
-
-    def get_response_info(self, state_manager: StateManager) -> dict:
-        """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-        It asks LLM to generate recommendation based on the current state.
-
-        :param state_manager: current state representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"predefined_response": self.get_hard_coded_response(state_manager)}
+        return "Recommender responds to the user after user accepts a recommended item"
 
     def get_priority_score(self, state_manager: StateManager) -> float:
         """
@@ -53,13 +44,12 @@ class PostAcceptanceAction(RecAction):
                     return self.priority_score_range[0] + (goal["utterance_index"]-0.5) / len(state_manager.get("conv_history")) * (self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def get_prompt(self, state_manager: StateManager) -> str | None:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         return None
 
@@ -70,7 +60,10 @@ class PostAcceptanceAction(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        return "Great! Enjoy your meal! If you need any more assistance, feel free to ask."
+        
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'PostAcceptanceAction':
+                return response_dict['response']
 
     def is_response_hard_coded(self) -> bool:
         """

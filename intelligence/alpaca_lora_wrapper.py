@@ -1,12 +1,9 @@
-import os
 import logging
 
 from intelligence.llm_wrapper import LLMWrapper
-from dotenv import load_dotenv
 
 from gradio_client import Client
 
-load_dotenv()
 logger = logging.getLogger('alpaca_lora_wrapper')
 
 
@@ -15,9 +12,13 @@ class AlpacaLoraWrapper(LLMWrapper):
     Class for wrapping around the Alpaca Lora LLM.
     """
 
-    def __init__(self):
-        self._client = Client(os.environ["GRADIO_URL"])
+    def __init__(self, gradio_url: str, temperature: float=0.1):
+        try:
+            self._client = Client(gradio_url)
+        except:
+            raise Exception("The provided Gradio URL is invalid. Please input a correct url and retry.")
         self._client.view_api()
+        self._temperature = temperature
 
     def make_request(self, message: str) -> str:
         """
@@ -30,7 +31,7 @@ class AlpacaLoraWrapper(LLMWrapper):
 
         try:
             # The following parameter order reflects the API parameter sequence and type from the view_api() call above.
-            response = self._client.predict(message, "", 0.1, 0.75, 40, 4, 256)
+            response = self._client.predict(message, "", self._temperature, 0.75, 40, 4, 1000)
         except Exception as e:
             return e
 

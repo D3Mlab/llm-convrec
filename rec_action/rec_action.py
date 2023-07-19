@@ -26,22 +26,12 @@ class RecAction:
         """
         raise NotImplementedError()
 
-    def get_response_info(self, state_manager: StateManager) -> str:
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Returns recommender's response corresponding to this recommender action based on the given statemanager.
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current statemanager.
-        """
-        raise NotImplementedError()
-
-    def get_prompt(self, state_manager: StateManager) -> str | None:
-        """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
-
-        :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         raise NotImplementedError()
 

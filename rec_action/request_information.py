@@ -1,7 +1,6 @@
-import re
-
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
+from state.status import Status
 from user_intent.ask_for_recommendation import AskForRecommendation
 from state.message import Message
 
@@ -10,17 +9,15 @@ class RequestInformation(RecAction):
     """
     Class representing Request Information recommender action.
 
-    :param mandatory_constraints: set of constraints that are mandatory to recommend
     """
     _mandatory_constraints: list[list[str]]
+    _constraint_statuses: list[Status]
 
-    def __init__(self, priority_score_range: tuple[float, float] = (1, 10), mandatory_constraints: str = None,
-                 specific_location_required: bool = True) -> None:
+    def __init__(self, constraint_statuses: list[Status], mandatory_constraints: list[list[str]], hard_coded_responses: list[dict], priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
-        if mandatory_constraints is None:
-            mandatory_constraints = [['location']]
+        self._constraint_statuses = constraint_statuses
         self._mandatory_constraints = mandatory_constraints
-        self._specific_location_required = specific_location_required
+        self._hard_coded_responses = hard_coded_responses
 
     def get_name(self):
         """
@@ -38,24 +35,12 @@ class RequestInformation(RecAction):
         """
         return "Recommender requests the user’s preference"
 
-    def get_response_info(self, state_manager: StateManager):
+    def get_prompt_response(self, state_manager: StateManager) -> str | None:
         """
-        Returns recommender's response corresponding to this recommender action based on the given state.
-        It asks for location if location isn't found in the hard constraints of the state and asks for general
-        preference otherwise.
-
-        :param state_manager: current statemanager representing the conversation
-        :return: recommender's response corresponding to this recommender action based on the current state.
-        """
-        return {"predefined_response": self.get_hard_coded_response(state_manager)}
-
-    def get_prompt(self, state_manager: StateManager) -> str | None:
-        """
-        Return prompt that can be inputted to LLM to produce recommender's response. 
-        Return None if it doesn't exist. 
+        Return prompt based recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt that can be inputted to LLM to produce recommender's response or None if it doesn't exist. 
+        :return: prompt based recommender's response corresponding to this action
         """
         return None
 
@@ -66,26 +51,22 @@ class RequestInformation(RecAction):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
+        
         hard_constraints = state_manager.get("hard_constraints")
+        default_response = None
 
-        for constraints in self._mandatory_constraints:
-            formatted_constraints = [key for key in constraints]
-            if len(formatted_constraints) > 1:
-                formatted_constraints[-1] = f'or {formatted_constraints[-1]}'
-            formatted_constraints = ', '.join(formatted_constraints).replace(', or ', ' or ')
+        for response_dict in self._hard_coded_responses:
+            if response_dict['action'] == 'RequestInformation':
+                constraints = response_dict['constraints']
 
-            if hard_constraints is None or all(hard_constraints.get(constraint) is None or
-                                               hard_constraints.get(constraint) == [] for constraint in constraints):
-                return f"Can you provide the {formatted_constraints}?"
-            elif 'location' in constraints and state_manager.get('location_type') == 'invalid':
-                return "I am sorry, I don't know the given location. Can you provide different location?"
-            elif 'location' in constraints and not state_manager.get("specific_location_asked") and \
-                    self._specific_location_required and \
-                    not state_manager.get('location_type') == 'specific':
-                state_manager.update("specific_location_asked", True)
-                return f'Could you provide a more specific location, such as the name of the street, avenue, or intersection?'
+                if not constraints:
+                    default_response = response_dict['response']
+                else:
+                    if hard_constraints is None or all(hard_constraints.get(constraint) is None or
+                                                       hard_constraints.get(constraint) == [] for constraint in constraints):
+                        return response_dict['response']
 
-        return "Are there any additional preferences, requirements, or specific features you would like the restaurant to have?"
+        return default_response
 
     def is_response_hard_coded(self) -> bool:
         """
@@ -106,10 +87,10 @@ class RequestInformation(RecAction):
                                                             hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
 
-        if state_manager.get('location_type') is None or state_manager.get('location_type') == 'invalid' or \
-                state_manager.get('location_type') == 'valid' and self._specific_location_required and \
-                not state_manager.get("specific_location_asked"):
-            is_ready = False
+        if self._constraint_statuses is not None:
+            for constraint in self._constraint_statuses:
+                if constraint.get_status() is None or constraint.get_status() == 'invalid':
+                    is_ready = False
 
         if state_manager.get("unsatisfied_goals") is not None:
             for goal in state_manager.get("unsatisfied_goals"):
