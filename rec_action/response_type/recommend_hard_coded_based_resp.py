@@ -26,7 +26,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
     _convert_state_to_query_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses):
+                 information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses: list[dict]):
         
         super().__init__(domain)
         

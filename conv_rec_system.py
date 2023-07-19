@@ -190,9 +190,9 @@ class ConvRecSystem(WarningObserver):
         
         # Initialize Rec Action
         recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses, config, observers=[self])
         
-        answer_prompt_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self])
+        answer_prompt_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses, observers=[self])
 
         rec_actions = [Answer(answer_prompt_resp),
                        ExplainPreference(),
