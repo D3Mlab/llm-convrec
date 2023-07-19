@@ -26,13 +26,6 @@ class Answer(RecAction):
     :param llm_wrapper: object to make request to LLM
     """
 
-    _num_of_reviews_to_return: int
-    _filter_restaurants: FilterApplier
-    _information_retriever: InformationRetrieval
-    _llm_wrapper: LLMWrapper
-    _prompt: str
-    _observers: list[WarningObserver]
-
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str,
                  observers=None,
@@ -57,34 +50,31 @@ class Answer(RecAction):
         with open("system_config.yaml") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
 
-        self.env = Environment(loader=FileSystemLoader(
+        env = Environment(loader=FileSystemLoader(
             self.config['ANSWER_PROMPTS_PATH']), trim_blocks=True, lstrip_blocks=True)
 
-        self.gpt_template = self.env.get_template(
+        self.gpt_template = env.get_template(
             self.config['ANSWER_GPT_PROMPT'])
 
-        self.mult_qs_template = self.env.get_template(
+        self.mult_qs_template = env.get_template(
             self.config['ANSWER_MULT_QS_PROMPT'])
 
-        self.verify_metadata_template = self.env.get_template(
+        self.verify_metadata_template = env.get_template(
             self.config['ANSWER_VERIFY_METADATA_RESP_PROMPT'])
 
-        self.format_mult_qs_template = self.env.get_template(
+        self.format_mult_qs_template = env.get_template(
             self.config['ANSWER_MULT_QS_FORMAT_RESP_PROMPT'])
 
-        self.format_mult_resp_template = self.env.get_template(
+        self.format_mult_resp_template = env.get_template(
             self.config['ANSWER_FORMAT_MULTIPLE_RESP_PROMPT'])
 
-        self.extract_category_template = self.env.get_template(
+        self.extract_category_template = env.get_template(
             self.config['ANSWER_EXTRACT_CATEGORY_PROMPT'])
 
-        self.hours_template = self.env.get_template(
-            self.config['ANSWER_HOURS_PROMPT'])
-
-        self.attr_template = self.env.get_template(
+        self.metadata_template = env.get_template(
             self.config['ANSWER_ATTR_PROMPT'])
 
-        self.ir_template = self.env.get_template(
+        self.ir_template = env.get_template(
             self.config['ANSWER_IR_PROMPT'])
 
         domain_specific_config_loader = DomainSpecificConfigLoader()
@@ -137,7 +127,7 @@ class Answer(RecAction):
         :param state_manager: current state representing the conversation
         :return: prompt based recommender's response corresponding to this action
         """
-        return self._llm_wrapper.make_request(self._prompt)
+        return None
 
     def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
         """
@@ -150,7 +140,7 @@ class Answer(RecAction):
         curr_mentioned_restaurants: list[RecommendedItem] = state_manager.get(
             "curr_items")
 
-        answer_all_q = []
+        answers = {}
 
         if curr_mentioned_restaurants is not None:
 
@@ -161,8 +151,8 @@ class Answer(RecAction):
                 logger.debug(
                     f'The question is {question}')
 
-                answer_one_q = {}
                 llm_resp = ""
+                answers[question] = {}
 
                 for curr_mentioned_restaurant in curr_mentioned_restaurants:
                     logger.debug(
@@ -181,8 +171,7 @@ class Answer(RecAction):
                         metadata_resp = (self._create_resp_from_metadata(
                             question, category, curr_mentioned_restaurant))
 
-                        answer_one_q[curr_mentioned_restaurant.get_name()
-                                     ] = metadata_resp
+                        answers[question][curr_mentioned_restaurant.get_name()] = metadata_resp
 
                     if not self._is_category_valid(category, curr_mentioned_restaurant) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
 
@@ -191,8 +180,7 @@ class Answer(RecAction):
                         ir_resp = self._create_resp_from_ir(
                             question, curr_mentioned_restaurant)
 
-                        answer_one_q[curr_mentioned_restaurant.get_name()
-                                     ] = ir_resp
+                        answers[question][curr_mentioned_restaurant.get_name()] = ir_resp
 
                         if "I do not know" in ir_resp:
                             logger.debug(
@@ -204,22 +192,18 @@ class Answer(RecAction):
                             llm_resp = self._llm_wrapper.make_request(
                                 prompt)
 
-                            answer_one_q[curr_mentioned_restaurant.get_name()
-                                         ] = llm_resp
+                            answers[question][curr_mentioned_restaurant.get_name()] = llm_resp
+                    
 
                 mult_rest_resp = self._format_multiple_restaurant_resp(
-                    question, curr_mentioned_restaurants, answer_one_q)
-
-                # If only one question then add note to beginning of response
-                if llm_resp != "" and len(user_questions) == 1:
-                    mult_rest_resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n' + mult_rest_resp
-
-                answer_all_q.append(mult_rest_resp)
+                    question, curr_mentioned_restaurants, answers[question])
+                
+                answers[question] = mult_rest_resp
 
         else:
             return "Please ask questions about previously recommended restaurants."
 
-        return self._format_multiple_qs_resp(state_manager, answer_all_q, llm_resp != "")
+        return self._format_multiple_qs_resp(state_manager, answers, llm_resp != "")
 
     def _seperate_input_into_multiple_qs(self, state_manager: StateManager) -> list[str]:
         """
@@ -268,12 +252,11 @@ class Answer(RecAction):
         :param recommended_restaurant: object representing the reccommended restaurant user is referring to
         :return: bool
         """
-        valid_categories = ["address", "city", "state",
-                            "postal_code", "stars", "review_count", "hours"]
+        valid_categories = []
 
-        for key in recommended_restaurant.get_optional_data():
-            valid_categories.append(key)
-
+        for key in recommended_restaurant.get_data():
+            valid_categories.append(key)        
+            
         for valid_category in valid_categories:
             if self._remove_punct_string(valid_category) in self._remove_punct_string(classified_category):
                 return True
@@ -299,7 +282,7 @@ class Answer(RecAction):
         else:
             return False
 
-    def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: list[str], is_llm_res: bool) -> str:
+    def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: dict, is_llm_res: bool) -> str:
         """
         Returns the response. Returns either an empty string indicating that more work needs to be done to formulate the response or the actual string response.
 
@@ -308,24 +291,28 @@ class Answer(RecAction):
         :param is_llm_res: boolean indicating if the answer was created using an LLM or not
         :return: str
         """
-
-        user_input = state_manager.get("conv_history")[-1].get_content()
+        
         resp = ""
 
         if (len(all_answers) > 1):
+            user_input = state_manager.get("conv_history")[-1].get_content()
 
-            self._prompt = self.format_mult_qs_template.render(
-                user_input=user_input, all_answers=all_answers)
-
-            if is_llm_res:
-                resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n'
+            prompt = self.format_mult_qs_template.render(
+                user_input=user_input, all_answers=list(all_answers.values()))
+            
+            resp = self._llm_wrapper.make_request(prompt)
 
         else:
-            resp = all_answers[0]
+            resp = list(all_answers.values())[0]
+        
+        if is_llm_res:
+            resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n' + resp
 
-            if '"' in resp:
-                # get rid of double quotes (gpt sometimes outputs it)
-                resp = resp.replace('"', "")
+        if '"' in resp:
+            # get rid of double quotes (gpt sometimes outputs it)
+            resp = resp.replace('"', "")
+        
+        resp = resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
         return resp
 
@@ -382,13 +369,10 @@ class Answer(RecAction):
         :return: RecommendedRestaurant.
         """
 
-        categories = "address, city, state, postal_code, stars, review_count, hours,"
+        categories = ""
 
-        for key in curr_restaurant.get_optional_data():
-            if key == 'GoodForMeal':
-                categories += f" best meals,"
-            else:
-                categories += f" {key},"
+        for key in curr_restaurant.get_data():
+            categories += f" {key},"
 
         categories += " or none"
 
@@ -409,259 +393,15 @@ class Answer(RecAction):
 
         resp = ""
 
-        if "address" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()} is located at {recommended_restaurant.get('address')} in {recommended_restaurant.get('city')}, {recommended_restaurant.get('state')}."
+        for key, val in recommended_restaurant.get_data().items():
+            if self._remove_punct_string(key) in self._remove_punct_string(category):
 
-        elif "city" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()} is in {recommended_restaurant.get('city')}."
-
-        elif 'state' in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()} is in {recommended_restaurant.get('state')}."
-
-        elif self._remove_punct_string('postal_code') in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()}'s postal code is {recommended_restaurant.get('postal_code')}."
-
-        elif "stars" in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()} has a rating of {recommended_restaurant.get('stars')} / 5."
-
-        elif self._remove_punct_string('review_count') in self._remove_punct_string(category):
-            resp = f"{recommended_restaurant.get_name()} has {recommended_restaurant.get('review_count')} reviews."
-
-        elif 'hours' in self._remove_punct_string(category):
-
-            hours = recommended_restaurant.get('hours')
-
-            resp = f"{recommended_restaurant.get_name()} is "
-
-            for key, val in hours.items():
-                if val == '0:0-0:0':
-                    resp += f'not open on {key}, '
-                else:
-                    val = val.replace(':', '.')
-
-                    try:
-                        time_open, time_close = val.split('-')
-                    except:
-
-                        prompt = self.hours_template.render(
-                            question=question, recommended_item=recommended_restaurant)
-
-                        return self._llm_wrapper.make_request(prompt)
-
-                    time_open, time_close = self._format_time_open_and_close(
-                        time_open, time_close)
-
-                    resp += f'is open on {key} from {time_open} to {time_close}, '
-
-            resp = f'{resp[:-2]}.'
-
-        else:
-            for key, val in recommended_restaurant.get_optional_data().items():
-                if self._remove_punct_string(key) in self._remove_punct_string(category):
-
-                    prompt = self.attr_template.render(
-                        question=question, key=key, val=val)
-
-                    resp = self._get_resp_from_attr(
-                        key, val, recommended_restaurant.get_name(), prompt)
+                prompt = self.metadata_template.render(
+                    question=question, key=key, val=val)
+                
+                return self._llm_wrapper.make_request(prompt)
 
         return resp
-
-    def _get_resp_from_attr(self, key: str, val: str | dict, restaurant_name: str, prompt: str) -> str:
-        """ 
-        Get response if metadata category is an attribute
-
-        :param key: the attribute category (ex. HasRestaurant)
-        :param value: the value of the attribute category (ex. True)
-        :param restaurant_name: the name of the restaurant
-        :param prompt: prompt to use if cannot get the metadata response
-        :returns: metadata response
-        """
-        dict_val = {}
-        str_val = val.split()[0]
-
-        # if value is a dictionary, assume there is no nested dictionarys and just has key and values which are all strings.
-        if '{' in val:
-            val = val.replace('{', '')
-            val = val.replace('}', '')
-
-            try:
-                val_list = val.split(',')
-            except:
-                return self._llm_wrapper.make_request(prompt)
-
-            for single_attr in val_list:
-                try:
-                    key_single_attr, val_single_attr = single_attr.split(':')
-                except:
-                    return self._llm_wrapper.make_request(prompt)
-
-                dict_val[key_single_attr.strip()] = val_single_attr.strip()
-
-        # format response if value is a string
-        # TODO: see if its in the acceptable range of values and if not them prompt to gpt  -> range of values = {'very_loud', 'average', '1', 'no', '3', 'full_bar', 'casual', '4', 'False', 'quie't, 'None', 'none', '2', 'True', 'paid', 'free', 'formal', 'loud', 'outdoor', 'dressy', 'beer_and_wine'}
-
-        if dict_val == {}:
-            # if string is not valid then return empty string
-            if not self._valid_keys_for_str_attr(key, str_val):
-                return self._llm_wrapper.make_request(prompt)
-
-            resp = self._get_attr_resp_from_str(
-                key, str_val, restaurant_name, prompt)
-
-        # format response if value is the dictionary
-        if dict_val != {}:
-            # If keys and values are not valid then return empty string
-            if not self._valid_keys_for_dict_attr(key, dict_val):
-                return self._llm_wrapper.make_request(prompt)
-
-            resp = self._get_attr_resp_from_dict(
-                key, dict_val, restaurant_name)
-
-        return resp
-
-    def _extract_resp_str(self, dict_val: dict, attribute: str, val_to_return_str: bool, str_to_return: str) -> str:
-        """ 
-        If metadata attribute category has a dict type value then extract the individual values in the dict or return an empty string if it doesn't exist
-
-        :param dict_val: dictionary of the metadata value  ex. {dj: False, live: False, jukebox: None, video: False}
-        :param attribute: the key in dict_val you want the value of (ex. dj)
-        :returns: the value from dict_val (ex. False)
-        """
-        if dict_val.get(attribute) is not None and dict_val.get(attribute) != 'None' and dict_val.get(attribute) == val_to_return_str:
-            return str_to_return
-        else:
-            return ""
-
-    def _has_expected_keys_and_values(self, expected_keys: list, attr_dict: dict, range_expected_values=["False", "True", "None"]) -> bool:
-        """ 
-        See if the keys and values in the metadata attribute category's dictionary are valid. Helper function for _valid_keys_for_dict_attr(self, curr_key, dict_val)
-
-        :param attr_dict: dictionary of the metadata value  ex. {dj: False, live: False, jukebox: None, video: False}
-        :param expected_keys: the keys that you would expect in attr_dict (ex. ["dj", "live"])
-        :param range_expected_values: list representing the expected values in attr_dict
-        :returns: boolean if it has the expected keys and values
-        """
-        for key, val in attr_dict.items():
-            if key not in expected_keys:
-                logger.debug(f'Foreign key is {key} in dict {attr_dict}')
-                return False
-
-            if val not in range_expected_values:
-                logger.debug(f'Foreign val is {val} in dict {attr_dict}')
-                return False
-
-    def _valid_keys_for_dict_attr(self, curr_key, dict_val) -> bool:
-        """ 
-        If metadata attribute category's value is a dictionary then see if the keys and values in the metadata attribute category's dictionary are valid
-
-        :param curr_key: metadata attribute category
-        :param dict_val: dictionary of the metadata value  ex. {dj: False, live: False, jukebox: None, video: False}
-        :returns: boolean if it has the expected keys and values
-        """
-        if curr_key == 'Music':
-            expected_music_keys = [
-                'dj', 'live', 'jukebox', 'video', 'background_music', 'karaoke', 'no_music']
-            if (self._has_expected_keys_and_values(expected_music_keys, dict_val)):
-                return True
-            else:
-                return False
-
-        elif curr_key == 'Ambience':
-            expected_ambience_keys = [
-                'touristy', 'hipster', 'romantic', 'intimate', 'trendy', 'upscale', 'classy', 'casual', 'divey']
-            if (self._has_expected_keys_and_values(expected_ambience_keys, dict_val)):
-                return True
-            else:
-                return False
-
-        elif curr_key == 'PopularNights':
-            expected_best_nights_keys = [
-                'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-            if (self._has_expected_keys_and_values(expected_best_nights_keys, dict_val)):
-                return True
-            else:
-                return False
-
-        elif curr_key == 'GoodForMeal':
-            expected_good_meal_keys = [
-                'dessert', 'lunch', 'dinner', 'brunch', 'breakfast', 'latenight']
-            if (self._has_expected_keys_and_values(expected_good_meal_keys, dict_val)):
-                return True
-            else:
-                return False
-
-        elif curr_key == 'BusinessParking':
-            expected_parking_keys = [
-                'garage', 'street', 'validated', 'lot', 'valet']
-            if (self._has_expected_keys_and_values(expected_parking_keys, dict_val)):
-                return True
-            else:
-                return True
-
-        elif curr_key == 'DietaryRestrictions':
-            expected_dietary_restrictions_keys = ['dairy-free', 'gluten-free', 'vegan',
-                                                  'kosher', 'halal', 'soy-free', 'vegetarian']
-            if (self._has_expected_keys_and_values(expected_dietary_restrictions_keys, dict_val)):
-                return True
-            else:
-                return False
-
-        # invalid key
-        else:
-            return False
-
-    def _valid_keys_for_str_attr(self, curr_key, val) -> bool:
-        """ 
-        Determines if metadata attribute key is valid or not for values that are strings
-
-        :param key: the attribute category (ex. HasRestaurant)
-        :param value: the value of the attribute category (ex. True)
-        :returns: bool representing if metadata attribute key is valid
-        """
-        valid_keys = ['PriceRange', 'Alcohol', 'WiFi', 'GoodForGroups', 'MustMakeReservation', 'BusinessAcceptsCreditCards', 'HasDelivery', 'HasReservations', 'Smoking', 'HasTakeOut',
-                      'WheelchairAccessible', 'GoodForKids', 'HappyHour', 'DogsAllowed', 'GoodForDancing', 'BYOB', 'HasTV', 'NoiseLevel', 'BikeParking', 'HasTableService', 'Corkage', 'CoatCheck', 'OutdoorSeating', 'DriveThru', 'Attire', 'Caters']
-
-        if curr_key not in valid_keys and val != 'None':
-            logger.debug(f'Foreign key is {curr_key}')
-            return False
-
-        return True
-
-    def _format_time_open_and_close(self, time_open: str, time_close: str) -> tuple:
-        """ 
-        If metadata key is hours then format the time the restaurant opens and time the restaurant closes.
-
-        :param time_open: time the restaurant opens
-        :param time_close: time the restaurant closes
-        :returns: new time open and time close values
-        """
-        if time_open[::-1].find('.') == 1:
-            time_open += '0'
-
-        if time_close[::-1].find('.') == 1:
-            time_close += '0'
-
-        if float(time_open) > 12.0:
-            time_open = str(Decimal(time_open) -
-                            Decimal(12.0)) + 'pm'
-        elif time_open == '0.00':
-            time_open = '12.00am'
-        else:
-            time_open += 'am'
-
-        if float(time_close) > 12.0:
-            time_close = str(Decimal(time_close) -
-                             Decimal(12.00)) + 'pm'
-        elif time_close == '0.00':
-            time_close = '12.00am'
-        else:
-            time_close += 'am'
-
-        time_open = time_open.replace('.', ':')
-        time_close = time_close.replace('.', ':')
-
-        return time_open, time_close
 
     def convert_state_to_query(self, question: str, recommended_restaurant: RecommendedItem) -> str:
         """
@@ -735,413 +475,3 @@ class Answer(RecAction):
 
         message = Message("recommender", response)
         state_manager.update_conv_history(message)
-
-    def _get_attr_resp_from_str(self, key: str, str_val: str, restaurant_name: str, prompt: str) -> str:
-        """
-        Gets the metadata response for an attribute type key and the value is a string
-
-        :param key: the metadata attribute category (ex. GoodForMeal)
-        :param str_val: The value of the metadata attribute category (ex. False)
-        :param restaurant_name: the name of the restaurant
-        :param prompt: the prompt to use if you have an unrecognized value 
-
-        :return: response
-        """
-        resp = f"{restaurant_name} "
-
-        # underscore to two words
-        if '_' in str_val:
-            str_val = " ".join(str_val.split('_'))
-
-        if key == 'NoiseLevel' and str_val != 'None' and str_val != 'none':
-            resp += 'has a'
-            if str_val == 'average':
-                resp += "n "
-            else:
-                resp += " "
-
-            resp += f'{str_val} noise level.'
-
-        elif key == 'PriceRange':
-            if str_val == 'None':
-                resp = f"{restaurant_name}'s price range is unknown."
-            else:
-                resp = f"{restaurant_name} has a price range of {str_val} / 4, where 1 is the cheapest option (less than $10 per person) and 4 is the most expensive (greater than $61 per person)."
-
-            if str_val == '2':
-                resp += ' A rating of 2 means that the average person spends $11-$30 per person.'
-
-            if str_val == '3':
-                resp += ' A rating of 3 means that the average person spends $31-$60 per person.'
-
-        elif key == 'Alcohol':
-            if str_val == 'None' or str_val == 'none':
-                resp += 'does not serve any alcohol.'
-
-            elif str_val == 'beer and wine':
-                resp += f'serves {str_val} but does not have a full bar'
-            else:
-                resp += f'has a {str_val}.'
-
-        elif key == 'WiFi':
-            if str_val == 'None':
-                resp = f"It is unknown if {restaurant_name} has WiFi."
-            else:
-                resp += f"has {str_val} WiFi."
-
-        elif key == 'GoodForGroups':
-            if str_val == 'True':
-                resp += f"is good for groups."
-            elif str_val == 'False':
-                resp += f"is not good for groups."
-            else:
-                resp = f"It is unknown if {restaurant_name} is good for groups."
-
-        elif key == 'MustMakeReservation':
-            if str_val == 'True':
-                resp = f"You must make a reservation to go to {restaurant_name}."
-            else:
-                resp = f"You do not need a reservation to go to {restaurant_name}."
-
-        elif key == 'BusinessAcceptsCreditCards':
-            if str_val == 'True':
-                resp += "does accept credit cards."
-            elif str_val == 'False':
-                resp += "does not accept credit cards."
-            else:
-                resp = f"I don't know if {restaurant_name} accepts credit cards."
-
-        elif key == 'HasDelivery':
-            if str_val == 'True':
-                resp += "does have delivery."
-            elif str_val == 'False':
-                resp += "does not have delivery."
-            else:
-                resp = f"I am not sure if {restaurant_name} has delivery."
-
-        elif key == "HasReservations":
-            if str_val == 'True':
-                resp += "accepts reservations."
-            elif str_val == 'False':
-                resp += "does not accept reservations."
-            else:
-                resp = f"I am not sure if {restaurant_name} accepts reservations."
-
-        elif key == "Smoking":
-            if str_val == 'outdoor':
-                resp += "has outdoor smoking."
-            elif str_val == "no":
-                resp += "has a no smoking policy."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return
-
-        elif key == 'HasTakeOut':
-            if str_val == 'False':
-                resp += "does not have takeout."
-            elif str_val == "True":
-                resp += "does have takeout."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has takeout."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "WheelchairAccessible":
-            if str_val == 'False':
-                resp += "is not wheelchair accessible."
-            elif str_val == "True":
-                resp += "is wheelchair accessible."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "GoodForKids":
-            if str_val == 'False':
-                resp += "is not kid friendly."
-            elif str_val == "True":
-                resp += "is kid friendly."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} is good for kids."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "HappyHour":
-            if str_val == 'False':
-                resp += "does not have a happy hour."
-            elif str_val == "True":
-                resp += "does have a happy hour."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has a happy hour."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "DogsAllowed":
-            if str_val == 'False':
-                resp += "does not allow dogs inside."
-            elif str_val == "True":
-                resp += "does allow dogs inside."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} allows dogs."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "GoodForDancing":
-            if str_val == 'False':
-                resp += "is not a good place to go dancing."
-            elif str_val == "True":
-                resp += "is a good place to go dancing."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "BYOB":
-            if str_val == 'False':
-                resp += "is not BYOB."
-            elif str_val == "True":
-                resp += "is BYOB."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} is BYOB."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "HasTV":
-            if str_val == 'False':
-                resp += "does not have a TV."
-            elif str_val == "True":
-                resp += "has a TV."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "BikeParking":
-            if str_val == 'False':
-                resp += "does not have bike parking."
-            elif str_val == "True":
-                resp += "does have bike parking."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has bike parking."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "HasTableService":
-            if str_val == 'False':
-                resp += "does not have table service."
-            elif str_val == "True":
-                resp += "does have table service."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has table service."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "Corkage":
-            if str_val == 'False':
-                resp += "does not have a corkage fee."
-            elif str_val == "True":
-                resp += "does have a corkage fee."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "CoatCheck":
-            if str_val == 'False':
-                resp += "does not have coat check."
-            elif str_val == "True":
-                resp += "does have coat check."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "OutdoorSeating":
-            if str_val == 'False':
-                resp += "does not have outdoor seating."
-            elif str_val == "True":
-                resp += "does have outdoor seating."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has outdoor seating."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "DriveThru":
-            if str_val == 'False':
-                resp += "does not have a drive thru."
-            elif str_val == "True":
-                resp += "does have a drive thru."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        elif key == "Attire":
-            if str_val == "None":
-                resp = f"I am not sure what {restaurant_name}'s dress code is."
-            else:
-                resp += f"has a {str_val} dress code."
-
-        elif key == "Caters":
-            if str_val == 'False':
-                resp += "does not have catering."
-            elif str_val == "True":
-                resp += "does have catering."
-            elif str_val == "None":
-                resp = f"I am not sure if {restaurant_name} has catering."
-            else:
-                # If it is a value don't recognize return llm response of prompt
-                return self._llm_wrapper.make_request(prompt)
-
-        return resp
-
-    def _get_attr_resp_from_dict(self, key: str, dict_val: str, restaurant_name: str) -> str:
-        """
-        Gets the metadata response for an attribute type key and the value is a dict
-
-        :param key: the metadata attribute category (ex. Ambience)
-        :param dict_val: The value of the metadata attribute category (ex. {'dj': 'False', 'live': 'True'})
-        :param restaurant_name: the name of the restaurant
-
-        :return: response
-        """
-        resp = f"{restaurant_name} "
-
-        if key == 'Music':
-            resp += self._extract_resp_str(dict_val, 'no_music',
-                                           'True', 'does not have music, ')
-            resp += self._extract_resp_str(dict_val, 'no_music', 'False',
-                                           f"does have music. In fact, {restaurant_name} does have ")
-
-            music_attr_to_resp_str = {
-                'dj': 'a DJ, ',
-                'live': 'live music, ',
-                'jukebox': 'a jukebox, ',
-                'video': 'a TV playing music videos, ',
-                'background_music': 'background music, ',
-                'karaoke': 'karaoke, '
-            }
-
-            for music_attr, resp_str in music_attr_to_resp_str.items():
-                resp += self._extract_resp_str(dict_val,
-                                               music_attr, 'True', resp_str)
-
-            transition_word = ""
-            if resp.endswith(f"{restaurant_name} does have "):
-                resp = resp[:-36]
-                transition_word = " But "
-            elif resp.endswith('does not have music, '):
-                resp = f'{resp[:-2]}. '
-                transition_word = "More specifically, "
-            else:
-                resp = f'{resp[:-2]}. '
-                transition_word = "However, "
-
-            resp += transition_word + "doesn't have "
-
-            for music_attr, resp_str in music_attr_to_resp_str.items():
-                resp += self._extract_resp_str(dict_val,
-                                               music_attr, 'False', resp_str)
-
-            if resp.endswith("doesn't have "):
-                index_rmv = len("doesn't have ") + len(transition_word)
-            else:
-                index_rmv = 2
-
-            resp = resp[:-index_rmv] + '.'
-
-        elif key == 'Ambience':
-            ambience_keys = [
-                'touristy', 'hipster', 'romantic', 'intimate', 'trendy', 'upscale', 'classy', 'casual', 'divey']
-            resp += 'has a '
-
-            for ambience_attr in ambience_keys:
-                resp += self._extract_resp_str(dict_val, ambience_attr,
-                                               'True', f'{ambience_attr}, ')
-            if resp == f"{restaurant_name} has a ":
-                resp = "I am not sure what the atmosphere of resaurant_name is but, I know it doesn't have a "
-
-                for ambience_attr in ambience_keys:
-                    resp += self._extract_resp_str(dict_val, ambience_attr,
-                                                   'False', f'{ambience_attr}, ')
-
-            resp = resp[:-2]
-            resp += ' vibe.'
-
-        elif key == 'PopularNights':
-            best_nights_keys = [
-                'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-
-            resp += "has their best nights on "
-
-            for best_night_attr in best_nights_keys:
-                resp += self._extract_resp_str(dict_val, best_night_attr,
-                                               'True', f"{best_night_attr}'s, ")
-
-            resp = resp[:-2] + '.'
-            if resp == f"{restaurant_name} 's best nights ar.":
-                resp = f"I do not have any information on {restaurant_name}'s best nights."
-
-        elif key == 'GoodForMeal':
-            good_meal_keys = [
-                'dessert', 'lunch', 'dinner', 'brunch', 'breakfast']
-
-            resp += 'is a popular spot for '
-
-            simple_resp_str = good_meal_keys[:-1]
-
-            for best_night_attr in simple_resp_str:
-                resp += self._extract_resp_str(dict_val, best_night_attr,
-                                               'True', f"{best_night_attr}, ")
-
-            resp += self._extract_resp_str(dict_val, 'latenight',
-                                           'True', f"late night meals, ")
-
-            resp = resp[:-2] + '.'
-
-            if resp == f"{restaurant_name} is a popular spot fo.":
-                resp = f"From my knowledge, {restaurant_name} does not have particular meals in the day where it is very popular."
-
-        elif key == 'BusinessParking':
-            parking_keys_to_resp_str = {
-                'garage': 'a parking garage, ',
-                'lot': 'a parking lot, ',
-                'street': 'street parking, ',
-                'valet': 'valet parking, ',
-            }
-
-            resp += 'has '
-
-            for parking_key, resp_str in parking_keys_to_resp_str.items():
-                resp += self._extract_resp_str(dict_val, parking_key,
-                                               'True', resp_str)
-
-            resp += self._extract_resp_str(dict_val, 'validated',
-                                           'True', "and has validated parking, ")
-
-            resp = resp[:-2] + '.'
-
-            if resp == f"{restaurant_name} ha.":
-                resp = f"{restaurant_name} does not have parking. "
-
-        else:
-            dietary_restrictions_keys = ['dairy-free', 'gluten-free', 'vegan',
-                                         'kosher', 'halal', 'soy-free', 'vegetarian']
-            resp += "has "
-
-            for dietary_restriction_key in dietary_restrictions_keys:
-                resp += self._extract_resp_str(dict_val, dietary_restriction_key,
-                                               'True', f'{dietary_restriction_key}, ')
-
-            if resp == f"{restaurant_name} has ":
-                resp = f"According to my database, {restaurant_name} does not have "
-
-                for dietary_restriction_key in dietary_restrictions_keys:
-                    resp += self._extract_resp_str(dict_val, dietary_restriction_key,
-                                                   'False', f'{dietary_restriction_key}, ')
-
-            resp = resp[:-2] + ' options.'
-
-        return resp
