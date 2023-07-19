@@ -20,10 +20,9 @@ class PDSearchEngine(SearchEngine):
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
-        self._embedder = embedder
+        super().__init__(embedder)
         domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._item_review_count = domain_specific_config_loader.load_item_review_count()
-        self._items_id, self._items_reviews, self._reviews_embedding_matrix\
+        self._items_reviews, self._reviews_embedding_matrix\
             = domain_specific_config_loader.load_data_for_pd_search_engine()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
@@ -47,24 +46,13 @@ class PDSearchEngine(SearchEngine):
             similarity_score_review, topk_reviews)
         # Finds the indexes of the ids to count
         id_index = self._find_index(item_ids_to_keep)
-        mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
-        mask[id_index] = True
-        similarity_score_item[~mask] = 0
-
+        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, id_index)
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
         list_of_item_id = self._get_topk_item_item_id(most_similar_item_index, self._items_reviews)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review,
                                           self._items_reviews)
 
         return list_of_item_id, list_of_review
-
-    def _find_index(self, ids_to_keep: np.array) -> list[int]:
-        indices = []
-
-        for item_id in ids_to_keep:
-            indices.append(np.where(self._items_id == item_id)[0][0])
-
-        return indices
 
     @staticmethod
     def _similarity_score_each_review(query: torch.Tensor, reviews: torch.Tensor) -> torch.Tensor:

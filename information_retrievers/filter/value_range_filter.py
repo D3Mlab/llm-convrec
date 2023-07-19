@@ -54,13 +54,10 @@ class ValueRangeFilter(Filter):
         item_metadata_field_values = row_of_df[self._metadata_field]
 
         for value_range in constraint_values:
-            value_range_list = self._remove_non_numeric(value_range).split("-")
+            value_range_list = re.sub(r'[^0-9-.]', '', value_range).split("-")
             for metadata_field_value in item_metadata_field_values:
+                metadata_field_value = re.sub(r'[^0-9.]', '', metadata_field_value)
                 if metadata_field_value >= value_range_list[0] and metadata_field_value >= value_range_list[1]:
                     return True
 
         return False
-
-    @staticmethod
-    def _remove_non_numeric(text: str):
-        return re.sub(r'[^0-9-]', '', text)

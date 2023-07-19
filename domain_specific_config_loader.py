@@ -246,16 +246,19 @@ class DomainSpecificConfigLoader:
         path_to_item_review_count = f'{self._get_path_to_domain()}/{filename}'
         return torch.load(path_to_item_review_count)
 
-    def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, pd.DataFrame, torch.Tensor]:
+    def load_item_id(self) -> np.ndarray:
         path_to_domain = self._get_path_to_domain()
         item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
         path_to_items_id = f'{path_to_domain}/{item_id_filename}'
+        return np.load(path_to_items_id, allow_pickle=True)
+
+    def load_data_for_pd_search_engine(self) -> tuple[pd.DataFrame, torch.Tensor]:
+        path_to_domain = self._get_path_to_domain()
         item_review_embeddings_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
         path_to_item_review_embeddings = f'{path_to_domain}/{item_review_embeddings_filename}'
         reviews_embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
         path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
-        return np.load(path_to_items_id, allow_pickle=True), pd.read_csv(path_to_item_review_embeddings), \
-            torch.load(path_to_reviews_embedding_matrix)
+        return pd.read_csv(path_to_item_review_embeddings), torch.load(path_to_reviews_embedding_matrix)
 
     def load_vector_database(self) -> VectorDataBase:
         path_to_domain = self._get_path_to_domain()

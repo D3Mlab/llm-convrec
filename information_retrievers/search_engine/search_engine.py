@@ -13,11 +13,13 @@ class SearchEngine:
 
     _embedder: BERT_model
     _item_review_count: torch.Tensor
+    _items_id: np.ndarray
 
     def __init__(self, embedder: BERT_model):
         self._embedder = embedder
         domain_specific_config_loader = DomainSpecificConfigLoader()
         self._item_review_count = domain_specific_config_loader.load_item_review_count()
+        self._items_id = domain_specific_config_loader.load_item_id()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_ids_to_keep: np.ndarray) -> tuple[list, list]:
@@ -99,3 +101,18 @@ class SearchEngine:
             num_items_to_remove = top_k_items - num_non_zero_value
             indices = indices[:-num_items_to_remove]
         return indices
+
+    def _find_index(self, ids_to_keep: np.array) -> list[int]:
+        indices = []
+
+        for item_id in ids_to_keep:
+            indices.append(np.where(self._items_id == item_id)[0][0])
+
+        return indices
+
+    @staticmethod
+    def _filter_item_similarity_score(similarity_score_item, id_index):
+        mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
+        mask[id_index] = True
+        similarity_score_item[~mask] = 0
+        return similarity_score_item

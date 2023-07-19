@@ -151,7 +151,7 @@ class ConvRecSystem(WarningObserver):
         # Initialize Filters
         metadata_wrapper = MetadataWrapper()
         filter_item = FilterApplier(metadata_wrapper)
-        if user_defined_filter is not None and not user_defined_filter:
+        if user_defined_filter:
             filter_item.filters.extend(user_defined_filter)
 
         BERT_name = config["IR_BERT_MODEL_NAME"]
