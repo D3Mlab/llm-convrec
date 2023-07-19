@@ -45,6 +45,7 @@ from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
+from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 
 
 class ConvRecSystem(WarningObserver):
@@ -190,8 +191,10 @@ class ConvRecSystem(WarningObserver):
         # Initialize Rec Action
         recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
         recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
+        
+        answer_prompt_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self])
 
-        rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self]),
+        rec_actions = [Answer(answer_prompt_resp),
                        ExplainPreference(),
                        Recommend(user_constraint_status_objects, mandatory_constraints, recc_hard_code_resp, recc_prompt_resp),
                        RequestInformation(user_constraint_status_objects, mandatory_constraints, hard_coded_responses), PostRejectionAction(hard_coded_responses),
