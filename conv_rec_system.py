@@ -202,7 +202,7 @@ class ConvRecSystem(WarningObserver):
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
 
-        self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
+        self.init_msg = f'Hello there! I am a recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
 
         # Initialize system
         if user_interface_str == "demo":
