@@ -66,7 +66,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
             config['ANSWER_EXTRACT_CATEGORY_PROMPT'])
 
         self.metadata_template = env.get_template(
-            config['ANSWER_ATTR_PROMPT'])
+            config['ANSWER_METADATA_PROMPT'])
 
         self.ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
