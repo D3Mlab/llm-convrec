@@ -58,6 +58,9 @@ class ExactWordMatchingFilter(Filter):
         """
         item_metadata_field_values = row_of_df[self._metadata_field]
 
+        if not isinstance(item_metadata_field_values, list):
+            item_metadata_field_values = [item_metadata_field_values]
+
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:
                 if constraint_value.lower().strip() == metadata_field_value.lower().strip():

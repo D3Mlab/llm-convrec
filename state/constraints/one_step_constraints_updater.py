@@ -208,12 +208,13 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :param new_constraints: new hard or soft constraints
         :param updated_keys: updated keys in this constraints
         """
-        for constraint_merger in self._user_defined_constraint_mergers:
-            if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
-                new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
-                    old_constraints.get(constraint_merger.get_constraint()),
-                    new_constraints.get(constraint_merger.get_constraint())
-                )
+        if self._user_defined_constraint_mergers is not None:
+            for constraint_merger in self._user_defined_constraint_mergers:
+                if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
+                    new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
+                        old_constraints.get(constraint_merger.get_constraint()),
+                        new_constraints.get(constraint_merger.get_constraint())
+                    )
         
         for key in new_constraints:
             if key not in self._cumulative_constraints_keys and key in updated_keys and key in old_constraints:

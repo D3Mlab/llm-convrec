@@ -6,8 +6,6 @@ from information_retrievers.filter.exact_word_matching_filter import ExactWordMa
 from information_retrievers.filter.item_filter import ItemFilter
 from information_retrievers.filter.value_range_filter import ValueRangeFilter
 from information_retrievers.filter.word_in_filter import WordInFilter
-from information_retrievers.filter.location_filter import LocationFilter
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 import torch
 import numpy as np
 from information_retrievers.vector_database import VectorDataBase
@@ -230,12 +228,6 @@ class DomainSpecificConfigLoader:
                 filters_list.append(ItemFilter(
                     row['key_in_state'], row['metadata_field']))
 
-            elif row['type_of_filter'].strip() == "location":
-                filters_list.append(LocationFilter(
-                    row['key_in_state'], [field.strip() for field in row['metadata_field'].split(",")],
-                    row['default_max_distance_in_km'],
-                    row['distance_type'], GoogleV3Wrapper()))
-
             elif row['type_of_filter'].strip() == "value range":
                 filters_list.append(ValueRangeFilter(row['key_in_state'], row['metadata_field']))
 
@@ -275,3 +267,17 @@ class DomainSpecificConfigLoader:
         path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
         return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)
 
+
+    def load_hard_coded_responses(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        responses_df = pd.read_csv(path_to_csv, encoding='latin1')
+        responses = [
+            {
+                'action': row['action'],
+                'response': row['response'],
+                'constraints': row['constraints'].split(', ') if isinstance(row['constraints'], str) else []
+            }
+            for row in responses_df.to_dict("records")
+        ]
+        return responses

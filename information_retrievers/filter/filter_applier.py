@@ -14,12 +14,12 @@ class FilterApplier:
     """
 
     _metadata_wrapper: MetadataWrapper
-    _filters: list[Filter]
+    filters: list[Filter]
 
     def __init__(self, metadata_wrapper: MetadataWrapper) -> None:
         self._metadata_wrapper = metadata_wrapper
         domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._filters = domain_specific_config_loader.load_filters()
+        self.filters = domain_specific_config_loader.load_filters()
 
     def apply_filter(self, state_manager: StateManager) -> np.ndarray:
         """
@@ -29,14 +29,11 @@ class FilterApplier:
         :return: item ids that must be kept
         """
         metadata = self._metadata_wrapper.get_metadata()
-        item_id_list = metadata['item_id'].tolist()
-        print(len(item_id_list))
 
-        for filter_obj in self._filters:
+        for filter_obj in self.filters:
             metadata = filter_obj.filter(state_manager, metadata)
 
         item_id_list = metadata['item_id'].tolist()
-        print(len(item_id_list))
         return np.array(item_id_list)
 
     @staticmethod

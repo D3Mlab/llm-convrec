@@ -1,8 +1,6 @@
 from state.state_manager import StateManager
 from geopy.distance import geodesic
-from geopy.distance import great_circle
-from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
-from typing import Any
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.filter.filter import Filter
 import pandas as pd
 
@@ -15,24 +13,19 @@ class LocationFilter(Filter):
     :param constraint_key: constraint key of interest
     :param metadata_field: metadata field of interest
     :param default_max_distance_in_km: default max allowable distance in km
-    :param distance_type: distance type (geodesic or great circle)
-    :param geocoder_wrapper: geocoder
     """
 
     _constraint_key: str
     _metadata_field: list[str]
     _default_max_distance_in_km: float
-    _distance_type: str
-    _geocoder_wrapper: GeocoderWrapper
+    _geocoder_wrapper: GoogleV3Wrapper
 
     def __init__(self, constraint_key: str, metadata_field: list[str],
-                 default_max_distance_in_km: float, distance_type: str,
-                 geocoder_wrapper: GeocoderWrapper) -> None:
+                 default_max_distance_in_km: float) -> None:
         self._constraint_key = constraint_key
         self._metadata_field = metadata_field
         self._default_max_distance_in_km = default_max_distance_in_km
-        self._distance_type = distance_type
-        self._geocoder_wrapper = geocoder_wrapper
+        self._geocoder_wrapper = GoogleV3Wrapper()
 
     def filter(self, state_manager: StateManager,
                metadata: pd.DataFrame) -> pd.DataFrame:
@@ -91,12 +84,8 @@ class LocationFilter(Filter):
         lat_lon_of_item = (row_of_df[self._metadata_field[0]], row_of_df[self._metadata_field[1]])
 
         for index in range(len(lat_lon_of_loc)):
-            if self._distance_type == "geodesic":
-                distance_btw_loc_and_item_in_km \
-                    = self._get_geodesic_distance(lat_lon_of_loc[index], lat_lon_of_item)
-            else:
-                distance_btw_loc_and_item_in_km \
-                    = self._get_great_circle_distance(lat_lon_of_loc[index], lat_lon_of_item)
+            distance_btw_loc_and_item_in_km \
+                = self._get_geodesic_distance(lat_lon_of_loc[index], lat_lon_of_item)
 
             if max(self._default_max_distance_in_km, max_distance_in_km[index]) \
                     >= distance_btw_loc_and_item_in_km:
@@ -113,10 +102,7 @@ class LocationFilter(Filter):
         its longitude
         :return: maximum allowable distance for location filter in km
         """
-        if self._distance_type == "geodesic":
-            diagonal_distance_in_km = self._get_geodesic_distance(northeast, southwest)
-        else:
-            diagonal_distance_in_km = self._get_geodesic_distance(northeast, southwest)
+        diagonal_distance_in_km = self._get_geodesic_distance(northeast, southwest)
         return diagonal_distance_in_km / 2
 
     @staticmethod
@@ -130,16 +116,3 @@ class LocationFilter(Filter):
         :return: geodesic distance between the location and the item in km
         """
         return geodesic(lat_lon_of_loc, lat_lon_of_item).km
-
-    @staticmethod
-    def _get_great_circle_distance(lat_lon_of_loc: tuple[float, float],
-                                   lat_lon_of_item: tuple[float, float]) -> float:
-        """
-        Get great circle distance between the location and the item using their latitudes and longitudes.
-
-        :param lat_lon_of_loc: tuple where the first element is latitude and the second element is longitude of the location
-        :param lat_lon_of_item: tuple where the first element is latitude and the second element is longitude of the item
-        :return: great circle distance between the location and the item in km
-        """
-        return great_circle(lat_lon_of_loc, lat_lon_of_item).km
-

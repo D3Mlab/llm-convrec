@@ -41,6 +41,7 @@ from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
 from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
 from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
@@ -57,17 +58,16 @@ class ConvRecSystem(WarningObserver):
     user_interface: UserInterface
     dialogue_manager: DialogueManager
 
-    def __init__(self, config: dict, user_defined_constraint_mergers: list,
-                 user_constraint_status_objects: list,
-                 openai_api_key_or_gradio_url: str,
-                 user_interface_str: str=None):
+    def __init__(self, config: dict, openai_api_key_or_gradio_url: str,
+                 user_defined_constraint_mergers: list = None,
+                 user_constraint_status_objects: list = None,
+                 user_defined_filter: list[Filter] = None,
+                 user_interface_str: str = None):
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
 
         # TEMP
-        # constraints = config['ALL_CONSTRAINTS']
-        # self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
 
         model = config["MODEL"]
@@ -80,12 +80,18 @@ class ConvRecSystem(WarningObserver):
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
 
+        hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
+
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         self._constraints = [constraints_category['key'] for constraints_category in constraints_categories]
         cumulative_constraints = [constraints_category['key'] for constraints_category in constraints_categories
                                   if constraints_category['is_cumulative']]
+        mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_responses
+                                       if response_dict['action'] == 'RequestInformation'
+                                       and response_dict['constraints'] != []]
+
         #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
@@ -144,6 +150,9 @@ class ConvRecSystem(WarningObserver):
         # Initialize Filters
         metadata_wrapper = MetadataWrapper()
         filter_item = FilterApplier(metadata_wrapper)
+        if user_defined_filter is not None and not user_defined_filter:
+            filter_item.filters.extend(user_defined_filter)
+
         BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
@@ -179,20 +188,19 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, observers=[self])
-        
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
+
         rec_actions = [Answer(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self]),
                        ExplainPreference(),
-                       Recommend(user_constraint_status_objects, constraints_categories, recc_hard_code_resp, recc_prompt_resp),
-                       RequestInformation(user_constraint_status_objects, constraints_categories), PostRejectionAction(),
-                       PostAcceptanceAction()]
-        
+                       Recommend(user_constraint_status_objects, mandatory_constraints, recc_hard_code_resp, recc_prompt_resp),
+                       RequestInformation(user_constraint_status_objects, mandatory_constraints, hard_coded_responses), PostRejectionAction(hard_coded_responses),
+                       PostAcceptanceAction(hard_coded_responses)]
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
 
         self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
-        
+
         # Initialize system
         if user_interface_str == "demo":
             self.user_interface = GradioInterface()
@@ -200,7 +208,7 @@ class ConvRecSystem(WarningObserver):
             self.user_interface = Terminal()
 
         self.dialogue_manager = DialogueManager(
-            state, user_intents_classifier, rec_action_classifier, llm_wrapper)
+            state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
 
