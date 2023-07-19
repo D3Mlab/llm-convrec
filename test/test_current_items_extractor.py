@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.item import Item
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
 from intelligence.gpt_wrapper import GPTWrapper
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.common_state_manager import CommonStateManager
@@ -34,10 +34,10 @@ for col in test_df.to_dict("records"):
                                "stars": 0,
                                "review_count": 0,
                                "is_open": True,
-                               "attributes": {},
+                               "optional": {},
                                "categories": [],
                                "hours": {}}
-            recommended_restaurant = RecommendedItem(Item("business_id", dictionary_info), "", [])
+            recommended_restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
             one_turn_reccommended_restaurants.append(recommended_restaurant)
 
         row.append(one_turn_reccommended_restaurants)

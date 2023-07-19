@@ -2,9 +2,9 @@ from state.state_manager import StateManager
 from typing import Dict, Any
 
 from state.state_manager import StateManager
-from information_retrievers.neural_information_retriever import InformationRetriever
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 from rec_action.response_type.recommend_resp import RecommendResponse
 
@@ -21,8 +21,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     """
     _observers: list[WarningObserver]
     _llm_wrapper: LLMWrapper
-    _filter_restaurants: FilterRestaurants
-    _information_retriever: InformationRetriever
+    _filter_restaurants: FilterApplier
+    _information_retriever: InformationRetrieval
     _topk_items: str
     _topk_reviews: str
     _convert_state_to_query_prompt: str
@@ -30,9 +30,9 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _format_recommendation_prompt: str
     _summarize_review_prompt: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterRestaurants,
-                 information_retriever: InformationRetriever, domain: str, config: dict, hard_coded_responses, observers = None):
-        
+    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses, config: dict, observers = None):
+
         super().__init__(domain)
         
         self._filter_restaurants = filter_restaurants
@@ -68,9 +68,9 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
 
         logger.debug(f'Query: {query}')
 
-        filtered_embedding_matrix = \
-            self._filter_restaurants.filter_by_constraints(state_manager)
-        
+        item_ids_to_keep = \
+            self._filter_restaurants.apply_filter(state_manager)
+
         for response_dict in self._hard_coded_responses:
             if response_dict['action'] == 'NoRecommendation':
                 no_recom_response = response_dict['response']
@@ -78,10 +78,10 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         try:
             self._current_recommended_items = \
                 self._information_retriever.get_best_matching_items(query, self._topk_items,
-                                                                    self._topk_reviews, filtered_embedding_matrix)
+                                                                    self._topk_reviews, item_ids_to_keep)
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            return no_recom_response 
+            return no_recom_response
         explanation = self._get_explanation_for_each_item(state_manager)
         prompt = self._get_prompt_to_format_recommendation(explanation)
         resp = self._llm_wrapper.make_request(prompt)
@@ -121,7 +121,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
-            [f'{rec_item.get("name")}' for rec_item in self._current_recommended_items])
+            [f'{rec_item.get_name()}' for rec_item in self._current_recommended_items])
         explanation_str = ', '.join(
             [f'{key}: {val}' for key, val in explanation.items()])
         return self._format_recommendation_prompt.render(
@@ -135,7 +135,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         """
         explanation = {}
         for rec_item in self._current_recommended_items:
-            item_name = rec_item.get("name")
+            item_name = rec_item.get_name()
             hard_constraints = state_manager.get('hard_constraints').copy()
             
             data = state_manager.to_dict()
@@ -154,8 +154,6 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             except Exception as e:
                 logger.debug(f'There is an error: {e}')
                 # this is very slow
-                print(
-                    'Sorry.. running into some difficulties, this is going to take longer than ususal.')
 
                 self._notify_observers()
                 
@@ -205,17 +203,15 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             [f'{key}: {val}' for key, val in constraints.items()])
         return self._summarize_review_prompt.render(constraints=constraints_str, review=review, domain=self._domain)
 
-    #TODO: generalize once metadata stuff is done
     def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem):
         """
         Get metadata of an item used for recommend
         :param recommended_item: recommended item whose metadata to be returned
         """
-        metadata = f"""location: at {recommended_item.get('address')}, """
         attributes = ', '.join(
-            [f'{key}: {val}' for key, val in recommended_item.get("attributes").items()])
-        metadata += attributes
-        return metadata
+            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items()] +
+            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items()])
+        return attributes
     
     def _notify_observers(self) -> None:
         """

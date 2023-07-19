@@ -86,10 +86,11 @@ class RequestInformation(RecAction):
         is_ready = hard_constraints is not None and all(any(hard_constraints.get(key) is not None and
                                                             hard_constraints.get(key) != [] for key in lst)
                                                         for lst in self._mandatory_constraints)
-        
-        for constraint in self._constraint_statuses:
-            if constraint.get_status() is None or constraint.get_status() == 'invalid':
-                is_ready = False
+
+        if self._constraint_statuses is not None:
+            for constraint in self._constraint_statuses:
+                if constraint.get_status() is None or constraint.get_status() == 'invalid':
+                    is_ready = False
 
         if state_manager.get("unsatisfied_goals") is not None:
             for goal in state_manager.get("unsatisfied_goals"):

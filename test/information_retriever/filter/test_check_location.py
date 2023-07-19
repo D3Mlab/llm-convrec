@@ -1,4 +1,4 @@
-from information_retrievers.filter.check_location import CheckLocation
+from information_retrievers.filter.filter import CheckLocation
 import pytest
 import dotenv
 

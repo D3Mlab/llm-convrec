@@ -1,6 +1,7 @@
 import openai.error
 
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+from information_retrievers.item.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
@@ -31,21 +32,20 @@ from user_intent.classifiers.prompt_based_user_intents_classifier import PromptB
 from user_intent.classifiers.multilabel_user_intents_classifier import MultilabelUserIntentsClassifier
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from rec_action.common_rec_actions_classifier import CommonRecActionsClassifier
-from information_retrievers.neural_information_retriever import NeuralInformationRetriever
-from information_retrievers.filter.check_location import CheckLocation
-from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
-from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.neural_ir.neural_search_engine import NeuralSearchEngine
-from information_retrievers.neural_ir.statics import *
-from information_retrievers.neural_ir.neural_embedder import BERT_model
+from information_retrievers.embedder.statics import *
+from information_retrievers.embedder.bert_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
-from information_retrievers.data_holder import DataHolder
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from domain_specific_config_loader import DomainSpecificConfigLoader
+from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
+from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
+from information_retrievers.metadata_wrapper import MetadataWrapper
+from information_retrievers.filter.filter_applier import FilterApplier
+from information_retrievers.filter.filter import Filter
+from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
-
+from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 
 
 class ConvRecSystem(WarningObserver):
@@ -58,21 +58,21 @@ class ConvRecSystem(WarningObserver):
     is_gpt_retry_notified: bool
     user_interface: UserInterface
     dialogue_manager: DialogueManager
-      
-    def __init__(self, config: dict, user_defined_constraint_mergers: list, user_constraint_status_objects: list,
-                 openai_api_key_or_gradio_url: str,
-                 user_interface_str: str=None):
+
+    def __init__(self, config: dict, openai_api_key_or_gradio_url: str,
+                 user_defined_constraint_mergers: list = None,
+                 user_constraint_status_objects: list = None,
+                 user_defined_filter: list[Filter] = None,
+                 user_interface_str: str = None):
         
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
-        
+
         # TEMP
-        constraints = config['ALL_CONSTRAINTS']
-        self._constraints = constraints
         geocoder_wrapper = GoogleV3Wrapper()
-        
+
         model = config["MODEL"]
-                
+
         if not isinstance(openai_api_key_or_gradio_url, str):
             raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
 
@@ -80,13 +80,15 @@ class ConvRecSystem(WarningObserver):
             llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
         else:
             llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
-            
 
         hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
 
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
+        self._constraints = [constraints_category['key'] for constraints_category in constraints_categories]
+        cumulative_constraints = [constraints_category['key'] for constraints_category in constraints_categories
+                                  if constraints_category['is_cumulative']]
         mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_responses
                                        if response_dict['action'] == 'RequestInformation'
                                        and response_dict['constraints'] != []]
@@ -94,34 +96,34 @@ class ConvRecSystem(WarningObserver):
         #TODO: generalize
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = ConstraintsRemover(
-                    llm_wrapper, constraints)
+                    llm_wrapper, self._constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
                 constraints_extractor, constraints_classifier, geocoder_wrapper,
                 constraints_remover=constraints_remover,
-                cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
+                cumulative_constraints=set(cumulative_constraints),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
         #TODO: generalize
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints)
+                llm_wrapper, self._constraints)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = SafeConstraintsRemover(
-                    llm_wrapper, default_keys=constraints)
+                    llm_wrapper, default_keys=self._constraints)
             else:
                 constraints_remover = None
             constraints_updater = ThreeStepsConstraintsUpdater(
                 constraints_extractor, constraints_classifier, geocoder_wrapper,
                 constraints_remover=constraints_remover,
-                cumulative_constraints=set(config['CUMULATIVE_CONSTRAINTS']),
+                cumulative_constraints=set(cumulative_constraints),
                 enable_location_merge=config['ENABLE_LOCATION_MERGE'])
        
         else:
@@ -146,25 +148,21 @@ class ConvRecSystem(WarningObserver):
             llm_wrapper, domain, rejected_items_fewshots, config)
         curr_items_extractor = CurrentItemsExtractor(llm_wrapper, domain, curr_items_fewshots, config)
 
-
         # Initialize Filters
-        check_location = CheckLocation(
-            config['DEFAULT_MAX_DISTANCE_IN_KM'], config['DISTANCE_TYPE'])
-        check_cuisine_type = CheckCuisineDishType()
-        check_already_recommended_restaurant = CheckAlreadyRecommendedRestaurant()
-        data_holder = DataHolder(config["PATH_TO_RESTAURANT_METADATA"], config["PATH_TO_RESTAURANT_REVIEW_EMBEDDINGS"],
-                                 config["PATH_TO_RESTAURANT_REVIEW_EMBEDDING_MATRIX"],
-                                 config["PATH_TO_NUM_OF_REVIEWS_PER_RESTAURANT"])
-        filter_restaurant = FilterRestaurants(geocoder_wrapper, check_location, check_cuisine_type, check_already_recommended_restaurant,
-                                              data_holder, config["FILTER_CONSTRAINTS"])
+        metadata_wrapper = MetadataWrapper()
+        filter_item = FilterApplier(metadata_wrapper)
+        if user_defined_filter:
+            filter_item.filters.extend(user_defined_filter)
 
-        #Initialize IR
         BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-        engine = NeuralSearchEngine(embedder)
-        information_retriever = NeuralInformationRetriever(engine, data_holder)
+        if config['SEARCH_ENGINE'] == "pandas":
+            search_engine = PDSearchEngine(embedder)
+        else:
+            search_engine = VectorDatabaseSearchEngine(embedder)
+        information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         
         # Initialize User Intent
         inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()
@@ -176,12 +174,7 @@ class ConvRecSystem(WarningObserver):
                         AcceptRecommendation(
                             accepted_items_extractor, curr_items_extractor, accept_classification_fewshots, domain, config),
                         RejectRecommendation(rejected_items_extractor, curr_items_extractor, reject_classification_fewshots, domain, config)]
-        
-        if user_interface_str == "demo":
-            self.user_interface = GradioInterface()
-        else:
-            self.user_interface = Terminal()
-                          
+
         if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
             user_intents_classifier = MultilabelUserIntentsClassifier(
                 user_intents, llm_wrapper, True)
@@ -196,32 +189,37 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
+        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
+        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
         
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_restaurant, information_retriever, domain, config, hard_coded_responses, observers=[self])
-        
-        rec_actions = [Answer(config, llm_wrapper, filter_restaurant, information_retriever, domain, observers=[self]),
+        answer_prompt_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self])
+
+        rec_actions = [Answer(answer_prompt_resp),
                        ExplainPreference(),
                        Recommend(user_constraint_status_objects, mandatory_constraints, recc_hard_code_resp, recc_prompt_resp),
                        RequestInformation(user_constraint_status_objects, mandatory_constraints, hard_coded_responses), PostRejectionAction(hard_coded_responses),
                        PostAcceptanceAction(hard_coded_responses)]
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
-        
+
+        self.init_msg = f'Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
+
         # Initialize system
-        self.user_interface = Terminal()
+        if user_interface_str == "demo":
+            self.user_interface = GradioInterface()
+        else:
+            self.user_interface = Terminal()
+
         self.dialogue_manager = DialogueManager(
             state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
-        
-        
 
     def run(self) -> None:
         """
         Run the conv rec system.
         """
-        self.user_interface.display_to_user()
+        self.user_interface.display_to_user("Recommender: " + self.init_msg)
         while True:
             user_input = self.user_interface.get_user_input("User: ")
             if user_input == 'quit' or user_input == 'q':

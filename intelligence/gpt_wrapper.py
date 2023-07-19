@@ -119,7 +119,8 @@ class GPTWrapper(LLMWrapper):
             if self._max_attempt is None:
                 t_decorator = retry(
                     wait=wait_random_exponential(min=self._min_sleep, max=self._max_sleep),
-                    retry=retry_if_exception_type(openai.error.RateLimitError),
+                    retry=retry_if_exception_type((openai.error.RateLimitError, openai.error.Timeout, openai.APIError,
+                        openai.error.APIConnectionError, openai.error.ServiceUnavailableError)),
                     before_sleep=self._before_completion_sleep,
                     retry_error_callback=lambda retry_state: None
                 )
@@ -144,11 +145,7 @@ class GPTWrapper(LLMWrapper):
         Wrapper for openai.ChatCompletion.create that retries when RateLimitError have occurred or if it takes
         too long to get the response.
         """
-        try:
-            return openai.ChatCompletion.create(*args, **{**kwargs, **{'request_timeout': self._timeout}})
-        except:
-            raise Exception("The provided OpenAI API Key is invalid. Please input a correct key and retry.")
-
+        return openai.ChatCompletion.create(*args, **{**kwargs, **{'request_timeout': self._timeout}})
 
 
 

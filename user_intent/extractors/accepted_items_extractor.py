@@ -1,7 +1,4 @@
-import yaml
-
-from domain_specific_config_loader import DomainSpecificConfigLoader
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.recommended_item import RecommendedItem
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
 from jinja2 import Environment, FileSystemLoader
@@ -43,9 +40,11 @@ class AcceptedItemsExtractor:
         item_names = {item.strip().casefold()
                             for item in llm_response.split(',')}
         result = []
+
         for item in all_mentioned_items:
-            if item.get("name").casefold() in item_names:
+            if item.get_name().casefold() in item_names:
                 result.append(item)
+
         return result
 
     def _generate_prompt(self, conv_history: list[Message], all_mentioned_items: list[RecommendedItem],
@@ -58,9 +57,7 @@ class AcceptedItemsExtractor:
         """
         curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
         return self.template.render(user_input=curr_user_input,
-                                    recently_mentioned_items=[item.get("name") for item in
-                                                                   recently_mentioned_items],
-                                    all_mentioned_items=[item.get("name") for item in
-                                                              all_mentioned_items],
+                                    recently_mentioned_items=[item.get_name() for item in recently_mentioned_items],
+                                    all_mentioned_items=[item.get_name() for item in all_mentioned_items],
                                     few_shots=self._fewshots,
                                     domain=self._domain)

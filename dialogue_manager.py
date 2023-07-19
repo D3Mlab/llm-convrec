@@ -95,21 +95,9 @@ class DialogueManager:
                 hard_coded_resp = action.get_hard_coded_response(
                     self.state_manager)
 
-            # If could not create a hard coded response (need LLM to do additonal work to get response) or the response isn't hard coded
-            if hard_coded_resp == "" or not action.is_response_hard_coded() or hard_coded_resp == hard_coded_llm_resp:
+            # If could not create a hard coded response
+            if not action.is_response_hard_coded():
                 rec_response = action.get_prompt_response(self.state_manager)
-
-                if '"' in rec_response:
-                    # get rid of double quotes (gpt sometimes outputs it)
-                    rec_response = rec_response.replace('"', "")
-
-                rec_response = rec_response.removeprefix(
-                    'Response to user:').removeprefix('response to user:').strip()
-
-                # If LLM answer then give warning to user that info might not be correct.
-                if hard_coded_llm_resp in hard_coded_resp:
-                    rec_response = hard_coded_resp + rec_response
-
                 self.state_manager.store_response(rec_response)
                 return rec_response
 

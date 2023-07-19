@@ -1,20 +1,19 @@
 from rec_action.answer import Answer
 from state.common_state_manager import CommonStateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
-from information_retrievers.filter.check_location import CheckLocation
-from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.neural_ir.neural_embedder import BERT_model
-from information_retrievers.neural_ir.statics import *
-from information_retrievers.neural_ir.neural_search_engine import NeuralSearchEngine
+from information_retrievers.filter.filter import CheckLocation
+from information_retrievers.filter.filter import CheckCuisineDishType
+from information_retrievers.filter.filter import FilterRestaurants
+from information_retrievers.embedder.bert_embedder import BERT_model
+from information_retrievers.embedder.statics import *
+from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retrievers.neural_information_retriever import NeuralInformationRetriever
 from intelligence.llm_wrapper import LLMWrapper
-from information_retrievers.item import Item
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
+from information_retrievers.item.recommended_item import RecommendedItem
 from user_intent.inquire import Inquire
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
-from state.message import Message
-from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
+from information_retrievers.filter.filter import CheckAlreadyRecommendedRestaurant
 from domain_specific.classes.restaurants.geocoding.nominatim_wrapper import NominatimWrapper
 
 from information_retrievers.data_holder import DataHolder
@@ -92,9 +91,9 @@ class TestGetBestMatchingReviewsOfRestaurant:
             question, recommended_restaurant)
         filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant, \
             filtered_restaurants_review_embeddings = \
-            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get("name")])
+            filter_restaurant.filter_by_restaurant_name([recommended_restaurant.get_name()])
         retrieved_review = information_retriever.get_best_matching_reviews_of_item(
-            query, [recommended_restaurant.get("name")], num_of_reviews_to_return,
+            query, [recommended_restaurant.get_name()], num_of_reviews_to_return,
             filtered_restaurants_review_embeddings,
             filtered_embedding_matrix, filtered_num_of_reviews_per_restaurant)
 
@@ -114,8 +113,8 @@ class TestGetBestMatchingReviewsOfRestaurant:
 
     def _create_restaurant_obj_from_meta_data(self, index_of_restaurant: int,
                                               restaurant_meta_data: pd.DataFrame) -> Item:
-        business_id = restaurant_meta_data.iloc[index_of_restaurant]["business_id"]
-        item_info = restaurant_meta_data.loc[restaurant_meta_data['business_id']
+        business_id = restaurant_meta_data.iloc[index_of_restaurant]["item_id"]
+        item_info = restaurant_meta_data.loc[restaurant_meta_data['item_id']
                                                    == business_id].iloc[0]
         dictionary_info = {"name": item_info[1],
                            "address": item_info[2],
@@ -127,7 +126,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
                            "stars": float(item_info[8]),
                            "review_count": int(item_info[9]),
                            "is_open": bool(item_info[10]),
-                           "attributes": ast.literal_eval(item_info[11]),
+                           "optional": ast.literal_eval(item_info[11]),
                            "categories": list(item_info[12].split(",")),
                            "hours": {}}
         restaurant_object = Item(business_id, dictionary_info)

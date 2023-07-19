@@ -1,7 +1,7 @@
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
-from information_retrievers.recommended_item import RecommendedItem
+from information_retrievers.item.recommended_item import RecommendedItem
 
 from string import punctuation
 import yaml
@@ -57,8 +57,7 @@ class CurrentItemsExtractor:
         :return prompt for extracting current restaurant from the most recent user's input in the conversation history.
         """
 
-        recc_res_names = [current_mentioned_restaurant.get("name"
-        ) for recommeded_restaurants_per_uttr in recommended_restaurants for current_mentioned_restaurant in recommeded_restaurants_per_uttr]
+        recc_res_names = [current_mentioned_restaurant.get_name() for recommeded_restaurants_per_uttr in recommended_restaurants for current_mentioned_restaurant in recommeded_restaurants_per_uttr]
 
         curr_ment_res_names_str = ", ".join(recc_res_names)
 
@@ -95,7 +94,7 @@ class CurrentItemsExtractor:
 
         for recommended_restaurants_per_turn in recommended_restaurants:
             for recommended_restaurant in recommended_restaurants_per_turn:
-                if recommended_restaurant.get("name") in llm_resp_restaurants:
+                if recommended_restaurant.get_name() in llm_resp_restaurants:
                     restaurants.append(recommended_restaurant)
 
         return restaurants
