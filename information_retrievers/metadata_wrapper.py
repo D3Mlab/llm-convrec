@@ -23,7 +23,7 @@ class MetadataWrapper:
         :return: item metadata
         """
         item_metadata = self._items_metadata.loc[self._items_metadata['item_id'] == item_id].iloc[0]
-        return item_metadata
+        return item_metadata.to_dict()
 
     def get_item_dict_from_index(self, index: int) -> dict[str, Any]:
         """

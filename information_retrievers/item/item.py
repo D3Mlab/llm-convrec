@@ -35,11 +35,14 @@ class Item:
     def get_name(self):
         return self._name
 
-    def get_mandatory_data(self):
+    def get_mandatory_data(self) -> dict:
         return self._mandatory
 
     def get_optional_data(self) -> dict:
         return self._optional
+    
+    def get_data(self) -> dict:
+        return self._mandatory | self._optional
 
     def get(self, key):
         return self._mandatory[key]
