@@ -1,11 +1,7 @@
 from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 
 import logging
-from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
-from user_intent.inquire import Inquire
-from state.message import Message
-from decimal import Decimal
 from string import ascii_letters
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
