@@ -1,14 +1,21 @@
 # llm-convrec
-LLM-based Conversational Recommendation Architecture
+## Introduction: A Semi-Structured Conversational Recommendation System
+LLM-ConvRec is a prompting-based, semi-structured conversational system that leverages the generative power of GPT to provide flexible and natural interaction. Unlike fully-structured conversational systems such as Siri, where utterances are often predefined and inflexible, LLM-ConvRec is designed for versatility and the production of more natural responses. Moreover, it incorporates past memory into the conversation, a feature often lacking in fully-structured systems.
+
+While unstructured conversational systems like ChatGPT can produce fluid, engaging responses, their approach to utterance handling is often a "black box", which can lead to the generation of inappropriate or incorrect responses, or cause the conversation to go off the rails. This is where LLM-ConvRec distinguishes itself: although it provides the flexibility and naturalness of an unstructured system, its semi-structured nature ensures that utterance handling is not opaque, and that inappropriate responses can be avoided through structural constraints.
+
+The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
+
+## Table of Content
+
+
+## Installation and Running the System
 
 pip install -r requirements.txt
 
-Install streamlit chat gpt
 
-1. git clone https://github.com/joeychrys/streamlit-chatGPT.git
-2. pip install -r streamlit-chatGPT/requirements.txt
 
-# To run Colab service (note public URL changes each time you restart the server)
+## To run Colab service (note public URL changes each time you restart the server)
 
 1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run it
 
@@ -22,12 +29,41 @@ GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live" <- change this URL
 3. Add public URL to .env where the key is GRADIO_URL
    example: GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live"
 
-# How to run unit tests
+
+## Conversation Flow
+
+## Domain Initialization and Customization
+
+1.Few shots
+
+2.Constraints
+
+3.Hard coded responses
+
+4.filter configs
+
+5.domain specific config
+- domain name
+- file path to files, shouldnt change normally
+
+6.data
+
+7.User defined classes
+  
+
+## Testing
+
+
+
+
+
+
+## How to run unit tests
 
 inside terminal:
 pytest .\test\filename.py
 
-# Test Format
+## Test Format
 
 - **constraints_extractor_test_v2.csv**: test file used to test constraints extractor
 
