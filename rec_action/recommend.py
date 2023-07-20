@@ -22,18 +22,24 @@ class Recommend(RecAction):
 
     _mandatory_constraints: list[list[str]]
     _constraint_statuses: list[Status]
-    _hard_coded_based_resp: HardCodedBasedResponse
-    _prompt_based_resp: PromptBasedResponse
+    _recommend_response: HardCodedBasedResponse | PromptBasedResponse
+    _is_hard_coded_response: bool
 
     def __init__(self,  constraint_statuses: list,
-                 mandatory_constraints: list[list[str]], hard_coded_based_resp: HardCodedBasedResponse, prompt_based_resp: PromptBasedResponse,
+                 hard_coded_response_list: list[dict], recommend_response: HardCodedBasedResponse | PromptBasedResponse, config: dict,
                  priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
 
-        self._mandatory_constraints = mandatory_constraints
+        self._mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_response_list
+                                       if response_dict['action'] == 'RequestInformation'
+                                       and response_dict['constraints'] != []]
         self._constraint_statuses = constraint_statuses
-        self._hard_coded_based_resp = hard_coded_based_resp
-        self._prompt_based_resp = prompt_based_resp
+        self._recommend_response = recommend_response
+        
+        if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
+            self._is_hard_coded_response = True
+        else:
+            self._is_hard_coded_response = False
 
     def get_name(self):
         """
@@ -52,30 +58,21 @@ class Recommend(RecAction):
         return "The recommender provides a recommendation either by directly presenting the item or asking the " \
                "user if she knows of the place."
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
-        return self._prompt_based_resp.get_response(state_manager)
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action.
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
-        """
-        return self._hard_coded_based_resp.get_response(state_manager)
+        return self._recommend_response.get(state_manager)
 
     def is_response_hard_coded(self) -> bool:
         """
         Returns whether hard coded response exists or not.
         :return: whether hard coded response exists or not.
         """
-        return False
+        return self._is_hard_coded_response
 
     def get_priority_score(self, state_manager: StateManager) -> float:
         """
@@ -113,11 +110,7 @@ class Recommend(RecAction):
 
         :return: none
         """
-        
-        if (self.is_response_hard_coded()):
-            current_recommended_items = self._hard_coded_based_resp.get_current_recommended_items()
-        else:
-            current_recommended_items= self._prompt_based_resp.get_current_recommended_items()
+        current_recommended_items = self._recommend_response.get_current_recommended_items()
 
         message = Message("recommender", response)
         state_manager.update_conv_history(message)

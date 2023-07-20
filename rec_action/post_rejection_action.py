@@ -46,23 +46,14 @@ class PostRejectionAction(RecAction):
                     return self.priority_score_range[0] + (goal["utterance_index"]-0.5) / len(state_manager.get("conv_history")) * (self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt based recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
-        return None
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action. 
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
-        """
-        return self._reject_resp.get_response(state_manager)
+        return self._reject_resp.get(state_manager)
 
     def is_response_hard_coded(self) -> bool:
         """

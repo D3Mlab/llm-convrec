@@ -4,7 +4,7 @@ class HardCodedBasedResponse:
     """
     Abstract class representing the hard coded based response
     """
-    def get_response(state_manager: StateManager) -> str:
+    def get(self, state_manager: StateManager) -> str:
         """
         Get the response to be returned to user
 

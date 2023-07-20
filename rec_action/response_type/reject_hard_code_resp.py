@@ -10,7 +10,7 @@ class RejectHardCodedBasedResponse(HardCodedBasedResponse):
     def __init__(self, hard_coded_responses: list[dict]):
         self._hard_coded_responses = hard_coded_responses
     
-    def get_response(self, state_manager: StateManager) -> str | None:
+    def get(self, state_manager: StateManager) -> str | None:
         """
         Return hard coded recommender's response corresponding to this action. 
 

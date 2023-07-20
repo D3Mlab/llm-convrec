@@ -13,12 +13,12 @@ class RequestInformation(RecAction):
     """
     _mandatory_constraints: list[list[str]]
     _constraint_statuses: list[Status]
-    _hard_code_resp: RequestInformationHardCodedBasedResponse
+    _request_info_resp: RequestInformationHardCodedBasedResponse
 
-    def __init__(self, constraint_statuses: list[Status], hard_coded_responses: list[dict], request_info_hard_code_resp: RequestInformationHardCodedBasedResponse, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, constraint_statuses: list[Status], hard_coded_responses: list[dict], request_info_resp: RequestInformationHardCodedBasedResponse, priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
         self._constraint_statuses = constraint_statuses
-        self._hard_code_resp = request_info_hard_code_resp
+        self._request_info_resp = request_info_resp
         self._mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_responses
                                 if response_dict['action'] == 'RequestInformation'
                                 and response_dict['constraints'] != []]
@@ -39,24 +39,15 @@ class RequestInformation(RecAction):
         """
         return "Recommender requests the user’s preference"
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt based recommender's response corresponding to this action
-        """
-        return None
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action. 
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
         
-        return self._hard_code_resp.get_response(state_manager)
+        return self._request_info_resp.get(state_manager)
 
     def is_response_hard_coded(self) -> bool:
         """
