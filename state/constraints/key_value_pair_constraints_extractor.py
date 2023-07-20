@@ -11,12 +11,13 @@ from jinja2 import Environment, FileSystemLoader
 class KeyValuePairConstraintsExtractor(ConstraintsExtractor):
     _llm_wrapper: LLMWrapper
 
-    def __init__(self, llm_wrapper: LLMWrapper, default_keys: list[str]) -> None:
+    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict], config: dict) -> None:
+        default_keys = [constraints_category['key'] for constraints_category in constraints_categories]
+        
         super().__init__(default_keys)
+        
         self._llm_wrapper = llm_wrapper
         self._default_keys = default_keys
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(

@@ -27,24 +27,15 @@ class ExplainPreference(RecAction):
         """
         return "Recommender explains recommendations based on the user's said preference"
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt based recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
         return f"Give me an explanation of why you made this recommendation based on this state, but do not " \
             f"mention the state {str(state_manager)}"
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action. 
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
-        """
-        return None
 
     def is_response_hard_coded(self) -> bool:
         """

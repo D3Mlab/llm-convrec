@@ -46,7 +46,9 @@ from information_retrievers.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
-
+from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
+from rec_action.response_type.accept_hard_code_resp import AcceptHardCodedBasedResponse
+from rec_action.response_type.reject_hard_code_resp import RejectHardCodedBasedResponse
 
 class ConvRecSystem(WarningObserver):
     """
@@ -68,9 +70,6 @@ class ConvRecSystem(WarningObserver):
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
 
-        # TEMP
-        geocoder_wrapper = GoogleV3Wrapper()
-
         model = config["MODEL"]
 
         if not isinstance(openai_api_key_or_gradio_url, str):
@@ -86,45 +85,37 @@ class ConvRecSystem(WarningObserver):
         # Constraints
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-        self._constraints = [constraints_category['key'] for constraints_category in constraints_categories]
-        cumulative_constraints = [constraints_category['key'] for constraints_category in constraints_categories
-                                  if constraints_category['is_cumulative']]
-        mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_responses
-                                       if response_dict['action'] == 'RequestInformation'
-                                       and response_dict['constraints'] != []]
 
-        #TODO: generalize
+        #TODO: generalize 3 step constraints updater
         if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, self._constraints)
+                llm_wrapper, constraints_categories, config)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, self._constraints)
+                llm_wrapper, constraints_categories, config)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = ConstraintsRemover(
-                    llm_wrapper, self._constraints)
+                    llm_wrapper, constraints_categories, config)
             else:
                 constraints_remover = None
+            
             constraints_updater = ThreeStepsConstraintsUpdater(
-                constraints_extractor, constraints_classifier, geocoder_wrapper,
-                constraints_remover=constraints_remover,
-                cumulative_constraints=set(cumulative_constraints),
-                enable_location_merge=config['ENABLE_LOCATION_MERGE'])
-        #TODO: generalize
+                constraints_extractor, constraints_classifier, constraints_categories,
+                constraints_remover=constraints_remover)
+        
         elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
             constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, self._constraints)
+                llm_wrapper, constraints_categories, config)
             constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, self._constraints)
+                llm_wrapper, constraints_categories, config)
             if config['ENABLE_CONSTRAINTS_REMOVAL']:
                 constraints_remover = SafeConstraintsRemover(
-                    llm_wrapper, default_keys=self._constraints)
+                    llm_wrapper, constraints_categories, config)
             else:
                 constraints_remover = None
+            
             constraints_updater = ThreeStepsConstraintsUpdater(
-                constraints_extractor, constraints_classifier, geocoder_wrapper,
-                constraints_remover=constraints_remover,
-                cumulative_constraints=set(cumulative_constraints),
-                enable_location_merge=config['ENABLE_LOCATION_MERGE'])
+                constraints_extractor, constraints_classifier, constraints_categories,
+                constraints_remover=constraints_remover)
        
         else:
             if config['LLM'] == "alpaca lora":
@@ -189,20 +180,25 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        recc_hard_code_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
-        recc_prompt_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses, config, observers=[self])
+        recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
+ 
+        if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
+            recc_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
         
-        answer_prompt_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses, observers=[self])
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
+        accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
+        reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
 
-        rec_actions = [Answer(answer_prompt_resp),
+
+        rec_actions = [Answer(answer_resp),
                        ExplainPreference(),
-                       Recommend(user_constraint_status_objects, mandatory_constraints, recc_hard_code_resp, recc_prompt_resp),
-                       RequestInformation(user_constraint_status_objects, mandatory_constraints, hard_coded_responses), PostRejectionAction(hard_coded_responses),
-                       PostAcceptanceAction(hard_coded_responses)]
+                       Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp, config),
+                       RequestInformation(user_constraint_status_objects, hard_coded_responses, requ_info_resp), 
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
 
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
-
-        self.init_msg = f'Hello there! I am a recommender. Please provide me with some preferences for what you are looking for. For example, {self._constraints[1]}, {self._constraints[2]}, or {self._constraints[3]}. Thanks!'
 
         # Initialize system
         if user_interface_str == "demo":
@@ -214,12 +210,14 @@ class ConvRecSystem(WarningObserver):
             state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
+        self.init_msg = f'Recommender: Hello there! I am a {domain} recommender. Please provide me with some preferences for what you are looking for. For example, {constraints_categories[0]["key"]}, {constraints_categories[1]["key"]}, or {constraints_categories[2]["key"]}. Thanks!'
+
 
     def run(self) -> None:
         """
         Run the conv rec system.
         """
-        self.user_interface.display_to_user("Recommender: " + self.init_msg)
+        self.user_interface.display_to_user(self.init_msg)
         while True:
             user_input = self.user_interface.get_user_input("User: ")
             if user_input == 'quit' or user_input == 'q':

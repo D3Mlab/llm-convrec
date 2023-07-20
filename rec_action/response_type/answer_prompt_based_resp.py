@@ -83,7 +83,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         self._verify_metadata_prompt_few_shots \
             = domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots()
 
-    def get_response(self, state_manager: StateManager) -> str | None:
+    def get(self, state_manager: StateManager) -> str | None:
         """
         Get the response to be returned to user
 
@@ -247,7 +247,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         """
         Returns the response. Returns either an empty string indicating that more work needs to be done to formulate the response or the actual string response.
 
-        :state_manager: current state representing the conversation
+        :param state_manager: current state representing the conversation
         :param all_answers: list of answers to the users question(s)
         :param is_llm_res: boolean indicating if the answer was created using an LLM or not
         :return: str
@@ -269,13 +269,22 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         if is_llm_res:
             resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n' + resp
 
+        return self._clean_llm_response(resp)
+
+    @staticmethod
+    def _clean_llm_response(resp: str) -> str:
+        """" 
+        Clean the response from the llm
+        
+        :param resp: response from LLM
+        :return: cleaned str
+        """
+        
         if '"' in resp:
-            # get rid of double quotes (gpt sometimes outputs it)
+            # get rid of double quotes (llm sometimes outputs it)
             resp = resp.replace('"', "")
         
-        resp = resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
-
-        return resp
+        return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
     def _format_multiple_item_resp(self, question: str, current_mentioned_items: list[RecommendedItem], answers: dict) -> str:
         """

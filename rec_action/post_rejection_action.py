@@ -3,6 +3,7 @@ from textwrap import dedent
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
 from user_intent.reject_recommendation import RejectRecommendation
+from rec_action.response_type.reject_hard_code_resp import RejectHardCodedBasedResponse
 from state.message import Message
 
 
@@ -10,10 +11,11 @@ class PostRejectionAction(RecAction):
     """
     Class representing Answer recommender action.
     """
+    _reject_resp: RejectHardCodedBasedResponse
 
-    def __init__(self, hard_coded_responses: list[dict],priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, reject_hard_code_resp: RejectHardCodedBasedResponse, priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
-        self._hard_coded_responses = hard_coded_responses
+        self._reject_resp = reject_hard_code_resp
 
     def get_name(self) -> str:
         """
@@ -44,25 +46,14 @@ class PostRejectionAction(RecAction):
                     return self.priority_score_range[0] + (goal["utterance_index"]-0.5) / len(state_manager.get("conv_history")) * (self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt based recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
-        return None
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action. 
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
-        """
-        for response_dict in self._hard_coded_responses:
-            if response_dict['action'] == 'PostRejectionAction':
-                return response_dict['response']
+        return self._reject_resp.get(state_manager)
 
     def is_response_hard_coded(self) -> bool:
         """

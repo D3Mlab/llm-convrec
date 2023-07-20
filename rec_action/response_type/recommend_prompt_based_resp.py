@@ -1,7 +1,6 @@
 from state.state_manager import StateManager
 from typing import Dict, Any
 
-from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
@@ -41,7 +40,6 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         self._observers = observers
         self._hard_coded_responses = hard_coded_responses
 
-
         self._topk_items = int(config["TOPK_ITEMS"])
         self._topk_reviews = int(config["TOPK_REVIEWS"])
         
@@ -56,7 +54,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
        
-    def get_response(self, state_manager: StateManager) -> str:
+    def get(self, state_manager: StateManager) -> str:
         """
         Get the response to be returned to user
 
@@ -86,14 +84,22 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         prompt = self._get_prompt_to_format_recommendation(explanation)
         resp = self._llm_wrapper.make_request(prompt)
         
+        return self._clean_llm_response(resp)
+
+    @staticmethod
+    def _clean_llm_response(resp: str) -> str:
+        """" 
+        Clean the response from the llm
+        
+        :param resp: response from LLM
+        :return: cleaned str
+        """
+        
         if '"' in resp:
             # get rid of double quotes (llm sometimes outputs it)
             resp = resp.replace('"', "")
-
-        resp = resp.removeprefix(
-            'Response to user:').removeprefix('response to user:').strip()
         
-        return resp
+        return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
     def convert_state_to_query(self, state_manager: StateManager) -> str:
         """
