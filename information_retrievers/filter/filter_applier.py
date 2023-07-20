@@ -21,31 +21,28 @@ class FilterApplier:
         domain_specific_config_loader = DomainSpecificConfigLoader()
         self.filters = domain_specific_config_loader.load_filters()
 
-    def apply_filter(self, state_manager: StateManager) -> np.ndarray:
+    def apply_filter(self, state_manager: StateManager) -> list[int]:
         """
         Return a numpy array that has item ids that must be kept.
 
         :param state_manager: current state
-        :return: item ids that must be kept
+        :return: item indices that must be kept
         """
         metadata = self._metadata_wrapper.get_metadata()
 
         for filter_obj in self.filters:
             metadata = filter_obj.filter(state_manager, metadata)
 
-        item_id_list = metadata['item_id'].tolist()
-        return np.array(item_id_list)
+        indices_list = metadata.index.tolist()
+        return indices_list
 
-    @staticmethod
-    def filter_by_current_item(current_items: list[RecommendedItem]) -> np.ndarray:
+    def filter_by_current_item(self, current_item: RecommendedItem) -> list[int]:
         """
         Return a numpy array that has item ids that must be kept.
 
-        :param current_items: current items
-        :return: item ids that must be kept
+        :param current_item: current item
+        :return: item index that must be kept
         """
-        item_id_to_keep = []
-        for current_item in current_items:
-            item_id_to_keep.append(current_item.get_id())
-
-        return np.array(item_id_to_keep)
+        metadata = self._metadata_wrapper.get_metadata()
+        index = metadata.index[metadata['item_id'] == current_item.get_id()].tolist()
+        return [index]

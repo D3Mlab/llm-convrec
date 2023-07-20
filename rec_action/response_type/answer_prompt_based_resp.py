@@ -189,11 +189,11 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         logger.debug(f'Query: {query}')
 
-        item_ids_to_keep = self._filter_items.filter_by_current_item([curr_mentioned_item])
+        item_index = self._filter_items.filter_by_current_item(curr_mentioned_item)
 
         try:
             reviews = self._information_retriever.get_best_matching_reviews_of_item(
-                query, self._num_of_reviews_to_return, item_ids_to_keep)[0]
+                query, self._num_of_reviews_to_return, item_index)[0]
         except Exception as e:
             logger.debug(f'There is an error: {e}')
             return "I do not know."
