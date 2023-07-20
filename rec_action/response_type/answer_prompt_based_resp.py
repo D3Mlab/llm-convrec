@@ -27,7 +27,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
     _observers: list[WarningObserver]
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str,
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
                  observers=None) -> None:
         
         self._filter_items = filter_items
@@ -36,6 +36,8 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
+
+        self._hard_coded_responses = hard_coded_responses
 
         self._num_of_reviews_to_return = int(
             config["NUM_REVIEWS_TO_RETURN"])
@@ -153,7 +155,9 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
                 answers[question] = mult_item_resp
 
         else:
-            return f"Please ask questions about previously recommended {self._domain}."
+            for response_dict in self._hard_coded_responses:
+                if response_dict['action'] == 'NoAnswer':
+                    return response_dict['response']
 
         return self._format_multiple_qs_resp(state_manager, answers, llm_resp != "")
 

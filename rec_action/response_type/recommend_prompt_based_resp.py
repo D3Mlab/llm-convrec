@@ -30,7 +30,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _summarize_review_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses, config: dict, observers = None):
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict], config: dict, observers = None):
 
         super().__init__(domain)
         

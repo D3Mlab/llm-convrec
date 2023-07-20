@@ -185,10 +185,11 @@ class ConvRecSystem(WarningObserver):
         if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
             recc_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
         
-        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, observers=[self])
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
         requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
+
 
         rec_actions = [Answer(answer_resp),
                        ExplainPreference(),
