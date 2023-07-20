@@ -48,4 +48,4 @@ class MetadataWrapper:
 
         :return: metadata dataframe
         """
-        return self._items_metadata
+        return self._items_metadata.copy()
