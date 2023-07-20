@@ -30,7 +30,38 @@ GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live" <- change this URL
    example: GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live"
 
 
-## Conversation Flow
+## Overall Conversation Flow
+
+The LLM-ConvRec system follows a precise process during each conversation turn to ensure the highest quality of responses. Let's break down this process, from the initial user input to the final recommender response:
+
+Examples to demonstrate these categories are from the restaurant recommendation domain.
+
+### 1.Intent Classification
+The conversation begins with user input. This input is passed to an Intent Classifier, which determines the user's intent. The intent could be any or multiple of the following:
+
+- **Provide Preference:** The user expresses a preference or interest. (Example: "I'd like to eat some sushi.")
+- **Inquire:** The user asks a question about a specific item or detail. (Example: "What's on their menu? Does the restaurant have a patio?")
+- **Accept/Reject Recommendation:** The user responds to a previous recommendation made by the system.(Example: "Sure, that first one sounds good!")
+
+### 2.State Update
+After identifying the user's intent, the system updates its internal state. This state stores critical information gathered during the conversation, including:
+
+- **User's Preferences and Constraints:** These include their location, budget, dietary restrictions, etc.
+- **Current Item of Interest:** The specific item (e.g., restaurant) the user is currently referring to or interested in.
+- **Accepted and Rejected Items:** The system keeps track of the items that the user has accepted or rejected.
+
+### 3.Action Classification
+With the updated state, the system then decides the action to take next. This could be any of the following:
+
+- **Request More Information:** The system may ask the user for additional details to refine its understanding or recommendations. (Example: "Can you provide your location?")
+- **Make a Recommendation:** The system might suggest an item that matches the user's stated preferences.
+- **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
+
+### Action Generation
+Once the action is chosen, the system generates a structured response that aligns with the decided action. The system ensures this response is in line with the ongoing conversation context and adheres to the system's semi-structured conversational style.
+
+This process is repeated at each turn of the conversation, enabling LLM-ConvRec to provide a dynamic, interactive, and engaging conversational recommendation experience.
+
 
 ## Domain Initialization and Customization
 
