@@ -7,7 +7,8 @@ from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from jinja2 import Environment, FileSystemLoader
-import yaml
+import threading
+from utility.thread_utility import start_thread
 
 
 class ProvidePreference(UserIntent):
@@ -60,8 +61,28 @@ class ProvidePreference(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
+        curr_res_thread = threading.Thread(
+            target=self._update_curr_item, args=(curr_state,))
 
-        # Update current item
+        constr_thread = threading.Thread(
+            target=self._constraints_updater.update_constraints, args=(curr_state,))
+
+        start_thread([curr_res_thread, constr_thread])
+        
+        # Update constraint status
+        if self._constraint_statuses is not None:
+            for constraint in self._constraint_statuses:
+                constraint.update_status(curr_state)
+
+        return curr_state
+
+    def _update_curr_item(self, curr_state: StateManager):
+        """
+        Update the current item 
+
+        :param curr_state: current state representing the conversation
+        :return: None
+        """
         reccommended_items = curr_state.get("recommended_items")
 
         if reccommended_items is not None and reccommended_items != []:
@@ -71,16 +92,7 @@ class ProvidePreference(UserIntent):
             # If current items are [] then just keep it the same
             if curr_item != []:
                 curr_state.update("curr_items", curr_item)
-
-        # Update constraints
-        self._constraints_updater.update_constraints(curr_state)
         
-        # Update constraint status
-        if self._constraint_statuses is not None:
-            for constraint in self._constraint_statuses:
-                constraint.update_status(curr_state)
-
-        return curr_state
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
