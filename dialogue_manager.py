@@ -28,11 +28,11 @@ class DialogueManager:
     _llm_wrapper: LLMWrapper
 
     def __init__(self, state_manager: StateManager, user_intents_classifier: UserIntentsClassifier,
-                 rec_actions_classifier: RecActionsClassifier, llm_wrapper: LLMWrapper, default_response="Could you provide more information?"):
+                 rec_actions_classifier: RecActionsClassifier, llm_wrapper: LLMWrapper, hard_coded_responses):
         self.state_manager = state_manager
         self._user_intents_classifier = user_intents_classifier
         self._rec_actions_classifier = rec_actions_classifier
-        self._default_response = default_response
+        self._hard_coded_responses = hard_coded_responses
         self._llm_wrapper = llm_wrapper
 
     def get_response(self, user_input: str) -> str:
@@ -53,7 +53,9 @@ class DialogueManager:
             self.state_manager)
         logger.debug(f'user_intents={str(user_intents)}')
         if not user_intents:
-            rec_response = self._default_response
+            for response_dict in self._hard_coded_responses:
+                if response_dict['action'] == 'DefaultResponse':
+                    rec_response = response_dict['response']
             self.state_manager.store_response(rec_response)
             logger.warning(
                 f"User input, \"{user_input}\" was not classified to any of the user intent.")
@@ -83,36 +85,9 @@ class DialogueManager:
         :param rec_actions: list of recommender actions
         :return: response from the recommender
         """
-
-        hard_coded_llm_resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n'
-
-        # Note only 1 action in MVP
+        
+        # Note only works for 1 rec action for now
         for action in rec_actions:
-            hard_coded_resp = "  "
-            if action.is_response_hard_coded():
-                hard_coded_resp = action.get_hard_coded_response(
-                    self.state_manager)
-
-            # If could not create a hard coded response (need LLM to do additonal work to get response) or the response isn't hard coded
-            if hard_coded_resp == "" or not action.is_response_hard_coded() or hard_coded_resp == hard_coded_llm_resp:
-                prompt = action.get_prompt(self.state_manager)
-                rec_response = self._llm_wrapper.make_request(prompt)
-
-                if '"' in rec_response:
-                    # get rid of double quotes (gpt sometimes outputs it)
-                    rec_response = rec_response.replace('"', "")
-
-                rec_response = rec_response.removeprefix(
-                    'Response to user:').removeprefix('response to user:').strip()
-
-                # If LLM answer then give warning to user that info might not be correct.
-                if hard_coded_llm_resp in hard_coded_resp:
-                    rec_response = hard_coded_resp + rec_response
-
-                self.state_manager.store_response(rec_response)
-                return rec_response
-
-            else:
-                self.state_manager.store_response(hard_coded_resp)
-                return hard_coded_resp
-
+            resp = action.get_response(self.state_manager)            
+            self.state_manager.store_response(resp)
+            return resp

@@ -1,7 +1,17 @@
 import re
-
 import pandas as pd
 import yaml
+from information_retrievers.filter.filter import Filter
+from information_retrievers.filter.exact_word_matching_filter import ExactWordMatchingFilter
+from information_retrievers.filter.item_filter import ItemFilter
+from information_retrievers.filter.value_range_filter import ValueRangeFilter
+from information_retrievers.filter.word_in_filter import WordInFilter
+import torch
+import numpy as np
+from information_retrievers.vector_database import VectorDataBase
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 
 class DomainSpecificConfigLoader:
@@ -26,7 +36,7 @@ class DomainSpecificConfigLoader:
             'CONSTRAINTS_CATEGORIES']
 
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
-        constraints_df = pd.read_csv(path_to_csv, encoding='latin1')
+        constraints_df = pd.read_csv(path_to_csv, encoding='latin1',keep_default_na=False)
         return constraints_df.to_dict("records")
 
     def load_accepted_items_fewshots(self) -> list[dict]:
@@ -163,8 +173,6 @@ class DomainSpecificConfigLoader:
 
     def _get_path_to_domain(self):
         return self.system_config['PATH_TO_DOMAIN_CONFIGS']
-    
-
 
     def load_inquire_classification_fewshots(self) -> list[dict]:
         filename = self.load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
@@ -204,3 +212,75 @@ class DomainSpecificConfigLoader:
             for row in reject_classification_fewshots_df.to_dict("records")
         ]
         return reject_classification_fewshots
+
+    def load_filters(self) -> list[Filter]:
+        filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        filter_config_df = pd.read_csv(path_to_csv, encoding='latin1')
+        filters_list = []
+
+        for row in filter_config_df.to_dict("records"):
+            if row['type_of_filter'].strip() == "exact word matching":
+                filters_list.append(ExactWordMatchingFilter(
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "item":
+                filters_list.append(ItemFilter(
+                    row['key_in_state'], row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "value range":
+                filters_list.append(ValueRangeFilter(row['key_in_state'], row['metadata_field']))
+
+            elif row['type_of_filter'].strip() == "word in":
+                filters_list.append(WordInFilter(
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
+
+        return filters_list
+
+    def get_path_to_item_metadata(self) -> str:
+        filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
+        return f'{self._get_path_to_domain()}/{filename}'
+
+    def load_item_review_count(self) -> torch.Tensor:
+        filename = self.load_domain_specific_config()['PATH_TO_ITEM_REVIEW_COUNT']
+        path_to_item_review_count = f'{self._get_path_to_domain()}/{filename}'
+        return torch.load(path_to_item_review_count)
+
+    def load_item_id(self) -> np.ndarray:
+        path_to_domain = self._get_path_to_domain()
+        item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
+        path_to_items_id = f'{path_to_domain}/{item_id_filename}'
+        return np.load(path_to_items_id, allow_pickle=True)
+
+    def load_data_for_pd_search_engine(self) -> tuple[pd.DataFrame, torch.Tensor]:
+        path_to_domain = self._get_path_to_domain()
+        item_review_embeddings_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        path_to_item_review_embeddings = f'{path_to_domain}/{item_review_embeddings_filename}'
+        reviews_embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
+        path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
+        return pd.read_csv(path_to_item_review_embeddings), torch.load(path_to_reviews_embedding_matrix)
+
+    def load_vector_database(self) -> VectorDataBase:
+        path_to_domain = self._get_path_to_domain()
+        database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
+        path_to_database = f'{path_to_domain}/{database_filename}'
+        review_id_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_ID']
+        path_to_items_id = f'{path_to_domain}/{review_id_filename}'
+        item_reviews_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
+        path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
+        return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)
+
+
+    def load_hard_coded_responses(self) -> list[dict]:
+        filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
+        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
+        responses_df = pd.read_csv(path_to_csv, encoding='latin1')
+        responses = [
+            {
+                'action': row['action'],
+                'response': row['response'],
+                'constraints': row['constraints'].split(', ') if isinstance(row['constraints'], str) else []
+            }
+            for row in responses_df.to_dict("records")
+        ]
+        return responses

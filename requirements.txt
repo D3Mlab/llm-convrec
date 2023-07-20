@@ -13,3 +13,4 @@ Nominatim
 tenacity
 jinja2
 gradio
+faiss-cpu==1.7.4

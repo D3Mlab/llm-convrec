@@ -1,9 +1,9 @@
-from information_retrievers.filter.check_location import CheckLocation
-from information_retrievers.filter.check_cuisine_dish_type import CheckCuisineDishType
-from information_retrievers.filter.check_already_recommended_restaurant import CheckAlreadyRecommendedRestaurant
-from information_retrievers.filter.filter_restaurants import FilterRestaurants
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.item import Item
+from information_retrievers.filter.filter import CheckLocation
+from information_retrievers.filter.filter import CheckCuisineDishType
+from information_retrievers.filter.filter import CheckAlreadyRecommendedRestaurant
+from information_retrievers.filter.filter import FilterRestaurants
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.data_holder import DataHolder
 from state.common_state_manager import CommonStateManager
@@ -11,7 +11,6 @@ import dotenv
 import pandas as pd
 import torch
 import pytest
-from itertools import chain
 
 dotenv.load_dotenv()
 geocoder_wrapper = GoogleV3Wrapper()
@@ -41,7 +40,7 @@ dictionary_info1 = {"name": "Super Dog",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant1 = Item("4iRzR7OaS-QaSXuvYxEGKA", dictionary_info1)
@@ -57,7 +56,7 @@ dictionary_info2 = {"name": "Sonic Drive-In",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant2 = Item("bBDDEgkFA1Otx9Lfe7BZUQ", dictionary_info2)
@@ -73,7 +72,7 @@ dictionary_info3 = {"name": "Caviar & Bananas",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant3 = Item("lk9IwjZXqUMqqOhM774DtQ", dictionary_info3)
@@ -89,7 +88,7 @@ dictionary_info4 = {"name": "The Green Pheasant",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant4 = Item("tMkwHmWFUEXrC9ZduonpTg", dictionary_info4)
@@ -105,7 +104,7 @@ dictionary_info5 = {"name": "The Green Pheasant",
                     "stars": 0,
                     "review_count": 0,
                     "is_open": True,
-                    "attributes": {},
+                    "optional": {},
                     "categories": [],
                     "hours": {}}
 restaurant5 = Item("tMkwHmWFUEX", dictionary_info5)

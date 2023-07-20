@@ -1,0 +1,9 @@
+action,response,constraints
+PostAcceptanceAction,"Great! If you need any more assistance, feel free to ask.",
+PostRejectionAction,I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?,
+RequestInformation,Could you provide the location?,location
+RequestInformation,Could you provide the cuisine type or dish type?,"cuisine type, dish type"
+RequestInformation,Do you have any other preferences?,
+DefaultResponse,Could you provide more information?,
+NoRecommendation,"Sorry, there is no restaurant that matches your constraints.",
+NoAnswer,Please only ask questions about previously recommended restaurant.,

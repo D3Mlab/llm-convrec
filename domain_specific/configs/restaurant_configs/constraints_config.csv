@@ -1,10 +1,10 @@
-key,description,is_mandatory,is_cumulative
-location,The desired location of the restaurants.,TRUE,FALSE
-cuisine type,"The desired specific style of cooking or cuisine offered by the restaurants (e.g., ""Italian"", ""Mexican"", ""Chinese""). This can be implicitly provided through dish type (e.g ""italian"" if dish type is ""pizza"").",TRUE,FALSE
-dish type,The desired menu item or dish in the restaurant that user shows interests.,TRUE,TRUE
-type of meal,"The desired category of food consumption associated with specific times of day (e.g., ""breakfast"", ""lunch"", ""dinner"").",FALSE,TRUE
-price range,The preferred range of prices for the restaurants specified by the user.,FALSE,TRUE
-wait times,The acceptable wait time for the user when dining at the restaurants.,FALSE,TRUE
-atmosphere,The preferred atmosphere or ambience of the restaurants.,FALSE,TRUE
-dietary restrictions,Any specific dietary limitations or restrictions the user may have.,FALSE,TRUE
-others,Any additional constraints or preferred features.,FALSE,TRUE
+key,description,is_cumulative,default_value
+location,The desired location of the restaurants.,FALSE,None
+cuisine type,"The desired specific style of cooking or cuisine offered by the restaurants (e.g., ""Italian"", ""Mexican"", ""Chinese""). This can be implicitly provided through dish type (e.g ""italian"" if dish type is ""pizza"").",FALSE,None
+dish type,The desired menu item or dish in the restaurant that user shows interests.,TRUE,None
+type of meal,"The desired category of food consumption associated with specific times of day (e.g., ""breakfast"", ""lunch"", ""dinner"").",TRUE,None
+price range,The preferred range of prices for the restaurants specified by the user.,TRUE,None
+wait times,The acceptable wait time for the user when dining at the restaurants.,TRUE,None
+atmosphere,The preferred atmosphere or ambience of the restaurants.,FALSE,None
+dietary restrictions,Any specific dietary limitations or restrictions the user may have.,TRUE,None
+others,Any additional constraints or preferred features.,TRUE,None

@@ -3,13 +3,13 @@ import pandas as pd
 import scipy.stats
 import torch
 import numpy as np
-from information_retrievers.neural_ir.neural_embedder import BERT_model
+from information_retrievers.embedder.bert_embedder import BERT_model
 from find_query_related_restaurants import FindQueryRelatedRestaurants
 from embedding_creator import EmbeddingCreator
 from sort_embedding import SortEmbedding
 from create_matrix import CreateMatrix
 from create_item import CreateItemSeperation
-from information_retrievers.neural_ir.neural_search_engine import NeuralSearchEngine
+from information_retrievers.ir.search_engine_old import NeuralSearchEngine
 from information_retriever_ranking import InformationRetrievalRankCSV
 from MAP import MAP
 from MRP import MRP

@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 import yaml
 
-from information_retrievers.recommended_item import RecommendedItem
-from information_retrievers.item import Item
+from information_retrievers.item.recommended_item import RecommendedItem
+from information_retrievers.item.item import Item
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.answer import Answer
 
@@ -39,10 +39,10 @@ class TestAnswer:
                            "stars": 0,
                            "review_count": 0,
                            "is_open": True,
-                           "attributes": restaurant_attributes,
+                           "optional": restaurant_attributes,
                            "categories": [],
                            "hours": {}}
-        restaurant = RecommendedItem(Item("business_id", dictionary_info), "", [])
+        restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
 
         actual = answer._extract_category_from_input(utterance, restaurant)
         assert actual == category
