@@ -1,4 +1,6 @@
 import re
+
+import faiss
 import pandas as pd
 import yaml
 from information_retrievers.filter.filter import Filter
@@ -241,35 +243,62 @@ class DomainSpecificConfigLoader:
         filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
         return f'{self._get_path_to_domain()}/{filename}'
 
-    def load_item_review_count(self) -> torch.Tensor:
-        filename = self.load_domain_specific_config()['PATH_TO_ITEM_REVIEW_COUNT']
-        path_to_item_review_count = f'{self._get_path_to_domain()}/{filename}'
-        return torch.load(path_to_item_review_count)
-
     def load_item_id(self) -> np.ndarray:
-        path_to_domain = self._get_path_to_domain()
-        item_id_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_ID']
-        path_to_items_id = f'{path_to_domain}/{item_id_filename}'
-        return np.load(path_to_items_id, allow_pickle=True)
+        filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
+        filepath = f'{self._get_path_to_domain()}/{filename}'
+        df_reviews = pd.read_csv(filepath)
+        return df_reviews["item_id"].to_numpy()
 
-    def load_data_for_pd_search_engine(self) -> tuple[pd.DataFrame, torch.Tensor]:
+    def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, np.ndarray, torch.Tensor]:
+        # # load item reviews
+        # path_to_domain = self._get_path_to_domain()
+        # item_reviews_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        # path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
+        # item_reviews_df = pd.read_csv(path_to_item_reviews)
         path_to_domain = self._get_path_to_domain()
-        item_review_embeddings_filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
-        path_to_item_review_embeddings = f'{path_to_domain}/{item_review_embeddings_filename}'
+        filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        filepath = f'{self._get_path_to_domain()}/{filename}'
+        df_reviews = pd.read_csv(filepath)
+        review_item_ids = df_reviews["item_id"].to_numpy()
+        reviews = df_reviews["Review"].to_numpy()
+
+        # load embedding matrix
         reviews_embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
         path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
-        return pd.read_csv(path_to_item_review_embeddings), torch.load(path_to_reviews_embedding_matrix)
+        if os.path.exists(path_to_reviews_embedding_matrix):
+            embedding_matrix = torch.load(path_to_reviews_embedding_matrix)
+        else:
+            embedding_matrix = self._create_embedding_matrix()
 
-    def load_vector_database(self) -> VectorDataBase:
+        return review_item_ids, reviews, embedding_matrix
+
+    def _create_item_id(self, item_reviews_df: pd.DataFrame):
+        return item_reviews_df["item_id"].to_numpy()
+
+    def load_vector_database(self) -> tuple[VectorDataBase, np.ndarray, np.ndarray]:
         path_to_domain = self._get_path_to_domain()
         database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
         path_to_database = f'{path_to_domain}/{database_filename}'
-        review_id_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_ID']
-        path_to_items_id = f'{path_to_domain}/{review_id_filename}'
-        item_reviews_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
-        path_to_item_reviews = f'{path_to_domain}/{item_reviews_filename}'
-        return VectorDataBase(path_to_database, path_to_items_id, path_to_item_reviews)
 
+        if os.path.exists(path_to_database):
+            database = faiss.read_index(path_to_database)
+        else:
+            database = self._create_database()
+
+        filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        filepath = f'{self._get_path_to_domain()}/{filename}'
+        df_reviews = pd.read_csv(filepath)
+        review_item_ids = df_reviews["item_id"].to_numpy()
+        reviews = df_reviews["Review"].to_numpy()
+        return VectorDataBase(database), review_item_ids, reviews
+
+    def _create_database(self):
+        # TODO: implement this function
+        pass
+
+    def _create_embedding_matrix(self) -> torch.tensor:
+        # TODO: implement this function
+        pass
 
     def load_hard_coded_responses(self) -> list[dict]:
         filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
