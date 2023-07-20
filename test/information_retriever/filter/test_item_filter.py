@@ -39,11 +39,11 @@ for i in range(num_rows):
     test_data.append((constraint_keys, metadata_field, state, expected_removed_indices))
 
 
-class TestExactWordMatchingFilter:
+class TestItemFilter:
 
     @pytest.mark.parametrize("constraint_key, metadata_field, state_manager, expected_removed_indices", test_data)
-    def test_exact_word_matching_filter(self, constraint_key: str, metadata_field: str,
-                                        state_manager: CommonStateManager, expected_removed_indices: list[int]):
+    def test_item_filter(self, constraint_key: str, metadata_field: str,
+                         state_manager: CommonStateManager, expected_removed_indices: list[int]):
         """
         Test exact word matching filter.
 
