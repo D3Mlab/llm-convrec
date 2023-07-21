@@ -256,10 +256,7 @@ class DomainSpecificConfigLoader:
         # load embedding matrix
         embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_EMBEDDING_MATRIX']
         path_to_embedding_matrix = f'{path_to_domain}/{embedding_matrix_filename}'
-        if os.path.exists(path_to_embedding_matrix):
-            embedding_matrix = torch.load(path_to_embedding_matrix)
-        else:
-            embedding_matrix = self._create_embedding_matrix(reviews_df, path_to_embedding_matrix)
+        embedding_matrix = self._create_embedding_matrix(reviews_df, path_to_embedding_matrix)
 
         review_item_ids = reviews_df["item_id"].to_numpy()
         reviews = reviews_df["Review"].to_numpy()
@@ -274,10 +271,7 @@ class DomainSpecificConfigLoader:
         database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
         path_to_database = f'{path_to_domain}/{database_filename}'
 
-        if os.path.exists(path_to_database):
-            database = faiss.read_index(path_to_database)
-        else:
-            database = self._create_database(reviews_df, path_to_database)
+        database = self._create_database(reviews_df, path_to_database)
 
         review_item_ids = reviews_df["item_id"].to_numpy()
         reviews = reviews_df["Review"].to_numpy()
@@ -293,15 +287,17 @@ class DomainSpecificConfigLoader:
         path_to_domain = self._get_path_to_domain()
         domain_specific_config = self.load_domain_specific_config()
         reviews_embedding_matrix_filename = domain_specific_config['PATH_TO_EMBEDDING_MATRIX']
-        path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
+        path_to_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
 
         # create database
-        if os.path.exists(path_to_reviews_embedding_matrix):
-            embedding_matrix = torch.load(path_to_reviews_embedding_matrix)
-            database = vector_database_creator.create_vector_database_from_matrix(embedding_matrix)
+        if not os.path.exists(path_to_embedding_matrix) and os.path.exists(path_to_embedding_matrix):
+            embedding_matrix = torch.load(path_to_embedding_matrix)
+            if embedding_matrix.shape()[0] == reviews_df.shape[0]:
+                database = vector_database_creator.create_vector_database_from_matrix(embedding_matrix, path_to_database)
+            else:
+                database = vector_database_creator.create_vector_database_from_reviews(reviews_df)
         else:
             database = vector_database_creator.create_vector_database_from_reviews(reviews_df)
-        faiss.write_index(database, path_to_database)
         return database
 
     def _create_embedding_matrix(self, reviews_df: pd.DataFrame, path_to_embedding_matrix: str) -> torch.tensor:
@@ -317,10 +313,18 @@ class DomainSpecificConfigLoader:
         path_to_database = f'{path_to_domain}/{database_filename}'
 
         # create embedding matrix
-        if os.path.exists(path_to_database):
+        if not os.path.exists(path_to_embedding_matrix) and os.path.exists(path_to_database):
             database = faiss.read_index(path_to_database)
-            embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_database(database)
-            torch.save(embedding_matrix, path_to_embedding_matrix)
+            if database.ntotal == reviews_df.shape[0]:
+                embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_database(
+                    database,
+                    path_to_embedding_matrix
+                )
+            else:
+                embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_reviews(
+                    reviews_df,
+                    path_to_embedding_matrix
+                )
         else:
             embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_reviews(
                 reviews_df,
