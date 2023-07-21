@@ -20,9 +20,9 @@ class VectorDatabaseSearchEngine(SearchEngine):
 
     def __init__(self, embedder: BERT_model):
         domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._database, review_item_ids, reviews = domain_specific_config_loader.load_vector_database()
+        review_item_ids, reviews, self._database =\
+            domain_specific_config_loader.load_data_for_vector_database_search_engine()
         super().__init__(embedder, review_item_ids, reviews)
-
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_indices_to_keep: list[int]) -> tuple[list, list]:
