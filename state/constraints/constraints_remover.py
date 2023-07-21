@@ -17,11 +17,10 @@ class ConstraintsRemover:
     :param default_keys: all possible keys for constraints
     """
 
-    def __init__(self, llm_wrapper: LLMWrapper, default_keys: list):
+    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict], config: dict):
         self._llm_wrapper = llm_wrapper
-        self._default_keys = set(default_keys)
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+        self._default_keys = [constraints_category['key'] for constraints_category in constraints_categories]
+       
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(

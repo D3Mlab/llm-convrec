@@ -1,7 +1,6 @@
 from state.state_manager import StateManager
 
 from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
-from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
@@ -26,7 +25,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
     _convert_state_to_query_prompt: str
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses):
+                 information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses: list[dict]):
         
         super().__init__(domain)
         
@@ -43,7 +42,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
         self._convert_state_to_query_prompt = env.get_template(
             config['CONVERT_STATE_TO_QUERY_PROMPT_FILENAME'])
       
-    def get_response(self, state_manager: StateManager) -> str:
+    def get(self, state_manager: StateManager) -> str:
         """
         Get the response to be returned to user
 
@@ -86,20 +85,19 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
 
         return query
 
-    #TODO: generalize this once metadata is done
-    def _format_hard_coded_resp(self, recommended_restaurants: list[RecommendedItem]) -> str:
+    def _format_hard_coded_resp(self, recommended_items: list[RecommendedItem]) -> str:
         """
         Formats the hard coded recommender response.
-        Returns the generated string from the list of recommended restaurants.
+        Returns the generated string from the list of recommended items.
 
-        :param recommended_restaurants: list of recommended restaurants
+        :param recommended_items: list of recommended items
 
         :return: response to display to user
         """
 
         recomm_resp = "How about "
-        for restaurant in recommended_restaurants:
-            recomm_resp += f'{restaurant.get_name()} at {restaurant.get("address")}, {restaurant.get("city")} with {restaurant.get("stars")} stars out of {restaurant.get("review_count")} reviews or '
+        for item in recommended_items:
+            recomm_resp += f'{item.get_name()} or '
 
         return f'{recomm_resp[:-4]}?'
     
