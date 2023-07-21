@@ -1,5 +1,7 @@
 import re
 
+import torch
+import numpy as np
 import faiss
 import pandas as pd
 import yaml
@@ -12,8 +14,6 @@ from information_retrievers.filter.exact_word_matching_filter import ExactWordMa
 from information_retrievers.filter.item_filter import ItemFilter
 from information_retrievers.filter.value_range_filter import ValueRangeFilter
 from information_retrievers.filter.word_in_filter import WordInFilter
-import torch
-import numpy as np
 from information_retrievers.vector_database import VectorDataBase
 import os
 
@@ -249,12 +249,12 @@ class DomainSpecificConfigLoader:
 
     def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, np.ndarray, torch.Tensor]:
         path_to_domain = self._get_path_to_domain()
-        filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
         reviews_df = pd.read_csv(filepath)
 
         # load embedding matrix
-        embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
+        embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_EMBEDDING_MATRIX']
         path_to_embedding_matrix = f'{path_to_domain}/{embedding_matrix_filename}'
         if os.path.exists(path_to_embedding_matrix):
             embedding_matrix = torch.load(path_to_embedding_matrix)
@@ -266,7 +266,7 @@ class DomainSpecificConfigLoader:
         return review_item_ids, reviews, embedding_matrix
 
     def load_data_for_vector_database_search_engine(self) -> tuple[np.ndarray, np.ndarray, VectorDataBase]:
-        filename = self.load_domain_specific_config()['PATH_TO_ITEMS_REVIEW_EMBEDDINGS']
+        filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
         reviews_df = pd.read_csv(filepath)
 
@@ -292,7 +292,7 @@ class DomainSpecificConfigLoader:
         # load file path to embedding matrix
         path_to_domain = self._get_path_to_domain()
         domain_specific_config = self.load_domain_specific_config()
-        reviews_embedding_matrix_filename = domain_specific_config['PATH_TO_REVIEWS_EMBEDDING_MATRIX']
+        reviews_embedding_matrix_filename = domain_specific_config['PATH_TO_EMBEDDING_MATRIX']
         path_to_reviews_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
 
         # create database
@@ -320,9 +320,12 @@ class DomainSpecificConfigLoader:
         if os.path.exists(path_to_database):
             database = faiss.read_index(path_to_database)
             embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_database(database)
+            torch.save(embedding_matrix, path_to_embedding_matrix)
         else:
-            embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_reviews(reviews_df)
-        torch.save(embedding_matrix, path_to_embedding_matrix)
+            embedding_matrix = embedding_matrix_creator.create_embedding_matrix_from_reviews(
+                reviews_df,
+                path_to_embedding_matrix
+            )
         return embedding_matrix
 
     def load_hard_coded_responses(self) -> list[dict]:
