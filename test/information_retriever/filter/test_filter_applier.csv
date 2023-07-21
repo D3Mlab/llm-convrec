@@ -1,0 +1,5 @@
+type_of_filter,name,cuisine type,rating,location,expected_indices
+"location, value range",A,B,2.4-2.6,exton,19
+"location, value range",A,B,4-5,Reno,"11, 42"
+"exact word matching, item",The Green pheasant,Japanese,4-5,Tucson,"7, 36"
+"word in, item",Super Sushi Kyo Hin,asian,4-5,Tucson,10

@@ -5,7 +5,7 @@ from information_retrievers.item.recommended_item import RecommendedItem
 import pandas as pd
 import pytest
 
-metadata = pd.read_json("information_retrievers/data/Top-50-Restaurants/top_50_restaurants.json", orient='records', lines=True)
+metadata = pd.read_json("test/information_retriever/filter/50_restaurants_metadata.json", orient='records', lines=True)
 
 test_csv = pd.read_csv("test/information_retriever/filter/test_item_filter.csv", encoding ="ISO-8859-1")
 num_rows = test_csv.shape[0]
@@ -55,11 +55,7 @@ class TestItemFilter:
         item_filter = ItemFilter(constraint_key, metadata_field)
         filtered_metadata = item_filter.filter(state_manager, metadata)
         remained_indices = filtered_metadata.index.tolist()
-        print(f'remained_indices: {remained_indices}')
-        print(f'length of remained_indices: {len(remained_indices)}')
 
-        print(f'metadata: {metadata}')
-        print(f'filtered_metadata: {filtered_metadata}')
         for value in expected_removed_indices:
             if value in remained_indices:
                 assert False

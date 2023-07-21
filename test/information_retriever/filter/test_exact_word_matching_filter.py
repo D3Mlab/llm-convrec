@@ -4,7 +4,7 @@ import pytest
 import pandas as pd
 
 
-metadata = pd.read_json("information_retrievers/data/Top-50-Restaurants/top_50_restaurants.json", orient='records', lines=True)
+metadata = pd.read_json("test/information_retriever/filter/50_restaurants_metadata.json", orient='records', lines=True)
 
 test_csv = pd.read_csv("test/information_retriever/filter/test_exact_word_matching_filter.csv", encoding ="ISO-8859-1")
 num_rows = test_csv.shape[0]
