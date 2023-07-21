@@ -57,7 +57,7 @@ With the updated state, the system then decides the action to take next. This co
 - **Make a Recommendation:** The system might suggest an item that matches the user's stated preferences.
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
-### Action Generation
+### 4.Action Generation
 Once the action is chosen, the system generates a structured response that aligns with the decided action. The system ensures this response is in line with the ongoing conversation context and adheres to the system's semi-structured conversational style.
 
 This process is repeated at each turn of the conversation, enabling LLM-ConvRec to provide a dynamic, interactive, and engaging conversational recommendation experience.
@@ -65,8 +65,46 @@ This process is repeated at each turn of the conversation, enabling LLM-ConvRec 
 
 ## Domain Initialization and Customization
 
-1.Few shots
+## 1.Few shots for prompts
+Few-shot examples are crucial in training the LLM-ConvRec system. They are a set of input-output pairs that demonstrate the type of behavior we want the system to exhibit. In the context of our system, few-shot examples help train the classifiers and provide the necessary prompts for information extraction.
 
+Few-shot learning is a powerful tool in AI because it enables models to understand and perform tasks after seeing just a few examples. This is crucial for conversational systems where a diverse array of utterances are possible. By providing the LLM-ConvRec system with few-shot examples, the model can learn to generate appropriate responses to a wide range of user inputs.
+
+When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
+
+Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
+
+Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
+
+- **accept_classification_fewshots.csv**
+- **reject_classification_fewshots.csv**
+- **inquire_classification_fewshots.csv**
+ 
+- **constraints_updater_fewshots.csv**
+- **accepted_items_extractor_fewshots.csv**
+- **rejected_items_extractor_fewshots.csv**
+- **current_items_extractor_fewshots.csv**
+  - requires columns named user_input and response
+  - user_input: user input
+  - response: items extracted from the user input
+- **answer_extract_category_fewshots.csv**
+  - requires columns named input and output
+  - input: question from user
+  - output: metadata category that has the answer for the user input
+- **answer_ir_fewshots.csv**
+  - requires columns named question, information, and answer
+  - question: question from user
+  - information: reviews retrieved by information retrieval
+  - answer: answer to the question based on the information given
+- **answer_separate_questions_fewshots.csv**
+  - requires columns named question and individual_questions
+  - question: question from user
+  - individual_questions: individual questions in the user's question separated by a new line character (i.e. "\n")
+- **answer_verify_metadata_resp_fewshots.csv**
+  - requires columns named question, answer, and response
+  - question: question from user
+  - answer: answer created by the system
+  - response: "Yes." if the answer actually answer the question. "No." if the answer doesn't answer the question
 2.Constraints
 
 3.Hard coded responses
