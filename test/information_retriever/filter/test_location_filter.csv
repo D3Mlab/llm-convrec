@@ -1,0 +1,5 @@
+location,expected_indices
+exton,19
+Reno,"11, 42"
+Tucson,"21,   33"
+"exton, reno","11, 19, 42"

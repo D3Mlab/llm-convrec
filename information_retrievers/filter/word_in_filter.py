@@ -59,7 +59,10 @@ class WordInFilter(Filter):
         item_metadata_field_values = row_of_df[self._metadata_field]
 
         if not isinstance(item_metadata_field_values, list):
-            item_metadata_field_values = [item_metadata_field_values]
+            if isinstance(item_metadata_field_values, str):
+                item_metadata_field_values = item_metadata_field_values.split(",")
+            else:
+                return True
 
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:

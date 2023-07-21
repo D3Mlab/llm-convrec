@@ -24,14 +24,13 @@ class VectorDatabaseSearchEngine(SearchEngine):
         self._database = domain_specific_config_loader.load_vector_database()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
+                        item_indices_to_keep: list[int]) -> tuple[list, list]:
         query_embedding = self._embedder.get_tensor_embedding(query)
         similarity_score_review = self._database.find_similarity_vector(query_embedding)
         similarity_score_review = torch.tensor(similarity_score_review)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
-        id_index = self._find_index(item_ids_to_keep)
-        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, id_index)
+        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
         list_of_business_id = self._get_topk_item_business_id(
             most_similar_item_index, index_most_similar_review)

@@ -26,7 +26,7 @@ class PDSearchEngine(SearchEngine):
             = domain_specific_config_loader.load_data_for_pd_search_engine()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
+                        item_indices_to_keep: list[int]) -> tuple[list, list]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
         reviews for that item
@@ -44,9 +44,7 @@ class PDSearchEngine(SearchEngine):
             query_embedding, self._reviews_embedding_matrix)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
-        # Finds the indexes of the ids to count
-        id_index = self._find_index(item_ids_to_keep)
-        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, id_index)
+        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
         list_of_item_id = self._get_topk_item_item_id(most_similar_item_index, self._items_reviews)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review,

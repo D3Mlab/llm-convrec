@@ -22,7 +22,7 @@ class SearchEngine:
         self._items_id = domain_specific_config_loader.load_item_id()
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
+                        item_indices_to_keep: list[int]) -> tuple[list, list]:
         """
         Takes a query and returns a list of item id that is most similar to the query and the top k
         reviews for that item
@@ -100,14 +100,6 @@ class SearchEngine:
             # remove restaurant that has score of 0
             num_items_to_remove = top_k_items - num_non_zero_value
             indices = indices[:-num_items_to_remove]
-        return indices
-
-    def _find_index(self, ids_to_keep: np.array) -> list[int]:
-        indices = []
-
-        for item_id in ids_to_keep:
-            indices.append(np.where(self._items_id == item_id)[0][0])
-
         return indices
 
     @staticmethod
