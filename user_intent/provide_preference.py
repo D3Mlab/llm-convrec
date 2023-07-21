@@ -35,6 +35,11 @@ class ProvidePreference(UserIntent):
             config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(
             config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
+        
+        if config['ENABLE_MULTITHREADING'] == True:
+            self.enable_threading = True
+        else:
+            self.enable_threading = False
 
     def get_name(self) -> str:
         """
@@ -61,13 +66,19 @@ class ProvidePreference(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        curr_res_thread = threading.Thread(
-            target=self._update_curr_item, args=(curr_state,))
+        
+        if (self.enable_threading):
+            curr_item_thread = threading.Thread(
+                target=self._update_curr_item, args=(curr_state,))
 
-        constr_thread = threading.Thread(
-            target=self._constraints_updater.update_constraints, args=(curr_state,))
+            constr_thread = threading.Thread(
+                target=self._constraints_updater.update_constraints, args=(curr_state,))
 
-        start_thread([curr_res_thread, constr_thread])
+            start_thread([curr_item_thread, constr_thread])
+        else:
+            self._update_curr_item(curr_state)
+            self._constraints_updater.update_constraints(curr_state)
+            
         
         # Update constraint status
         if self._constraint_statuses is not None:

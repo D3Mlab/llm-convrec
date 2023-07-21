@@ -10,11 +10,17 @@ from utility.thread_utility import start_thread
 
 class MultilabelUserIntentsClassifier(UserIntentsClassifier):
 
-    def __init__(self, user_intents: list[UserIntent], llm_wrapper: LLMWrapper, force_provide_preference: bool = False):
+    def __init__(self, user_intents: list[UserIntent], llm_wrapper: LLMWrapper, config: dict, force_provide_preference: bool = False):
         super().__init__(user_intents)
         self._user_intents = user_intents.copy()
         self._llm_wrapper = llm_wrapper
         self._provide_preference = None
+        
+        if config['ENABLE_MULTITHREADING'] == True:
+            self.enable_threading = True
+        else:
+            self.enable_threading = False
+            
         if force_provide_preference:
             for user_intent in self._user_intents:
                 if isinstance(user_intent, ProvidePreference):
@@ -54,12 +60,15 @@ class MultilabelUserIntentsClassifier(UserIntentsClassifier):
         intent_list = []
         thread_list = []
         for user_intent in self._user_intents:
-            
-            thread = threading.Thread(
-                target=self._classify_one_intent, args=(user_intent, curr_state, intent_list))
-            thread_list.append(thread)
-        
-        start_thread(thread_list)
+            if (self.enable_threading):
+                thread = threading.Thread(
+                    target=self._classify_one_intent, args=(user_intent, curr_state, intent_list))
+                thread_list.append(thread)
+            else:
+                self._classify_one_intent(user_intent, curr_state, intent_list)
+                
+        if (self.enable_threading):
+            start_thread(thread_list)
         
         if self._provide_preference is not None:
             intent_list.append(self._provide_preference)

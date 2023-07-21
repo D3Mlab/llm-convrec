@@ -59,6 +59,12 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         self.query = ""
         self.explanation = {}
         self.item_ids = []
+        
+        if config['ENABLE_MULTITHREADING'] == True:
+            self.enable_threading = True
+        else:
+            self.enable_threading = False
+            
        
     def get(self, state_manager: StateManager) -> str:
         """
@@ -68,33 +74,40 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: response to be returned to user
         """
         
-        state_to_query_thread = threading.Thread(
-            target=self._get_query, args=(state_manager,))
+        if (self.enable_threading):
+            state_to_query_thread = threading.Thread(
+                target=self._get_query, args=(state_manager,))
 
-        embedding_matrix_thread = threading.Thread(
-            target=self._get_item_ids, args=(state_manager,))
-        
-        start_thread(
-            [state_to_query_thread, embedding_matrix_thread])
-
+            embedding_matrix_thread = threading.Thread(
+                target=self._get_item_ids, args=(state_manager,))
+            
+            start_thread(
+                [state_to_query_thread, embedding_matrix_thread])
+        else:
+            self._get_query(state_manager)
+            self._get_item_ids(state_manager)
 
         try:
-            explanation_thread = threading.Thread(
-                target=self._get_explanation, args=(state_manager,))
+            if (self.enable_threading):
+                explanation_thread = threading.Thread(
+                    target=self._get_explanation, args=(state_manager,))
 
-            reccommendation_thread = threading.Thread(
-                target=self._get_recommendation)
+                reccommendation_thread = threading.Thread(
+                    target=self._get_recommendation)
 
-            start_thread(
-                [explanation_thread, reccommendation_thread])
-            
+                start_thread(
+                    [explanation_thread, reccommendation_thread])
+            else:
+                self._get_explanation(state_manager)
+                self._get_recommendation()
+                
         except Exception as e:
             logger.debug(f'There is an error: {e}')
             
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'NoRecommendation':
                     return response_dict['response']
-                
+       
         prompt = self._get_prompt_to_format_recommendation()
         resp = self._llm_wrapper.make_request(prompt)
         

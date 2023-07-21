@@ -70,6 +70,11 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         self.ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
+        
+        if config['ENABLE_MULTITHREADING'] == True:
+            self.enable_threading = True
+        else:
+            self.enable_threading = False
 
         domain_specific_config_loader = DomainSpecificConfigLoader()
 
@@ -106,12 +111,15 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
             thread_list = []
 
             for question in user_questions:
-                thread_list.append(threading.Thread(
-                    target=self._get_resp_one_q, args=(question, curr_mentioned_items, answers)))
-            
-            start_thread(thread_list)
-            
+                if (self.enable_threading):
+                    thread_list.append(threading.Thread(
+                        target=self._get_resp_one_q, args=(question, curr_mentioned_items, answers)))
+                else:
+                    self._get_resp_one_q(question, curr_mentioned_items, answers)
                 
+            if (self.enable_threading):
+                start_thread(thread_list)
+            
         else:
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'NoAnswer':
