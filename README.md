@@ -75,10 +75,33 @@ When providing few-shot examples, make sure that they are representative of the 
 Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
 
 Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
+### 1.1 Few shots for intent classification prompts
 
-- **accept_classification_fewshots.csv**
-- **reject_classification_fewshots.csv**
-- **inquire_classification_fewshots.csv**
+To effectively classify user intents, you'll need to provide few-shot examples for each intent. Each of the following CSV files contains two columns: 'User Input' and 'Response'. 'User Input' provides an example of a user utterance, and 'Response' indicates whether the input should be classified under the corresponding intent (True) or not (False).
+
+- **accept_classification_fewshots.csv**: This file should contain examples of user utterances that express acceptance of a recommendation. For instance:
+
+    | User Input                        | Response |
+    | --------------------------------- | -------- |
+    | "That sounds good, let's go there"| True     |
+    | "I don't like that type of food"  | False    |
+
+- **reject_classification_fewshots.csv**: This file includes examples where the user rejects a recommendation. Examples might include:
+
+    | User Input                             | Response |
+    | -------------------------------------- | -------- |
+    | "No, I don't want to go to that place" | True     |
+    | "Sure, that sounds nice"               | False    |
+
+- **inquire_classification_fewshots.csv**: Here, the examples should be of user utterances where the user is inquiring or asking a question. For instance:
+
+    | User Input                          | Response |
+    | ----------------------------------- | -------- |
+    | "What's on their menu?"             | True     |
+    | "I think we should try something else" | False  |
+
+By providing these few-shot examples, you can effectively train the system to correctly classify various user intents.
+
  
 - **constraints_updater_fewshots.csv**
 - **accepted_items_extractor_fewshots.csv**
@@ -108,6 +131,7 @@ Remember, the quality of the few-shot examples can significantly impact the perf
 2.Constraints
 
 3.Hard coded responses
+
 
 4.filter configs
 
