@@ -43,10 +43,11 @@ class NominatimWrapper(GeocoderWrapper):
         :param old_loc_query: old location query that should contain new location
         :return: merged query or None if old location doesn't contain new location
         """
-        merged_location = self._geocoder.geocode(f'{new_loc_query}, {old_loc_query}')
+        merged_location = self.geocode(f'{new_loc_query}, {old_loc_query}')
+        print(merged_location)
         if merged_location is None or merged_location.raw['importance'] < 0.3:
             return None
-        if merged_location == self._geocoder.geocode(old_loc_query):
+        if merged_location == self.geocode(old_loc_query):
             return None
         else:
             return f'{new_loc_query}, {old_loc_query}'

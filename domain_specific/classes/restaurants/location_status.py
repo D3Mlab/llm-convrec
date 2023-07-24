@@ -1,6 +1,6 @@
 from state.state_manager import StateManager
 from state.status import Status
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 
 class LocationStatus(Status):
@@ -11,10 +11,10 @@ class LocationStatus(Status):
     _status_types: list[str]
     _state_key: str
     
-    def __init__(self):
+    def __init__(self, geocoder_wrapper: GeocoderWrapper):
         super().__init__("location")
         
-        self._geocoder_wrapper = GoogleV3Wrapper()
+        self._geocoder_wrapper = geocoder_wrapper
 
             
     def update_status(self, curr_state: StateManager):

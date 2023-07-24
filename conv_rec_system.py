@@ -1,6 +1,5 @@
 import openai.error
 
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.item.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
