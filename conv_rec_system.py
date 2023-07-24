@@ -168,7 +168,7 @@ class ConvRecSystem(WarningObserver):
 
         if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
             user_intents_classifier = MultilabelUserIntentsClassifier(
-                user_intents, llm_wrapper, True)
+                user_intents, llm_wrapper, config, True)
         else:
             user_intents_classifier = PromptBasedUserIntentsClassifier(
                 user_intents, llm_wrapper)

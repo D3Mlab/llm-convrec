@@ -10,6 +10,8 @@ from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from jinja2 import Environment, FileSystemLoader
 from warning_observer import WarningObserver
+import threading
+from utility.thread_utility import start_thread
 
 logger = logging.getLogger('answer')
 
@@ -68,6 +70,8 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         self.ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
+        
+        self.enable_threading = config['ENABLE_MULTITHREADING']
 
         domain_specific_config_loader = DomainSpecificConfigLoader()
 
@@ -100,67 +104,90 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
             user_questions = self._seperate_input_into_multiple_qs(
                 state_manager)
+            
+            thread_list = []
 
             for question in user_questions:
-                logger.debug(
-                    f'The question is {question}')
-
-                llm_resp = ""
-                answers[question] = {}
-
-                for curr_mentioned_item in curr_mentioned_items:
-                    logger.debug(
-                        f'The recommended {self._domain} is {curr_mentioned_item.get_name()}')
-                    category = self._extract_category_from_input(
-                        question, curr_mentioned_item)
-
-                    logger.debug(f'The category is {category}')
-
-                    logger.debug(
-                        f'Is the category the LLM classified the user input into valid: {self._is_category_valid(category, curr_mentioned_item)}')
-
-                    if self._is_category_valid(category, curr_mentioned_item):
-                        logger.debug("Metadata question!")
-
-                        metadata_resp = (self._create_resp_from_metadata(
-                            question, category, curr_mentioned_item))
-
-                        answers[question][curr_mentioned_item.get_name()] = metadata_resp
-
-                    if not self._is_category_valid(category, curr_mentioned_item) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
-
-                        logger.debug("Non metadata question!")
-
-                        ir_resp = self._create_resp_from_ir(
-                            question, curr_mentioned_item)
-
-                        answers[question][curr_mentioned_item.get_name()] = ir_resp
-
-                        if "I do not know" in ir_resp:
-                            logger.debug(
-                                f'Answer with GPT')
-
-                            prompt = self.gpt_template.render(
-                                curr_mentioned_item=curr_mentioned_item, question=question)
-
-                            llm_resp = self._llm_wrapper.make_request(
-                                prompt)
-
-                            answers[question][curr_mentioned_item.get_name()] = llm_resp
-                    
-
-                mult_item_resp = self._format_multiple_item_resp(
-                    question, curr_mentioned_items, answers[question])
+                if (self.enable_threading):
+                    thread_list.append(threading.Thread(
+                        target=self._get_resp_one_q, args=(question, curr_mentioned_items, answers)))
+                else:
+                    self._get_resp_one_q(question, curr_mentioned_items, answers)
                 
-                answers[question] = mult_item_resp
-
+            if (self.enable_threading):
+                start_thread(thread_list)
+            
         else:
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'NoAnswer':
                     return response_dict['response']
 
-        return self._format_multiple_qs_resp(state_manager, answers, llm_resp != "")
+        return self._format_multiple_qs_resp(state_manager, answers)
 
+    def _get_resp_one_q(self, question: str, curr_mentioned_items: list[RecommendedItem], answers: dict):
+        """
+        Get the response for one question
+
+        :param question: question extracted from user input
+        :param curr_mentioned_items: list of recommended items that user is referring to
+        :answers: list of answers to each question / item the user has mentioned
+        :return: response to be returned to user
+        """
+        logger.debug(f'The question is {question}')
+
+        answers[question] = {}
+
+        for curr_mentioned_item in curr_mentioned_items:
+            logger.debug(
+                f'The recommended {self._domain} is {curr_mentioned_item.get_name()}')
+            category = self._extract_category_from_input(
+                question, curr_mentioned_item)
+
+            logger.debug(f'The category is {category}')
+
+            logger.debug(
+                f'Is the category the LLM classified the user input into valid: {self._is_category_valid(category, curr_mentioned_item)}')
+
+            if self._is_category_valid(category, curr_mentioned_item):
+                logger.debug("Metadata question!")
+                self.answer_type = "metadata"
+
+                metadata_resp = (self._create_resp_from_metadata(
+                    question, category, curr_mentioned_item))
+
+                answers[question][curr_mentioned_item.get_name()] = metadata_resp
+
+            if not self._is_category_valid(category, curr_mentioned_item) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
+                self.answer_type = "ir"
+
+                logger.debug("Non metadata question!")
+
+                ir_resp = self._create_resp_from_ir(
+                    question, curr_mentioned_item)
+
+                answers[question][curr_mentioned_item.get_name()] = ir_resp
+
+                if "I do not know" in ir_resp:
+                    logger.debug(
+                        f'Answer with LLM')
+                    
+                    self.answer_type = "llm"
+
+                    prompt = self.gpt_template.render(
+                        curr_mentioned_item=curr_mentioned_item, question=question)
+
+                    llm_resp = self._llm_wrapper.make_request(
+                        prompt)
+
+                    answers[question][curr_mentioned_item.get_name()] = llm_resp
+            
+
+        mult_item_resp = self._format_multiple_item_resp(
+            question, curr_mentioned_items, answers[question])
+        
+        answers[question] = mult_item_resp
+
+    
     def _seperate_input_into_multiple_qs(self, state_manager: StateManager) -> list[str]:
         """
         Takes the users input and splits it into a list of questions
@@ -243,13 +270,12 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         else:
             return False
 
-    def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: dict, is_llm_res: bool) -> str:
+    def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: dict) -> str:
         """
         Returns the response. Returns either an empty string indicating that more work needs to be done to formulate the response or the actual string response.
 
         :param state_manager: current state representing the conversation
         :param all_answers: list of answers to the users question(s)
-        :param is_llm_res: boolean indicating if the answer was created using an LLM or not
         :return: str
         """
         
@@ -266,7 +292,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         else:
             resp = list(all_answers.values())[0]
         
-        if is_llm_res:
+        if self.answer_type == "llm":
             resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n' + resp
 
         return self._clean_llm_response(resp)
