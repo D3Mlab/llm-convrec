@@ -16,10 +16,7 @@ class MultilabelUserIntentsClassifier(UserIntentsClassifier):
         self._llm_wrapper = llm_wrapper
         self._provide_preference = None
         
-        if config['ENABLE_MULTITHREADING'] == True:
-            self.enable_threading = True
-        else:
-            self.enable_threading = False
+        self.enable_threading = config['ENABLE_MULTITHREADING']
             
         if force_provide_preference:
             for user_intent in self._user_intents:

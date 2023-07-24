@@ -60,11 +60,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         self.explanation = {}
         self.item_ids = []
         
-        if config['ENABLE_MULTITHREADING'] == True:
-            self.enable_threading = True
-        else:
-            self.enable_threading = False
-            
+        self.enable_threading = config['ENABLE_MULTITHREADING']
        
     def get(self, state_manager: StateManager) -> str:
         """

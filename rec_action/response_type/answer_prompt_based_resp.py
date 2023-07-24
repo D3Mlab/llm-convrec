@@ -71,10 +71,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         self.ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
         
-        if config['ENABLE_MULTITHREADING'] == True:
-            self.enable_threading = True
-        else:
-            self.enable_threading = False
+        self.enable_threading = config['ENABLE_MULTITHREADING']
 
         domain_specific_config_loader = DomainSpecificConfigLoader()
 

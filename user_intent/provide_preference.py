@@ -36,10 +36,8 @@ class ProvidePreference(UserIntent):
         self.template = env.get_template(
             config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
         
-        if config['ENABLE_MULTITHREADING'] == True:
-            self.enable_threading = True
-        else:
-            self.enable_threading = False
+        self.enable_threading = config['ENABLE_MULTITHREADING']
+           
 
     def get_name(self) -> str:
         """
