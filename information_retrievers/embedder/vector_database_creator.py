@@ -40,7 +40,7 @@ class VectorDatabaseCreator:
             index = faiss.IndexFlatIP(dimension_size)
             start_index = 0
 
-        if not start_index == len(reviews):
+        if start_index < len(reviews):
             save_number = k * batch_size
             for i in tqdm(range(start_index, len(reviews), batch_size)):
                 embedding = self.embedding_model.embed(reviews[i:i + batch_size].to_list())
@@ -48,8 +48,9 @@ class VectorDatabaseCreator:
                 if output_filepath is not None and (i - start_index) % save_number == 0:
                     faiss.write_index(index, output_filepath)
 
-        if output_filepath is not None:
-            faiss.write_index(index, output_filepath)
+            if output_filepath is not None:
+                faiss.write_index(index, output_filepath)
+
         return index
 
     @staticmethod
