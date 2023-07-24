@@ -32,7 +32,7 @@ class VectorDatabaseCreator:
         """
         reviews = reviews_df['Review']
 
-        if output_filepath is None or os.path.exists(output_filepath):
+        if output_filepath is not None and os.path.exists(output_filepath):
             index = faiss.read_index(output_filepath)
             start_index = index.ntotal
         else:

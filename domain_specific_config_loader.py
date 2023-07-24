@@ -295,9 +295,9 @@ class DomainSpecificConfigLoader:
             if embedding_matrix.shape[0] == reviews_df.shape[0]:
                 database = vector_database_creator.create_vector_database_from_matrix(embedding_matrix, path_to_database)
             else:
-                database = vector_database_creator.create_vector_database_from_reviews(reviews_df)
+                database = vector_database_creator.create_vector_database_from_reviews(reviews_df, path_to_database)
         else:
-            database = vector_database_creator.create_vector_database_from_reviews(reviews_df)
+            database = vector_database_creator.create_vector_database_from_reviews(reviews_df, path_to_database)
         return database
 
     def _create_embedding_matrix(self, reviews_df: pd.DataFrame, path_to_embedding_matrix: str) -> torch.tensor:
