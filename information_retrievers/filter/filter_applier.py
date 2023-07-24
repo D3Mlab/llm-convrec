@@ -31,6 +31,9 @@ class FilterApplier:
         metadata = self._metadata_wrapper.get_metadata()
 
         for filter_obj in self.filters:
+            if metadata.shape[0] == 0:
+                break
+
             metadata = filter_obj.filter(state_manager, metadata)
 
         indices_list = metadata.index.tolist()
