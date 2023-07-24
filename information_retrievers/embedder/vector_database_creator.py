@@ -62,5 +62,5 @@ class VectorDatabaseCreator:
         index = faiss.IndexFlatIP(embedding_matrix.shape[1])
         index.add(embedding_matrix.numpy())
         if output_filepath is not None:
-            faiss.write_index(index)
+            faiss.write_index(index, output_filepath)
         return index
