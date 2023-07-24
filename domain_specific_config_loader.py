@@ -290,7 +290,7 @@ class DomainSpecificConfigLoader:
         path_to_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
 
         # create database
-        if not os.path.exists(path_to_embedding_matrix) and os.path.exists(path_to_embedding_matrix):
+        if not os.path.exists(path_to_database) and os.path.exists(path_to_embedding_matrix):
             embedding_matrix = torch.load(path_to_embedding_matrix)
             if embedding_matrix.shape()[0] == reviews_df.shape[0]:
                 database = vector_database_creator.create_vector_database_from_matrix(embedding_matrix, path_to_database)
