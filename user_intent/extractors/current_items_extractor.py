@@ -1,11 +1,10 @@
-from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
 from information_retrievers.item.recommended_item import RecommendedItem
 
 from string import punctuation
-import yaml
 from jinja2 import Environment, FileSystemLoader
+
 
 class CurrentItemsExtractor:
     """
