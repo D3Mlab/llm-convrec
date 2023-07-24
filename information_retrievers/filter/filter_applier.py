@@ -1,4 +1,3 @@
-import numpy as np
 from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter import Filter
 from state.state_manager import StateManager
@@ -47,5 +46,5 @@ class FilterApplier:
         :return: item index that must be kept
         """
         metadata = self._metadata_wrapper.get_metadata()
-        index = metadata.index[metadata['item_id'] == current_item.get_id()].tolist()
-        return [index]
+        index = metadata.index[metadata['name'] == current_item.get_name()].tolist()
+        return index

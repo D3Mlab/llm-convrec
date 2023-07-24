@@ -228,18 +228,18 @@ class DomainSpecificConfigLoader:
         for row in filter_config_df.to_dict("records"):
             if row['type_of_filter'].strip() == "exact word matching":
                 filters_list.append(ExactWordMatchingFilter(
-                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field'].strip()))
 
             elif row['type_of_filter'].strip() == "item":
                 filters_list.append(ItemFilter(
-                    row['key_in_state'], row['metadata_field']))
+                    row['key_in_state'].strip(), row['metadata_field'].strip()))
 
             elif row['type_of_filter'].strip() == "value range":
-                filters_list.append(ValueRangeFilter(row['key_in_state'], row['metadata_field']))
+                filters_list.append(ValueRangeFilter(row['key_in_state'].strip(), row['metadata_field'].strip()))
 
             elif row['type_of_filter'].strip() == "word in":
                 filters_list.append(WordInFilter(
-                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field']))
+                    [key.strip() for key in row['key_in_state'].split(",")], row['metadata_field'].strip()))
 
         return filters_list
 

@@ -85,23 +85,9 @@ class DialogueManager:
         :param rec_actions: list of recommender actions
         :return: response from the recommender
         """
-
-        hard_coded_llm_resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n'
-
-        # Note only 1 action in MVP
+        
+        # Note only works for 1 rec action for now
         for action in rec_actions:
-            hard_coded_resp = "  "
-            if action.is_response_hard_coded():
-                hard_coded_resp = action.get_hard_coded_response(
-                    self.state_manager)
-
-            # If could not create a hard coded response
-            if not action.is_response_hard_coded():
-                rec_response = action.get_prompt_response(self.state_manager)
-                self.state_manager.store_response(rec_response)
-                return rec_response
-
-            else:
-                self.state_manager.store_response(hard_coded_resp)
-                return hard_coded_resp
-
+            resp = action.get_response(self.state_manager)            
+            self.state_manager.store_response(resp)
+            return resp

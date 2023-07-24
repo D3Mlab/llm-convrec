@@ -1,0 +1,8 @@
+key_in_state,metadata_field,location,cuisine type,dish type,expected_indices
+location,city,tucson,italian,pizza,"21, 33"
+location,city,tucsons,italian,pizza,"21, 33"
+cuisine type,categories,nashville,japanese,ramen,"7, 13, 36"
+cuisine type,categories,nashville,"japanese, asian",ramen,"7, 10, 13, 36"
+cuisine type,categories,nashville,"japanese, asian fusion",ramen,"7, 10, 13, 36"
+"cuisine type, dish type",categories,nashville,japanese,hot dog,"7, 12, 13, 36"
+"cuisine type, dish type",categories,nashville,japanese,hot dogs,"7, 12, 13, 36"
