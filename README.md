@@ -11,7 +11,31 @@ The system retains important information about the conversation, ensuring that c
 
 ## Installation and Running the System
 
-pip install -r requirements.txt
+Before you can use the system, you must first ensure that you have Python (version 3.7 or higher) installed on your machine. You will also need pip for installing the necessary Python packages.
+
+## 1. Clone the GitHub Repository
+
+Clone the repository from GitHub to your local machine by running the following command in your terminal:
+
+**git clone https://github.com/<your_username>/LLM-ConvRec.git**
+
+Please replace `<your_username>` with your actual GitHub username.
+
+## 2. Navigate to the Project Directory
+
+Once you've cloned the repository, use the command line to navigate into the project's directory:
+
+**cd LLM-ConvRec**
+
+## 3. Install the Required Packages
+
+The project has a number of dependencies that need to be installed. These are listed in the `requirements.txt` file. To install these dependencies, run the following command in your terminal:
+
+**pip install -r requirements.txt**
+
+## 4. Run the System
+
+
 
 
 
@@ -214,6 +238,11 @@ By providing these hard-coded responses, you can control the behavior of the sys
 - file path to files, shouldnt change normally
 
 6.data
+metadata need to have item id, each item need to have optional
+
+review has to be csv, has itemid and reviews
+
+ordershould match
 
 7.User defined classes
   
