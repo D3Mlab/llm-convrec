@@ -75,41 +75,80 @@ When providing few-shot examples, make sure that they are representative of the 
 Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
 
 Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
-### 1.1 Few shots for intent classification prompts
 
-To effectively classify user intents, you'll need to provide few-shot examples for each intent. Each of the following CSV files contains two columns: 'User Input' and 'Response'. 'User Input' provides an example of a user utterance, and 'Response' indicates whether the input should be classified under the corresponding intent (True) or not (False).
+### 1.1 Few-shot Prompts for Intent Classification
 
-- **accept_classification_fewshots.csv**: This file should contain examples of user utterances that express acceptance of a recommendation. For instance:
+For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: 'User Input' and 'Response'. 'User Input' should contain examples of user utterances, while 'Response' indicates whether the input corresponds to the respective intent (True) or not (False).
 
-    | User Input                        | Response |
-    | --------------------------------- | -------- |
-    | "That sounds good, let's go there"| True     |
-    | "I don't like that type of food"  | False    |
+#### 1.1.1 `accept_classification_fewshots.csv`: 
+This file should contain examples of user utterances that express acceptance of a recommendation.
 
-- **reject_classification_fewshots.csv**: This file includes examples where the user rejects a recommendation. Examples might include:
+| User Input | Response |
+|------------|----------|
+| That sounds good, let's go there | True |
+| I don't like that type of food | False |
 
-    | User Input                             | Response |
-    | -------------------------------------- | -------- |
-    | "No, I don't want to go to that place" | True     |
-    | "Sure, that sounds nice"               | False    |
+#### 1.1.2 `reject_classification_fewshots.csv`: 
+This file should contain examples where the user rejects a recommendation.
 
-- **inquire_classification_fewshots.csv**: Here, the examples should be of user utterances where the user is inquiring or asking a question. For instance:
+| User Input | Response |
+|------------|----------|
+| No, I don't want to go to that place | True |
+| Sure, that sounds nice | False |
 
-    | User Input                          | Response |
-    | ----------------------------------- | -------- |
-    | "What's on their menu?"             | True     |
-    | "I think we should try something else" | False  |
+#### 1.1.3 `inquire_classification_fewshots.csv`: 
+This file should contain examples where the user is inquiring or asking a question.
 
-By providing these few-shot examples, you can effectively train the system to correctly classify various user intents.
+| User Input | Response |
+|------------|----------|
+| What's on their menu? | True |
+| I think we should try something else | False |
 
- 
-- **constraints_updater_fewshots.csv**
-- **accepted_items_extractor_fewshots.csv**
-- **rejected_items_extractor_fewshots.csv**
-- **current_items_extractor_fewshots.csv**
-  - requires columns named user_input and response
-  - user_input: user input
-  - response: items extracted from the user input
+### 1.3 Few-shot Prompts for 'Answer' Recommender Action
+
+This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
+
+#### 1.3.1 `answer_extract_category_fewshots.csv`
+This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (metadata category that corresponds to the user's question).
+
+| input | output |
+|-------|--------|
+| What's their addresses? | address |
+| Can you recommend any dishes or specialties? | none |
+| Can I make a reservation? | HasReservations |
+| What are the meals it's known for? | PopularMeals |
+
+#### 1.3.2 `answer_ir_fewshots.csv`
+This file trains the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
+
+| question | information | answer |
+|----------|-------------|--------|
+| Do they have a slide in the restaurant? | I really like this place. They have great food. | I do not know. |
+
+#### 1.3.3 `answer_separate_questions_fewshots.csv`
+This file aids the system in breaking down complex user queries into simpler, individual questions. It requires 'question' (user's question) and 'individual_questions' (decomposed questions).
+
+| question | individual_questions |
+|----------|----------------------|
+| Do they have wine? | Do they have wine? |
+| What are dishes, cocktails and types of wine do you recommend? | What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend? |
+
+#### 1.3.4 `answer_verify_metadata_resp_fewshots.csv`
+This file trains the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
+
+| question | answer | response |
+|----------|--------|----------|
+| Do they have a high chair? | Subway is kid friendly. | No. |
+| Do they serve vodka? | They have a full bar. | No. |
+| Are there gluten free options? | Yes, there are gluten free options. | Yes. |
+
+Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
+
+
+
+
+
+
 - **answer_extract_category_fewshots.csv**
   - requires columns named input and output
   - input: question from user
@@ -130,10 +169,45 @@ By providing these few-shot examples, you can effectively train the system to co
   - response: "Yes." if the answer actually answer the question. "No." if the answer doesn't answer the question
 2.Constraints
 
-3.Hard coded responses
+## 3.Hard-Coded Responses
+
+The `hard_coded_responses.csv` file includes specific, structured responses that the system should use under certain conditions. This file has three columns: 'Action', 'Response', and 'Constraints'.
+
+- **Action**: This column refers to the action that the system should take.
+- **Response**: This column provides the exact response that should be given when the action is chosen.
+- **Constraints**: This column specifies one or more constraints. If any of these constraints are missing in the system's state, then the corresponding response will be prioritized. If no constraints are applicable, this field should be left empty.
+
+Descriptions of each action:
+
+- **PostAcceptanceAction**: The response given after the user accepts a recommendation.
+- **PostRejectionAction**: The response given after the user rejects a recommendation.
+- **RequestInformation**: The system is requesting additional information from the user. The required information type depends on the 'Constraints' column.
+- **DefaultResponse**: Used when the system failed to classify an intent and cannot decide on any specific action until the user provides more information.
+- **NoRecommendation**: This response is given when the system cannot find a restaurant that meets the user's constraints.
+- **NoAnswer**: Used when the system cannot answer the user's question with the information it has retrieved.
+
+Here are some examples:
+
+| Action | Response | Constraints |
+| --- | --- | --- |
+| PostAcceptanceAction | "Great! If you need any more assistance, feel free to ask." |  |
+| PostRejectionAction | I'm sorry that you did not like the recommendation. Is there anything else I can assist you with? |  |
+| RequestInformation | Could you provide the location? | location |
+| RequestInformation | Could you provide the cuisine type or dish type? | "cuisine type, dish type" |
+| RequestInformation | Do you have any other preferences? |  |
+| DefaultResponse | Could you provide more information? |  |
+| NoRecommendation | "Sorry, there is no restaurant that matches your constraints." |  |
+| NoAnswer | Please only ask questions about previously recommended restaurant. |  |
+
+By providing these hard-coded responses, you can control the behavior of the system and ensure that the conversation flow remains on track.
+
 
 
 4.filter configs
+
+5.system config
+
+
 
 5.domain specific config
 - domain name
