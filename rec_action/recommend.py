@@ -88,7 +88,7 @@ class Recommend(RecAction):
 
         if self._constraint_statuses is not None:
             for constraint in self._constraint_statuses:
-                if constraint.get_status() is None or constraint.get_status() == 'invalid':
+                if constraint.get_response() is not None:
                     is_ready = False
                     break
         

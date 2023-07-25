@@ -16,7 +16,6 @@ class LocationStatus(Status):
         
         self._geocoder_wrapper = geocoder_wrapper
 
-            
     def update_status(self, curr_state: StateManager):
         """
         update the location type in the state to None, 'invalid', 'valid'.
@@ -33,8 +32,18 @@ class LocationStatus(Status):
             return
         geocoded_latest_location = self._geocoder_wrapper.geocode(
             locations[-1])
-        if geocoded_latest_location is None or not self._geocoder_wrapper.is_location_specific(geocoded_latest_location):
+        if geocoded_latest_location is None:
             self._curr_status = "invalid"
-            return
-        
-        self._curr_status = "valid"
+        elif self._geocoder_wrapper.is_location_specific(geocoded_latest_location):
+            self._curr_status = "specific"
+        else:
+            self._curr_status = "valid"
+
+    def get_response(self):
+        if self._curr_status == "specific" or self._curr_status is None:
+            return None
+        elif self._curr_status == "invalid":
+            return "I am sorry, I don't understand the given location. Could you give other location?"
+        else:
+            return "Could you provide more specific location?"
+

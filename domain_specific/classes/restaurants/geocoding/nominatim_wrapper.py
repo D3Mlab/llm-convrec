@@ -27,7 +27,6 @@ class NominatimWrapper(GeocoderWrapper):
         :return: location object corresponding to the given query
         """
         if query not in self._geocoder_cash:
-            print("geocoding")
             attempts = 0
             while attempts < self._max_attempts:
                 try:
@@ -36,8 +35,6 @@ class NominatimWrapper(GeocoderWrapper):
                 except Exception as e:
                     attempts += 1
                     time.sleep(attempts * 10)
-                    print(f"there was an error: {e}")
-                    print("retry")
 
                 if attempts == self._max_attempts:
                     return None
