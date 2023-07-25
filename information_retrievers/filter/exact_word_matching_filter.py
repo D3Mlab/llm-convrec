@@ -33,6 +33,7 @@ class ExactWordMatchingFilter(Filter):
         constraint_values = []
         for constraint_key in self._constraint_keys:
             constraint_value = state_manager.get('hard_constraints').get(constraint_key)
+
             if constraint_value is not None:
                 constraint_values.extend(constraint_value)
 
@@ -59,10 +60,14 @@ class ExactWordMatchingFilter(Filter):
         item_metadata_field_values = row_of_df[self._metadata_field]
 
         if not isinstance(item_metadata_field_values, list):
-            item_metadata_field_values = [item_metadata_field_values]
+            if isinstance(item_metadata_field_values, str):
+                item_metadata_field_values = item_metadata_field_values.split(",")
+            else:
+                return True
 
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:
+
                 if constraint_value.lower().strip() == metadata_field_value.lower().strip():
                     return True
 

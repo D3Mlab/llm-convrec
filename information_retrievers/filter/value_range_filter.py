@@ -53,11 +53,55 @@ class ValueRangeFilter(Filter):
         """
         item_metadata_field_values = row_of_df[self._metadata_field]
 
+        if not isinstance(item_metadata_field_values, list):
+            if isinstance(item_metadata_field_values, str):
+
+                if "-" in item_metadata_field_values:
+                    item_metadata_field_values = item_metadata_field_values.split("-")
+
+                    if len(item_metadata_field_values) != 2:
+                        return True
+                    else:
+                        return self._do_value_ranges_overlap(constraint_values, item_metadata_field_values)
+
+                else:
+                    item_metadata_field_values = item_metadata_field_values.split(",")
+
+            else:
+                return True
+
         for value_range in constraint_values:
             value_range_list = re.sub(r'[^0-9-.]', '', value_range).split("-")
+
             for metadata_field_value in item_metadata_field_values:
                 metadata_field_value = re.sub(r'[^0-9.]', '', metadata_field_value)
-                if metadata_field_value >= value_range_list[0] and metadata_field_value >= value_range_list[1]:
+
+                if float(value_range_list[0]) <= float(metadata_field_value) <= float(value_range_list[1]):
                     return True
+
+        return False
+
+    @staticmethod
+    def _do_value_ranges_overlap(constraint_values: list[str], item_metadata_field_values: list[str]) -> bool:
+        """
+        Check whether one of the value range in constraint overlaps with the value range in metadata.
+
+        :param constraint_values: value ranges in constraint, where each element is a value range
+        that contains "-"
+        :param item_metadata_field_values: value range in metadata field, where first element is the lower bound
+        and second element is the upper bound
+        :return: true if one of the value range in constraint overlaps with the value range in metadata,
+        otherwise false
+        """
+        for value_range in constraint_values:
+            value_range_list = re.sub(r'[^0-9-.]', '', value_range).split("-")
+            metadata_value_range_lower = re.sub(r'[^0-9.]', '', item_metadata_field_values[0])
+            metadata_value_range_upper = re.sub(r'[^0-9.]', '', item_metadata_field_values[1])
+
+            if (float(metadata_value_range_lower) <= float(value_range_list[1])
+                and float(metadata_value_range_upper) >= float(value_range_list[0])) \
+                    or (float(value_range_list[0]) <= float(metadata_value_range_upper)
+                        and float(value_range_list[1]) >= float(metadata_value_range_lower)):
+                return True
 
         return False

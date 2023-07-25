@@ -1,7 +1,7 @@
 import numpy as np
 import torch
+
 from information_retrievers.embedder.bert_embedder import BERT_model
-from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class SearchEngine:
@@ -12,17 +12,16 @@ class SearchEngine:
     """
 
     _embedder: BERT_model
-    _item_review_count: torch.Tensor
-    _items_id: np.ndarray
+    _review_item_ids: np.ndarray
+    _reviews: np.ndarray
 
-    def __init__(self, embedder: BERT_model):
+    def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray):
         self._embedder = embedder
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._item_review_count = domain_specific_config_loader.load_item_review_count()
-        self._items_id = domain_specific_config_loader.load_item_id()
+        self._review_item_ids = review_item_ids
+        self._reviews = reviews
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
+                        item_indices_to_keep: list[int]) -> tuple[list, list]:
         """
         Takes a query and returns a list of item id that is most similar to the query and the top k
         reviews for that item
@@ -46,35 +45,26 @@ class SearchEngine:
         :return: Returning a tuple with element 0 being a tensor that contains the similarity score for each item
                 and element 1 being a tensor that contains the index of top k reviews for each item
         """
-
-        index = 0
-        # size records how many items are in the matrix
-        size = self._item_review_count.size(0)
-
+        prev_id = self._review_item_ids[0]
         item_score = []
         item_index = []
+        index_start = 0
+        for i in range(self._review_item_ids.size + 1):
+            if i == self._review_item_ids.size or self._review_item_ids[i] != prev_id:
+                similarity_score_item = similarity_score[index_start:i]
+                k_actual = min(i - index_start, k)
+                values, index_topk = similarity_score_item.topk(k_actual)
+                index_topk += index_start
+                item_score.append(values.mean(dim=0))
 
-        for i in range(size):
-            # Mask out the review scores related to one item
-            similarity_score_item = similarity_score[index:index + self._item_review_count[i]]
+                if index_topk.size()[0] != k:
+                    padding = torch.full((k - index_topk.size()[0],), -1, dtype=torch.int64)
+                    index_topk = torch.cat((index_topk, padding), dim=0)
+                item_index.append(index_topk)
 
-            # Get the top k review scores or all review scores if the number of reviews is less than k
-            k_actual = min(self._item_review_count[i], k)
-
-            values, index_topk = similarity_score_item.topk(k_actual)
-
-            index_topk += index
-
-            # Get the item score by finding the mean of all the review scores
-            item_score.append(values.mean(dim=0))
-
-            # if size is smaller than k, pad with -1
-            if index_topk.size()[0] != k:
-                padding = torch.full((k - index_topk.size()[0],), -1, dtype=torch.int64)
-                index_topk = torch.cat((index_topk, padding), dim=0)
-            item_index.append(index_topk)
-
-            index += self._item_review_count[i]
+                index_start = i
+            if i != self._review_item_ids.size:
+                prev_id = self._review_item_ids[i]
 
         item_score = torch.stack(item_score)
         item_index = torch.stack(item_index)
@@ -102,17 +92,45 @@ class SearchEngine:
             indices = indices[:-num_items_to_remove]
         return indices
 
-    def _find_index(self, ids_to_keep: np.array) -> list[int]:
-        indices = []
-
-        for item_id in ids_to_keep:
-            indices.append(np.where(self._items_id == item_id)[0][0])
-
-        return indices
-
     @staticmethod
     def _filter_item_similarity_score(similarity_score_item, id_index):
         mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
         mask[id_index] = True
         similarity_score_item[~mask] = 0
         return similarity_score_item
+
+    def _get_topk_item_id(self, most_similar_item_index: torch.Tensor,
+                                   index_most_similar_review: torch.Tensor) -> list[str]:
+        """
+        Get the most similar item's business id
+
+        :param most_similar_item_index: A tensor containing the top k items with the most
+        :return: A list of business id of the most similar items. Beginning from the most
+            similar to the least.
+        """
+
+        list_of_id = []
+
+        for i in range(len(most_similar_item_index)):
+            list_of_id.append(self._review_item_ids[index_most_similar_review[most_similar_item_index[i]][0]])
+
+        return list_of_id
+
+    def _get_review(self, most_similar_item_index: torch.Tensor, index_most_similar_review: torch.Tensor) \
+            -> list[list[str]]:
+        """
+        Return the most similar reviews for those top k items
+
+        :param most_similar_item_index: A tensor containing the index of the most similar items
+        :param index_most_similar_review: A tensor containing the index of all the items(Not just the most similar item)
+        :return: Returns a list of lists of reviews
+        """
+
+        review_list = []
+        for i in most_similar_item_index:
+            item_review_list = []
+            for j in index_most_similar_review[i]:
+                item_review_list.append(self._reviews[j])
+
+            review_list.append(item_review_list)
+        return review_list

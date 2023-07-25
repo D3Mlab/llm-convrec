@@ -41,7 +41,7 @@ class ItemFilter(Filter):
 
         return filtered_metadata
 
-    def _is_item_not_in_item_list(self, row_of_df: pd.Series, item_nested_list: list[RecommendedItem]) -> bool:
+    def _is_item_not_in_item_list(self, row_of_df: pd.Series, item_nested_list: list[list[RecommendedItem]]) -> bool:
         """
         Return true if a word in the constraint matches exactly with a word
         in the specified metadata field or a word in the specified metadata field
@@ -56,11 +56,11 @@ class ItemFilter(Filter):
 
         for item in item_list:
             if self._metadata_field == "item_id":
-                if item.get_id() == item_metadata_field_value:
+                if item.get_id().strip() == item_metadata_field_value.strip():
                     return False
 
             elif self._metadata_field == "name":
-                if item.get_name() == item_metadata_field_value:
+                if item.get_name().lower().strip() == item_metadata_field_value.lower().strip():
                     return False
 
         return True

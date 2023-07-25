@@ -25,36 +25,36 @@ class InformationRetrieval:
         self._item_loader = item_loader
 
     def get_best_matching_items(self, query: str, topk_items: int, topk_reviews: int,
-                                item_ids_to_keep: np.ndarray) -> list[RecommendedItem]:
+                                item_indices_to_keep: list[int]) -> list[RecommendedItem]:
         """
         Get k items that match the query the best.
 
         :param query: query
         :param topk_items: the number of items to return
         :param topk_reviews: the number of reviews to store in a RecommendedItem object
-        :param item_ids_to_keep: item ids must be kept
+        :param item_indices_to_keep: item indices must be kept
         :return: most relevant items and reviews as a list of RecommendedItem objects
         """
         topk_item_id, topk_most_relevant_reviews = \
-            self._search_engine.search_for_topk(query, topk_items, topk_reviews, item_ids_to_keep)
+            self._search_engine.search_for_topk(query, topk_items, topk_reviews, item_indices_to_keep)
 
         topk_recommended_items_object = self._create_recommended_items(
             query, topk_item_id, topk_most_relevant_reviews)
         return topk_recommended_items_object
 
     def get_best_matching_reviews_of_item(self, query: str, num_of_reviews_to_return: int,
-                                          item_ids_to_keep: np.ndarray) -> list[list[str]]:
+                                          item_indices_to_keep: list[int]) -> list[list[str]]:
         """
         Get num_of_reviews_to_return number of reviews for items that match the query the best.
 
         :param query: query
         :param num_of_reviews_to_return: the number of reviews to return for each item
-        :param item_ids_to_keep: item ids must be kept
+        :param item_indices_to_keep: item indices must be kept
         :return: most relevant reviews for each item
         """
-        topk_items = len(item_ids_to_keep)
+        topk_items = len(item_indices_to_keep)
         _, topk_most_relevant_reviews = \
-            self._search_engine.search_for_topk(query, topk_items, num_of_reviews_to_return, item_ids_to_keep)
+            self._search_engine.search_for_topk(query, topk_items, num_of_reviews_to_return, item_indices_to_keep)
         return topk_most_relevant_reviews
 
     def _create_recommended_items(self, query: str, item_ids: list[str],
