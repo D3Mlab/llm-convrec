@@ -31,7 +31,7 @@ class NominatimWrapper(GeocoderWrapper):
             attempts = 0
             while attempts < self._max_attempts:
                 try:
-                    self._geocoder_cash[query] = self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True}})
+                    self._geocoder_cash[query] = self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True, 'timeout': None}})
                     break
                 except Exception as e:
                     attempts += 1
