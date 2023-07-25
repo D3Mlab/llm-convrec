@@ -1,6 +1,6 @@
 from geopy import Location, Nominatim
-
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+import time
 
 
 class NominatimWrapper(GeocoderWrapper):
@@ -8,10 +8,15 @@ class NominatimWrapper(GeocoderWrapper):
     Wrapper for Nominatim geocoder.
     """
 
-    def __init__(self, mandatory_address_key='road'):
+    _geocoder_cash: dict[str, Location]
+    _max_attempts: int
+
+    def __init__(self, max_attempts: int = 5, mandatory_address_key='road'):
         super().__init__()
         self._geocoder = Nominatim(user_agent='d3m-2023-convrec-demo')
         self._mandatory_address_key = mandatory_address_key
+        self._geocoder_cash = {}
+        self._max_attempts = max_attempts
 
     def geocode(self, query, **kwargs) -> Location:
         """
@@ -21,7 +26,23 @@ class NominatimWrapper(GeocoderWrapper):
         :param kwargs: other arguments
         :return: location object corresponding to the given query
         """
-        return self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True}})
+        if query not in self._geocoder_cash:
+            print("geocoding")
+            attempts = 0
+            while attempts < self._max_attempts:
+                try:
+                    self._geocoder_cash[query] = self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True}})
+                    break
+                except Exception as e:
+                    attempts += 1
+                    time.sleep(attempts * 10)
+                    print(f"there was an error: {e}")
+                    print("retry")
+
+                if attempts == self._max_attempts:
+                    return None
+
+        return self._geocoder_cash[query]
 
     def is_location_specific(self, location: Location) -> bool:
         """
@@ -44,7 +65,7 @@ class NominatimWrapper(GeocoderWrapper):
         :return: merged query or None if old location doesn't contain new location
         """
         merged_location = self.geocode(f'{new_loc_query}, {old_loc_query}')
-        print(merged_location)
+
         if merged_location is None or merged_location.raw['importance'] < 0.3:
             return None
         if merged_location == self.geocode(old_loc_query):
