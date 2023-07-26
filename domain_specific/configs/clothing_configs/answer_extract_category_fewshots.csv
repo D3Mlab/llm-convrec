@@ -1,5 +1,12 @@
 input,output
-what is the size of that t-shirt?,Size
-what is the color of that cap?, Color
-Is that jacket waterproof?, None
-What is the rank of that jeans?,Rank
+what is the size of that t-shirt?,category
+what is the color of that cap?,color
+Is that jacket waterproof?,none
+What is the rank of that jeans?,rank
+How do others think about the size?,category
+Is that a men's t-shirt or a women's t-shirt?,category
+Do the pants have a zipper?,category
+Does the skirt have lining?,category
+What is the waist size?,details
+What is the material of that shirt?,material
+what is the brand of those jeans?,brand
