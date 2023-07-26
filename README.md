@@ -7,6 +7,26 @@ While unstructured conversational systems like ChatGPT can produce fluid, engagi
 The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
 
 ## Table of Content
+# Table of Contents
+
+1. [Few-shot Examples](#1-few-shot-examples)
+   1.1 [Few-shot Prompts for Intent Classification](#11-few-shot-prompts-for-intent-classification)
+       1.1.1 [`accept_classification_fewshots.csv`](#111-accept_classification_fewshotscsv)
+   1.2 [Constraint Updater Few-shots](#12-constraint-updater-few-shots)
+       1.2.1 [`constraints_updater_fewshots.csv`](#121-constraints_updater_fewshotscsv)
+2. [Constraints Configuration](#2-constraints-configuration)
+3. [Filter Configuration](#3-filter-configuration)
+4. [Installation and Running the System](#4-installation-and-running-the-system)
+5. [Setting up the Model](#5-setting-up-the-model)
+6. [Data](#6-data)
+   6.1 [Metadata](#61-metadata)
+   6.2 [Review](#62-review)
+7. [System Inputs](#7-system-inputs)
+8. [System Outputs](#8-system-outputs)
+9. [Testing](#9-testing)
+10. [License](#10-license)
+
+Click on any section to directly navigate to it.
 
 
 ## Installation and Running the System
@@ -33,7 +53,36 @@ The project has a number of dependencies that need to be installed. These are li
 
 **pip install -r requirements.txt**
 
-## 4. Run the System
+## 4. Obtaining an OpenAI API Key and Configuring the .env file
+
+Before you can run the system, you need an API key from OpenAI. This key enables the model to interact with the OpenAI's servers to process and generate conversational responses.
+
+Here are the steps to obtain an API key:
+
+1. Visit OpenAI's website and create an account or log in if you already have an account.
+
+2. Navigate to the 'API Keys' section in your account settings.
+
+3. Click on the 'Create a new API key' button.
+
+4. Name your key and click on 'Create secret key' to generate your new API key.
+
+After you have the API key, you need to configure your `.env` file:
+
+1. Create a new file in your project root directory and name it `.env`.
+
+2. Inside the `.env` file, create a new line and write `OPENAI_API_KEY=`, and then paste your API key after the equals sign. For example:
+
+OPENAI_API_KEY='sk1234567890abcdef`.
+
+4. Save the `.env` file.
+
+Please ensure you do not upload your `.env` file to public repositories to keep your OpenAI API key secure.
+
+After this step, you are ready to install the dependencies and run the system.
+
+
+## 5. Run the System
 
 
 
