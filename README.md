@@ -141,6 +141,7 @@ This process is repeated at each turn of the conversation, enabling LLM-ConvRec 
 
 
 ## Domain Initialization and Customization
+This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs. 
 
 ## 1. Constraints Configuration
 
