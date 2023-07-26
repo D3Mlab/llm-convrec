@@ -21,7 +21,7 @@ class Status:
         """
         raise NotImplementedError()
 
-    def get_response(self):
+    def get_response_from_status(self):
         raise NotImplementedError()
 
     def get_status(self):

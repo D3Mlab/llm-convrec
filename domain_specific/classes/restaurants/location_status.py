@@ -39,7 +39,7 @@ class LocationStatus(Status):
         else:
             self._curr_status = "valid"
 
-    def get_response(self):
+    def get_response_from_status(self):
         if self._curr_status == "specific" or self._curr_status is None:
             return None
         elif self._curr_status == "invalid":
