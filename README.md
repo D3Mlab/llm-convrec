@@ -7,30 +7,12 @@ While unstructured conversational systems like ChatGPT can produce fluid, engagi
 The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
 
 ## Table of Content
-# Table of Contents
 
-1. [Few-shot Examples](#1-few-shot-examples)
-
-   1.1 [Few-shot Prompts for Intent Classification](#11-few-shot-prompts-for-intent-classification)
-
-   1.1.1 [`accept_classification_fewshots.csv`](#111-accept_classification_fewshotscsv)
-
-   1.2 [Constraint Updater Few-shots](#12-constraint-updater-few-shots)
-
-   1.2.1 [`constraints_updater_fewshots.csv`](#121-constraints_updater_fewshotscsv)
-3. [Constraints Configuration](#2-constraints-configuration)
-4. [Filter Configuration](#3-filter-configuration)
-5. [Installation and Running the System](#4-installation-and-running-the-system)
-6. [Setting up the Model](#5-setting-up-the-model)
-7. [Data](#6-data)
-   6.1 [Metadata](#61-metadata)
-   6.2 [Review](#62-review)
-8. [System Inputs](#7-system-inputs)
-9. [System Outputs](#8-system-outputs)
-10. [Testing](#9-testing)
-11. [License](#10-license)
-
-Click on any section to directly navigate to it.
+1. Introduction
+2. Table of Content
+3. Installation and Running the System
+4. Overall Conversation Flow
+5. Domain Initialization and Customization
 
 
 ## Installation and Running the System
