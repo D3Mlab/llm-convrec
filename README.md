@@ -85,11 +85,15 @@ GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live" <- change this URL
 ### 6. Run the System
 If you want to run the restaurant demo, execute following command in the terminal: 
 
+```
 python restaurant_main.py
+```
 
 If you want to run the clothing demo, execute following command in the terminal: 
 
+```
 python clothing_main.py
+```
 
 
 ## Overall Conversation Flow
