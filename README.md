@@ -10,21 +10,25 @@ The system retains important information about the conversation, ensuring that c
 # Table of Contents
 
 1. [Few-shot Examples](#1-few-shot-examples)
+
    1.1 [Few-shot Prompts for Intent Classification](#11-few-shot-prompts-for-intent-classification)
-       1.1.1 [`accept_classification_fewshots.csv`](#111-accept_classification_fewshotscsv)
+
+   1.1.1 [`accept_classification_fewshots.csv`](#111-accept_classification_fewshotscsv)
+
    1.2 [Constraint Updater Few-shots](#12-constraint-updater-few-shots)
-       1.2.1 [`constraints_updater_fewshots.csv`](#121-constraints_updater_fewshotscsv)
-2. [Constraints Configuration](#2-constraints-configuration)
-3. [Filter Configuration](#3-filter-configuration)
-4. [Installation and Running the System](#4-installation-and-running-the-system)
-5. [Setting up the Model](#5-setting-up-the-model)
-6. [Data](#6-data)
+
+   1.2.1 [`constraints_updater_fewshots.csv`](#121-constraints_updater_fewshotscsv)
+3. [Constraints Configuration](#2-constraints-configuration)
+4. [Filter Configuration](#3-filter-configuration)
+5. [Installation and Running the System](#4-installation-and-running-the-system)
+6. [Setting up the Model](#5-setting-up-the-model)
+7. [Data](#6-data)
    6.1 [Metadata](#61-metadata)
    6.2 [Review](#62-review)
-7. [System Inputs](#7-system-inputs)
-8. [System Outputs](#8-system-outputs)
-9. [Testing](#9-testing)
-10. [License](#10-license)
+8. [System Inputs](#7-system-inputs)
+9. [System Outputs](#8-system-outputs)
+10. [Testing](#9-testing)
+11. [License](#10-license)
 
 Click on any section to directly navigate to it.
 
@@ -88,7 +92,7 @@ After this step, you are ready to install the dependencies and run the system.
 
 
 
-### To run Colab service (note public URL changes each time you restart the server)
+### 6.To run Colab service (note public URL changes each time you restart the server)
 
 1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run it
 
