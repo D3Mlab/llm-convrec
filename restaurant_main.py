@@ -37,7 +37,7 @@ if geocoder is None:
 
     conv_rec_system = ConvRecSystem(
         config, openai_api_key_or_gradio_url,
-        user_defined_filter=user_filter_objects, user_interface_str="demo")
+        user_defined_filter=user_filter_objects)
 else:
     user_constraint_merger_objects = [LocationConstraintMerger(geocoder)]
     user_constraint_status_objects = [LocationStatus(geocoder)]
@@ -46,6 +46,6 @@ else:
     conv_rec_system = ConvRecSystem(
         config, openai_api_key_or_gradio_url, user_defined_constraint_mergers=user_constraint_merger_objects,
         user_constraint_status_objects=user_constraint_status_objects,
-        user_defined_filter=user_filter_objects, user_interface_str="demo")
+        user_defined_filter=user_filter_objects)
 
 conv_rec_system.run()
