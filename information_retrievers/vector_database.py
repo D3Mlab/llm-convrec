@@ -15,8 +15,13 @@ class VectorDataBase:
         self._ntotal = self._storage.ntotal
 
     def find_similarity_vector(self, query: np.ndarray) -> np.ndarray:
-        """
-        #TODO
+        """This function finds the similarity between the query and the vectors in the database
+
+        Args:
+            query (np.ndarray): The query vector
+
+        Returns:
+            np.ndarray: The similarity score between the query and each vector in the database in respect to the index.
         """
         query = query.reshape(-1, self._storage.d)
         D, I = self._storage.search(query, self._storage.ntotal)
