@@ -2,10 +2,11 @@
 
 ## Table of Content
 
-1. Introduction
-3. Installation and Running the System
-4. Overall Conversation Flow
-5. Domain Initialization and Customization
+- [1. Introduction](#Introduction:)
+- [2. Installation and Running the System](#2-installation-and-running-the-system)
+- [3. Overall Conversation Flow](#3-overall-conversation-flow)
+- [4. Domain Initialization and Customization](#4-domain-initialization-and-customization)
+
 
 ## Introduction: A Semi-Structured Conversational Recommendation System
 LLM-ConvRec is a prompting-based, semi-structured conversational system that leverages the generative power of GPT to provide flexible and natural interaction. Unlike fully-structured conversational systems such as Siri, where utterances are often predefined and inflexible, LLM-ConvRec is designed for versatility and the production of more natural responses. Moreover, it incorporates past memory into the conversation, a feature often lacking in fully-structured systems.
