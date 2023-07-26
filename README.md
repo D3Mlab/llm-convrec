@@ -237,7 +237,7 @@ This file helps in mapping user queries to metadata categories. It needs two col
 | What are the meals it's known for? | PopularMeals |
 
 #### 2.4.2 `answer_ir_fewshots.csv`
-This file trains the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
+This file instructs the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
 
 | question | information | answer |
 |----------|-------------|--------|
@@ -252,7 +252,7 @@ This file aids the system in breaking down complex user queries into simpler, in
 | What are dishes, cocktails and types of wine do you recommend? | What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend? |
 
 #### 2.4.4 `answer_verify_metadata_resp_fewshots.csv`
-This file trains the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
+This file instructs the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
 
 | question | answer | response |
 |----------|--------|----------|
