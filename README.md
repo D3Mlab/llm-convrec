@@ -286,7 +286,7 @@ By providing these hard-coded responses, you can control the behavior of the sys
 
 
 
-4.filter configs
+## 4.filter configs
 
 | type_of_filter | key_in_state | metadata_field |
 | -------------- | ------------ | -------------- |
