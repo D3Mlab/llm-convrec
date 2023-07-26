@@ -25,14 +25,14 @@ class VectorDatabaseSearchEngine(SearchEngine):
         super().__init__(embedder, review_item_ids, reviews)
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_indices_to_keep: list[int]) -> tuple[list, list]:
+                        item_indices_to_keep: list[int], unacceptable_similarity_range: float, max_number_similar_items: int) -> tuple[list, list]:
         query_embedding = self._embedder.get_tensor_embedding(query)
         similarity_score_review = self._database.find_similarity_vector(query_embedding)
         similarity_score_review = torch.tensor(similarity_score_review)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
         similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
-        most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
+        most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items, unacceptable_similarity_range, max_number_similar_items)
         list_of_business_id = self._get_topk_item_id(
             most_similar_item_index, index_most_similar_review)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review)
