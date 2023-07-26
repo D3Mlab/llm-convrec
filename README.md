@@ -39,7 +39,7 @@ The project has a number of dependencies that need to be installed. These are li
 
 **pip install -r requirements.txt**
 
-### 4. Obtaining an OpenAI API Key and Configuring the .env file
+### 4 Obtaining an OpenAI API Key and Configuring the .env file
 
 Before you can run the system, you need an API key from OpenAI. This key enables the model to interact with the OpenAI's servers to process and generate conversational responses.
 
@@ -67,14 +67,7 @@ Please ensure you do not upload your `.env` file to public repositories to keep 
 
 After this step, you are ready to install the dependencies and run the system.
 
-
-### 5. Run the System
-
-
-
-
-
-### 6.To run Colab service (note public URL changes each time you restart the server)
+### 5. Configuring gradio URL
 
 1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run first 4 and 11th cells
 
@@ -87,6 +80,16 @@ GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live" <- change this URL
 
 3. Add public URL to .env where the key is GRADIO_URL
    example: GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live"
+
+
+### 6. Run the System
+If you want to run the restaurant demo, execute following command in the terminal: 
+
+python restaurant_main.py
+
+If you want to run the clothing demo, execute following command in the terminal: 
+
+python clothing_main.py
 
 
 ## Overall Conversation Flow
