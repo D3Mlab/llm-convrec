@@ -33,7 +33,7 @@ Click on any section to directly navigate to it.
 
 Before you can use the system, you must first ensure that you have Python (version 3.7 or higher) installed on your machine. You will also need pip for installing the necessary Python packages.
 
-## 1. Clone the GitHub Repository
+### 1. Clone the GitHub Repository
 
 Clone the repository from GitHub to your local machine by running the following command in your terminal:
 
@@ -41,19 +41,19 @@ Clone the repository from GitHub to your local machine by running the following 
 
 Please replace `<your_username>` with your actual GitHub username.
 
-## 2. Navigate to the Project Directory
+### 2. Navigate to the Project Directory
 
 Once you've cloned the repository, use the command line to navigate into the project's directory:
 
 **cd LLM-ConvRec**
 
-## 3. Install the Required Packages
+### 3. Install the Required Packages
 
 The project has a number of dependencies that need to be installed. These are listed in the `requirements.txt` file. To install these dependencies, run the following command in your terminal:
 
 **pip install -r requirements.txt**
 
-## 4. Obtaining an OpenAI API Key and Configuring the .env file
+### 4. Obtaining an OpenAI API Key and Configuring the .env file
 
 Before you can run the system, you need an API key from OpenAI. This key enables the model to interact with the OpenAI's servers to process and generate conversational responses.
 
@@ -82,13 +82,13 @@ Please ensure you do not upload your `.env` file to public repositories to keep 
 After this step, you are ready to install the dependencies and run the system.
 
 
-## 5. Run the System
+### 5. Run the System
 
 
 
 
 
-## To run Colab service (note public URL changes each time you restart the server)
+### To run Colab service (note public URL changes each time you restart the server)
 
 1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run it
 
@@ -163,11 +163,7 @@ The configuration of these constraints will allow the system to capture user pre
 ## 2.Few shots for prompts
 Few-shot examples are crucial in training the LLM-ConvRec system. They are a set of input-output pairs that demonstrate the type of behavior we want the system to exhibit. In the context of our system, few-shot examples help train the classifiers and provide the necessary prompts for information extraction.
 
-Few-shot learning is a powerful tool in AI because it enables models to understand and perform tasks after seeing just a few examples. This is crucial for conversational systems where a diverse array of utterances are possible. By providing the LLM-ConvRec system with few-shot examples, the model can learn to generate appropriate responses to a wide range of user inputs.
-
 When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
-
-Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
 
 Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
 
