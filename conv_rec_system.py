@@ -66,7 +66,10 @@ class ConvRecSystem(WarningObserver):
                  user_constraint_status_objects: list = None,
                  user_defined_filter: list[Filter] = None,
                  user_interface_str: str = None):
-        
+        if user_constraint_status_objects is None:
+            user_constraint_status_objects = []
+        if user_defined_constraint_mergers is None:
+            user_defined_constraint_mergers = []
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain = domain_specific_config_loader.load_domain()
 
@@ -118,7 +121,7 @@ class ConvRecSystem(WarningObserver):
                 constraints_remover=constraints_remover)
        
         else:
-            if config['LLM'] == "alpaca lora":
+            if config['LLM'] == "Alpaca Lora":
                 temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
             else:
                 temperature_zero_llm_wrapper = GPTWrapper(
@@ -168,7 +171,7 @@ class ConvRecSystem(WarningObserver):
 
         if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
             user_intents_classifier = MultilabelUserIntentsClassifier(
-                user_intents, llm_wrapper, True)
+                user_intents, llm_wrapper, config, True)
         else:
             user_intents_classifier = PromptBasedUserIntentsClassifier(
                 user_intents, llm_wrapper)

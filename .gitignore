@@ -8,3 +8,4 @@ information_retrievers/data/all-edmonton-restaurant-faiss/review.npy
 information_retrievers/data/all-edmonton-restaurant-faiss/vector_database.faiss
 domain_specific/configs/restaurant_configs/data/large_files/
 domain_specific/configs/clothing_configs/500000_reviews_data/
+domain_specific/configs/clothing_configs/large_data/
