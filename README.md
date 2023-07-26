@@ -3,7 +3,6 @@
 ## Table of Content
 
 1. Introduction
-2. Table of Content
 3. Installation and Running the System
 4. Overall Conversation Flow
 5. Domain Initialization and Customization
