@@ -299,13 +299,13 @@ By providing these hard-coded responses, you can control the behavior of the sys
 
 4.filter configs
 
-| type_of_filter | key_in_state | metadata_field | default_max_distance_in_km | distance_type |
-| -------------- | ------------ | -------------- | -------------------------- | ------------- |
-| word in | "cuisine type, dish type" | categories | | |
-| item | recommended_items | name | | |
+| type_of_filter | key_in_state | metadata_field |
+| -------------- | ------------ | -------------- |
+| word in | "cuisine type, dish type" | categories |
+| item | recommended_items | name |
 
 
-5.domain specific config
+## 5.domain specific config
 - domain name
 - file path to files, shouldnt change normally
 
@@ -315,7 +315,7 @@ The LLM-ConvRec system requires two main types of data: metadata and reviews.
 
 ### 6.1 Metadata
 
-The metadata must include unique item identifiers (item ID) as a key. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
+The metadata must include unique item identifiers (item_id) as a key. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
 
 An example of a metadata structure is as follows:
 
@@ -333,7 +333,7 @@ ordershould match
 
 
 
-7.User defined classes
+## 7.User defined classes
   
 
 ## Example Conversations:
