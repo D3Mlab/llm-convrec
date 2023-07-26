@@ -297,7 +297,7 @@ The LLM-ConvRec system requires two main types of data: metadata and reviews.
 
 ### 6.1 Metadata
 
-The metadata must include unique item identifiers (item_id) as a key. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
+The metadata must include name and unique item identifiers (item_id) as keys. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
 
 An example of a metadata structure is as follows:
 
@@ -309,10 +309,8 @@ An example of a metadata structure is as follows:
     "city": "Edmonton",
     "categories": ["Fish & Chips", "Restaurants"]
 }
-review has to be csv, has itemid and reviews
 
-ordershould match
-
+### 6.2 Review data
 
 
 ## 7.User defined classes
