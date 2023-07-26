@@ -132,6 +132,15 @@ This process is repeated at each turn of the conversation, enabling LLM-ConvRec 
 ## Domain Initialization and Customization
 This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs. 
 
+### Quick Start
+
+If you're looking to get started quickly, we've already set up two pre-configured domains: **Restaurant** and **Clothing**.
+
+- **Restaurant Domain:** This domain utilizes a dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
+
+- **Clothing Domain:** For the Clothing domain, we've integrated Amazon data related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
+
+
 ## 1. Constraints Configuration
 
 To provide personalized recommendations, the LLM-ConvRec system takes into account user constraints that can be both explicit (provided directly by the user) or implicit (derived from the user's input). For efficient constraint management, it is crucial to set up a `constraints_config.csv` that defines the various constraints and their properties.
