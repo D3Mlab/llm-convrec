@@ -16,7 +16,7 @@ from state.common_state_manager import CommonStateManager
 from state.constraints.one_step_constraints_updater import OneStepConstraintsUpdater
 from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from user.terminal import Terminal
-from user.gradio import GradioInterface
+# from user.gradio import GradioInterface
 from user.user_interface import UserInterface
 from user_intent.accept_recommendation import AcceptRecommendation
 from user_intent.ask_for_recommendation import AskForRecommendation
@@ -160,7 +160,8 @@ class ConvRecSystem(WarningObserver):
                         RejectRecommendation(rejected_restaurants_extractor, curr_restaurant_extractor, reject_classification_fewshots, domain)]
 
         if user_interface_str == "demo":
-            self.user_interface = GradioInterface()
+            # self.user_interface = GradioInterface()
+            pass
         else:
             self.user_interface = Terminal()
 
