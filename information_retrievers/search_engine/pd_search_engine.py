@@ -15,18 +15,16 @@ class PDSearchEngine(SearchEngine):
 
     _embedder: BERT_model
     _items_id: np.ndarray
-    _item_review_count: torch.Tensor
-    _items_reviews: pd.DataFrame
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
-        super().__init__(embedder)
         domain_specific_config_loader = DomainSpecificConfigLoader()
-        self._items_reviews, self._reviews_embedding_matrix\
-            = domain_specific_config_loader.load_data_for_pd_search_engine()
+        review_item_ids, reviews, self._reviews_embedding_matrix = \
+            domain_specific_config_loader.load_data_for_pd_search_engine()
+        super().__init__(embedder, review_item_ids, reviews)
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_ids_to_keep: np.ndarray) -> tuple[list, list]:
+                        item_indices_to_keep: list[int]) -> tuple[list, list]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
         reviews for that item
@@ -44,13 +42,10 @@ class PDSearchEngine(SearchEngine):
             query_embedding, self._reviews_embedding_matrix)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
-        # Finds the indexes of the ids to count
-        id_index = self._find_index(item_ids_to_keep)
-        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, id_index)
+        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
         most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
-        list_of_item_id = self._get_topk_item_item_id(most_similar_item_index, self._items_reviews)
-        list_of_review = self._get_review(most_similar_item_index, index_most_similar_review,
-                                          self._items_reviews)
+        list_of_item_id = self._get_topk_item_id(most_similar_item_index, index_most_similar_review)
+        list_of_review = self._get_review(most_similar_item_index, index_most_similar_review)
 
         return list_of_item_id, list_of_review
 
@@ -68,47 +63,3 @@ class PDSearchEngine(SearchEngine):
         similarity_score = torch.matmul(reviews, query)
 
         return similarity_score
-
-    @staticmethod
-    def _get_topk_item_item_id(most_similar_item_index: torch.Tensor, df: pd.DataFrame) -> list[str]:
-        """
-        Get the most similar item's business id
-
-        :param most_similar_item_index: A tensor containing the top k items with the most
-        :return: A list of business id of the most similar items. Beginning from the most
-            similar to the least.
-        """
-        unique_values = df["item_id"].unique()
-        list_of_item_id = []
-        most_similar_item_index = most_similar_item_index.tolist()
-        for i in most_similar_item_index:
-            list_of_item_id.append(unique_values[i])
-
-        return list_of_item_id
-
-    @staticmethod
-    def _get_review(most_similar_item_index: torch.Tensor, index_most_similar_review: torch.Tensor,
-                    items_reviews_embedding: pd.DataFrame) -> list[list[str]]:
-        """
-        Return the most similar reviews for those top k items
-
-        :param most_similar_item_index: A tensor containing the index of the most similar items
-        :param index_most_similar_review: A tensor containing the index of all the items(Not just the most similar item)
-        :param items_reviews_embedding: A panda object that reads from the review embedding file :return: returns
-         a list[list[
-        str]] with dim 0 has the top k most similar item, dim 1 has the top k reviews for the corresponding item
-        """
-
-        most_similar_item_index = most_similar_item_index.tolist()
-        index_most_similar_review = index_most_similar_review.tolist()
-        review_list = []
-        for i in most_similar_item_index:
-            most_similar_review_list = index_most_similar_review[i]
-            review_list_item = []
-            for j in most_similar_review_list:
-                # if not -1, which was padded to make sure the size each row matches with each other
-                if j != -1:
-                    review_list_item.append(items_reviews_embedding["Review"][j])
-
-            review_list.append(review_list_item)
-        return review_list

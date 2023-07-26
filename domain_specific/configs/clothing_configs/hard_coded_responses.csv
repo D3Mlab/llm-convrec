@@ -5,3 +5,4 @@ RequestInformation,Could you provide the category?,category
 RequestInformation,Do you have any other preferences?,
 DefaultResponse,Could you provide more information?,
 NoRecommendation,"Sorry, there is no clothing item that matches your constraints.",
+NoAnswer,Please only ask questions about previously recommended clothing item.,

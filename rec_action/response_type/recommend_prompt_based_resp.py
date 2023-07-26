@@ -1,7 +1,6 @@
 from state.state_manager import StateManager
 from typing import Dict, Any
 
-from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
@@ -12,6 +11,8 @@ from intelligence.llm_wrapper import LLMWrapper
 import logging
 from jinja2 import Environment, FileSystemLoader
 from warning_observer import WarningObserver
+from utility.thread_utility import start_thread
+import threading
 
 logger = logging.getLogger('recommend')
 
@@ -21,7 +22,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     """
     _observers: list[WarningObserver]
     _llm_wrapper: LLMWrapper
-    _filter_restaurants: FilterApplier
+    _filter_items: FilterApplier
     _information_retriever: InformationRetrieval
     _topk_items: str
     _topk_reviews: str
@@ -30,17 +31,16 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     _format_recommendation_prompt: str
     _summarize_review_prompt: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses, config: dict, observers = None):
+    def __init__(self, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict], config: dict, observers = None):
 
         super().__init__(domain)
         
-        self._filter_restaurants = filter_restaurants
+        self._filter_items = filter_items
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
         self._hard_coded_responses = hard_coded_responses
-
 
         self._topk_items = int(config["TOPK_ITEMS"])
         self._topk_reviews = int(config["TOPK_REVIEWS"])
@@ -55,45 +55,116 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
+        
+        self.query = ""
+        self.explanation = {}
+        self.item_ids = []
+        
+        self.enable_threading = config['ENABLE_MULTITHREADING']
        
-    def get_response(self, state_manager: StateManager) -> str:
+    def get(self, state_manager: StateManager) -> str:
         """
         Get the response to be returned to user
 
         :param state_manager: current representation of the state
         :return: response to be returned to user
         """
+        
+        if (self.enable_threading):
+            state_to_query_thread = threading.Thread(
+                target=self._get_query, args=(state_manager,))
 
-        query = self.convert_state_to_query(state_manager)
-
-        logger.debug(f'Query: {query}')
-
-        item_ids_to_keep = \
-            self._filter_restaurants.apply_filter(state_manager)
-
-        for response_dict in self._hard_coded_responses:
-            if response_dict['action'] == 'NoRecommendation':
-                no_recom_response = response_dict['response']
+            embedding_matrix_thread = threading.Thread(
+                target=self._get_item_ids, args=(state_manager,))
+            
+            start_thread(
+                [state_to_query_thread, embedding_matrix_thread])
+        else:
+            self._get_query(state_manager)
+            self._get_item_ids(state_manager)
 
         try:
-            self._current_recommended_items = \
-                self._information_retriever.get_best_matching_items(query, self._topk_items,
-                                                                    self._topk_reviews, item_ids_to_keep)
+            if (self.enable_threading):
+                explanation_thread = threading.Thread(
+                    target=self._get_explanation, args=(state_manager,))
+
+                reccommendation_thread = threading.Thread(
+                    target=self._get_recommendation)
+
+                start_thread(
+                    [explanation_thread, reccommendation_thread])
+            else:
+                self._get_explanation(state_manager)
+                self._get_recommendation()
+                
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            return no_recom_response
-        explanation = self._get_explanation_for_each_item(state_manager)
-        prompt = self._get_prompt_to_format_recommendation(explanation)
+            
+            for response_dict in self._hard_coded_responses:
+                if response_dict['action'] == 'NoRecommendation':
+                    return response_dict['response']
+       
+        prompt = self._get_prompt_to_format_recommendation()
         resp = self._llm_wrapper.make_request(prompt)
+        
+        return self._clean_llm_response(resp)
+
+    def _get_query(self, state_manager: StateManager) -> None:
+        """
+        Get query from the state
+
+        :param state_manager: current state representing the conversation
+        :param ir_params: dict representing the parameters needed for IR
+        :return: None
+        """
+        self.query = self.convert_state_to_query(state_manager)
+        logger.debug(f'Query: { self.query}')
+    
+    def _get_item_ids(self, state_manager: StateManager) -> None:
+        """
+        Get filtered embedding matrix
+
+        :param state_manager: current state representing the conversation
+        :param ir_params: dict representing the parameters needed for IR
+        :return: None
+        """
+        self.item_ids = \
+            self._filter_items.apply_filter(state_manager)
+    
+    def _get_explanation(self, state_manager: StateManager) -> None:
+        """
+        Get explanation
+
+        :param state_manager: current state representing the conversation
+        :param explanation: set representing the explanation
+        :return: None
+        """
+        self._get_explanation_for_each_item(state_manager)
+
+    def _get_recommendation(self) -> None:
+        """
+        Get recommendation
+
+        :param ir_params: dict representing the parameters needed for IR
+        :return: None
+        """
+        self._current_recommended_items = self._information_retriever.get_best_matching_items(self.query, self._topk_items,
+                                                                    self._topk_reviews, self.item_ids)
+    
+    @staticmethod
+    def _clean_llm_response(resp: str) -> str:
+        """" 
+        Clean the response from the llm
+        
+        :param resp: response from LLM
+        :return: cleaned str
+        """
         
         if '"' in resp:
             # get rid of double quotes (llm sometimes outputs it)
             resp = resp.replace('"', "")
-
-        resp = resp.removeprefix(
-            'Response to user:').removeprefix('response to user:').strip()
         
-        return resp
+        return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
     def convert_state_to_query(self, state_manager: StateManager) -> str:
         """
@@ -114,7 +185,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     def get_current_recommended_items(self):
         return self._current_recommended_items 
 
-    def _get_prompt_to_format_recommendation(self, explanation: dict):
+    def _get_prompt_to_format_recommendation(self):
         """
         Get the prompt to get recommendation text with explanation.
         :param explanation: explanation of why the items are recommended
@@ -123,7 +194,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         item_names = ' and '.join(
             [f'{rec_item.get_name()}' for rec_item in self._current_recommended_items])
         explanation_str = ', '.join(
-            [f'{key}: {val}' for key, val in explanation.items()])
+            [f'{key}: {val}' for key, val in self.explanation.items()])
         return self._format_recommendation_prompt.render(
             item_names=item_names, explanation=explanation_str, domain=self._domain)
 
@@ -176,8 +247,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                 explanation[item_name] = self._llm_wrapper.make_request(
                     prompt)
 
-        return explanation
-
+        self.explanation = explanation
+        
     def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:
         """

@@ -16,10 +16,11 @@ class Answer(RecAction):
     :param information_retriever: information retriever that is used to fetch restaurant recommendations
     :param llm_wrapper: object to make request to LLM
     """
+    _answer_response: AnswerPromptBasedResponse
 
-    def __init__(self, answer_prompt_resp: AnswerPromptBasedResponse, priority_score_range: tuple[float, float] = (1, 10)) -> None:
+    def __init__(self, answer_response: AnswerPromptBasedResponse, priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
-        self._answer_prompt_resp = answer_prompt_resp
+        self._answer_response = answer_response
 
     def get_name(self) -> str:
         """
@@ -50,24 +51,14 @@ class Answer(RecAction):
                     return self.priority_score_range[0] + goal["utterance_index"] / len(state_manager.get("conv_history")) * (self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def get_prompt_response(self, state_manager: StateManager) -> str | None:
+    def get_response(self, state_manager: StateManager) -> str | None:
         """
-        Return prompt based recommender's response corresponding to this action.
+        Return recommender's response corresponding to this action.
 
         :param state_manager: current state representing the conversation
-        :return: prompt based recommender's response corresponding to this action
+        :return: recommender's response corresponding to this action
         """
-        return self._answer_prompt_resp.get_response(state_manager)
-
-    def get_hard_coded_response(self, state_manager: StateManager) -> str | None:
-        """
-        Return hard coded recommender's response corresponding to this action. 
-
-        :param state_manager: current state representing the conversation
-        :return: hard coded recommender's response corresponding to this action
-        """
-
-        return None
+        return self._answer_response.get(state_manager)
 
     def is_response_hard_coded(self) -> bool:
         """
