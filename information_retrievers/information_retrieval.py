@@ -1,4 +1,3 @@
-import numpy as np
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.search_engine.search_engine import SearchEngine
 from information_retrievers.metadata_wrapper import MetadataWrapper
@@ -14,7 +13,7 @@ class InformationRetrieval:
     :param item_loader: used to load metadata to Item object
     """
 
-    _engine: SearchEngine
+    _search_engine: SearchEngine
     _metadata_wrapper: MetadataWrapper
     _item_loader: ItemLoader
 
@@ -58,7 +57,7 @@ class InformationRetrieval:
         return topk_most_relevant_reviews
 
     def _create_recommended_items(self, query: str, item_ids: list[str],
-                                 items_most_relevant_reviews: list[list[str]]) -> list[RecommendedItem]:
+                                  items_most_relevant_reviews: list[list[str]]) -> list[RecommendedItem]:
         """
         Construct RecommendedItem object from query, items id, and most relevant review.
 

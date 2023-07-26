@@ -29,9 +29,27 @@ class SearchEngine:
         :param query: query text
         :param topk_items: number of items to be returned
         :param topk_reviews: number of reviews for each item
-        :param item_ids_to_keep: The numpy array containing item ids to keep
+        :param item_indices_to_keep: Stores the item indices to keep
         :return: a tuple where the first element is a list of most relevant item's id 
         and the second element is a list of top k reviews for each most relevant item
+        """
+        query_embedding = self._embedder.get_tensor_embedding(query)
+        similarity_score_review = self._similarity_score_each_review(query_embedding)
+        similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
+            similarity_score_review, topk_reviews)
+        similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
+        most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items)
+        list_of_item_id = self._get_topk_item_id(most_similar_item_index, index_most_similar_review)
+        list_of_review = self._get_review(most_similar_item_index, index_most_similar_review)
+
+        return list_of_item_id, list_of_review
+
+    def _similarity_score_each_review(self, query: torch.Tensor) -> torch.Tensor:
+        """
+        Return a tensor that contains the similarity score for each review
+
+        :param query: A tensor containing the query embedding
+        :return: A pytorch tensor that contains the similarity score for each review
         """
         raise NotImplementedError()
 

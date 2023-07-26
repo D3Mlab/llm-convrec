@@ -6,8 +6,8 @@ class VectorDataBase:
     This class functions as a vector database
 
     :param storage: Stores the vector database
-    :param review: Review numpy array
     """
+
     _ntotal: int
 
     def __init__(self, storage):
@@ -15,6 +15,9 @@ class VectorDataBase:
         self._ntotal = self._storage.ntotal
 
     def find_similarity_vector(self, query: np.ndarray) -> np.ndarray:
+        """
+        #TODO
+        """
         query = query.reshape(-1, self._storage.d)
         D, I = self._storage.search(query, self._storage.ntotal)
         D = D[0]
