@@ -10,18 +10,17 @@ class Inquire(UserIntent):
     """
     Class representing Inquire user intent.
 
-    :param current_restaurants_extractor: object used to extract the restaurant that the user is referring to from the users input
+    :param current_items_extractor: object used to extract the item that the user is referring to from the users input
     """
 
-    _current_restaurants_extractor: CurrentItemsExtractor
+    _current_items_extractor: CurrentItemsExtractor
 
-    def __init__(self, current_restaurants_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str):
-        self._current_restaurants_extractor = current_restaurants_extractor
+    def __init__(self, current_items_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str, config: dict):
+        self._current_items_extractor = current_items_extractor
         
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)    
         env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
+        
         self._few_shots = few_shots
         self._domain = domain
 
@@ -49,16 +48,16 @@ class Inquire(UserIntent):
         :return: new updated state
         """
 
-        # Update current restaurant
-        reccommended_restaurants = curr_state.get("recommended_items")
+        # Update current item
+        reccommended_items = curr_state.get("recommended_items")
 
-        if reccommended_restaurants is not None and reccommended_restaurants != []:
-            curr_res = self._current_restaurants_extractor.extract(
-                reccommended_restaurants, curr_state.get("conv_history"))
+        if reccommended_items is not None and reccommended_items != []:
+            curr_item = self._current_items_extractor.extract(
+                reccommended_items, curr_state.get("conv_history"))
 
-            # If current restaurant is [] then just keep it the same
-            if curr_res != []:
-                curr_state.update("curr_items", curr_res)
+            # If current item is [] then just keep it the same
+            if curr_item != []:
+                curr_state.update("curr_items", curr_item)
 
         return curr_state
 

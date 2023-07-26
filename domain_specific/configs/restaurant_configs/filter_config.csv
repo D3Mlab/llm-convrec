@@ -1,0 +1,3 @@
+type_of_filter,key_in_state,metadata_field
+word in,"cuisine type, dish type",categories
+item,recommended_items,name

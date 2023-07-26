@@ -1,0 +1,50 @@
+from information_retrievers.metadata_wrapper import MetadataWrapper
+from information_retrievers.filter.filter import Filter
+from state.state_manager import StateManager
+from information_retrievers.item.recommended_item import RecommendedItem
+from domain_specific_config_loader import DomainSpecificConfigLoader
+
+
+class FilterApplier:
+    """
+    Responsible to return item ids that must be kept.
+
+    :param metadata_wrapper: metadata wrapper
+    """
+
+    _metadata_wrapper: MetadataWrapper
+    filters: list[Filter]
+
+    def __init__(self, metadata_wrapper: MetadataWrapper) -> None:
+        self._metadata_wrapper = metadata_wrapper
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        self.filters = domain_specific_config_loader.load_filters()
+
+    def apply_filter(self, state_manager: StateManager) -> list[int]:
+        """
+        Return a numpy array that has item ids that must be kept.
+
+        :param state_manager: current state
+        :return: item indices that must be kept
+        """
+        metadata = self._metadata_wrapper.get_metadata()
+
+        for filter_obj in self.filters:
+            if metadata.shape[0] == 0:
+                break
+
+            metadata = filter_obj.filter(state_manager, metadata)
+
+        indices_list = metadata.index.tolist()
+        return indices_list
+
+    def filter_by_current_item(self, current_item: RecommendedItem) -> list[int]:
+        """
+        Return a numpy array that has item ids that must be kept.
+
+        :param current_item: current item
+        :return: item index that must be kept
+        """
+        metadata = self._metadata_wrapper.get_metadata()
+        index = metadata.index[metadata['name'] == current_item.get_name()].tolist()
+        return index

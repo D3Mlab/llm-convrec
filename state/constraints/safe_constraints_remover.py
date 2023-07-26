@@ -16,10 +16,11 @@ class SafeConstraintsRemover(ConstraintsRemover):
     :param default_keys: all possible keys for constraints
     """
 
-    def __init__(self, llm_wrapper: LLMWrapper, default_keys: list = None):
+    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list, config: dict):
+        default_keys = [constraints_category['key'] for constraints_category in constraints_categories]
+        
         super().__init__(llm_wrapper, default_keys)
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+        
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
         self.removal_check_template = env.get_template(
