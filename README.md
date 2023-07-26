@@ -331,6 +331,34 @@ ordershould match
 7.User defined classes
   
 
+## Example Conversations:
+
+Demonstration using the restaurant domain:
+
+User: I am looking for Japanese restaurants that serve excellent sushi, preferably in a casual setting.
+
+Recommender: Can you provide the location?
+
+User: Tower Road NW & Kingsway NW
+
+Recommender: How about trying Washoku Bistro for a comfortable and laid-back vibe while enjoying some delicious Japanese sushi? But if you're looking for something quick and easy without sacrificing taste, Tokyo Express is another great option near the same location.
+
+User: What kind of menu do they offer?
+
+Recommender: For Washoku Bistro, they offer a lunch menu with bento boxes and entrées, with limited options. They also have sushi rolls, such as spicy salmon rolls and California rolls. As for Tokyo Express, they have a wide variety of options including bento boxes, sushi combos, feature rolls, tempura, and noodles.
+
+User: Ok, then the first one doesn't seem to match my preference.
+
+Recommender: I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?
+
+User: Does Tokyo Express have a parking lot?
+
+Recommender: Tokyo Express has a parking lot.
+
+User: Great. I will go there then. Thanks!
+
+Recommender: Great! Enjoy your meal! If you need any more assistance, feel free to ask.
+
 ## Testing
 
 
