@@ -55,6 +55,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
+        self._preference_elicitation_prompt = env.get_template(
+            config['PREFERENCE_ELICITATION_PROMPT'])
         
         self.query = ""
         self.explanation = {}
@@ -160,12 +162,14 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: str
         """
         similar_items_metadata = {}
+        num_similar_items = 0
         
         # Get first group of items where there is more than 1 item per group
         for group in current_recommended_items:
             if len(group) > 1:
                 for item in group:
                     similar_items_metadata[item.get_name()] = item.get_optional_data()
+                    num_similar_items +=1
                 break
                         
         if (state_manager.get('hard_constraints') is not None):
@@ -173,20 +177,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         
         if state_manager.get('soft_constraints') is not None:
             constraints = constraints | state_manager.get('soft_constraints')
-        
-        prompt = f""" 
-        You are a restaurant recommender and the user has the following preferences on what they are looking for:
-
-        {constraints}
-
-        You must choose between the following {len(current_recommended_items[0])} restaurants to recommend to the user:
-
-        {similar_items_metadata}
-
-        What open-ended question should you ask the user in order to better understand which one to choose without mentioning their preferences? Only respond with the question.
-        """
-                
-        return prompt
+            
+        return self._preference_elicitation_prompt.render(domain=self._domain, constraints=constraints, num_similar_items=num_similar_items, similar_items_metadata=similar_items_metadata)
     
     @staticmethod
     def _clean_llm_response(resp: str) -> str:

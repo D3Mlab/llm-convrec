@@ -45,7 +45,7 @@ class InformationRetrieval:
         return topk_recommended_items_object
 
     def get_best_matching_reviews_of_item(self, query: str, num_of_reviews_to_return: int,
-                                          item_indices_to_keep: list[int], unacceptable_similarity_range: float = 0.5, max_number_similar_items: int = 5) -> list[list[str]]:
+                                          item_indices_to_keep: list[int], unacceptable_similarity_range: float = 0.5, max_number_similar_items: int = 5) -> list[list[list[str]]]:
         """
         Get num_of_reviews_to_return number of reviews for items that match the query the best.
 

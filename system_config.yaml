@@ -41,6 +41,7 @@ ANSWER_IR_PROMPT: "ir_prompt.jinja"
 ANSWER_MULT_QS_PROMPT: "seperate_questions_prompt.jinja"
 ANSWER_GPT_PROMPT: "gpt_prompt.jinja"
 ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
+PREFERENCE_ELICITATION_PROMPT: "preference_elicitation_prompt.jinja"
 
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"
@@ -48,3 +49,6 @@ SEARCH_ENGINE: "vector database"
 LLM: "GPT"
 RECOMMEND_RESPONSE_TYPE: "prompt"
 ENABLE_MULTITHREADING: True
+UNACCEPTABLE_SIMILARITY_SCORE_RANGE: 0.5
+MAX_NUMBER_SIMILAR_ITEMS: 5
+ENABLE_PREFERENCE_ELICITATION: True
