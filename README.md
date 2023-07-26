@@ -94,7 +94,7 @@ After this step, you are ready to install the dependencies and run the system.
 
 ### 6.To run Colab service (note public URL changes each time you restart the server)
 
-1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run it
+1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run first 4 and 11th cells
 
 2. Copy the public URL (should be something like this https://8b4a0f826a0deb0ec1.gradio.live)
 
@@ -134,7 +134,7 @@ With the updated state, the system then decides the action to take next. This co
 - **Give Recommendation:** The system might suggest an item that matches the user's stated preferences.
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
-### 4.Action Generation
+### 4.Response Generation
 Once the action is chosen, the system generates a structured response that aligns with the decided action. The system ensures this response is in line with the ongoing conversation context and adheres to the system's semi-structured conversational style.
 
 This process is repeated at each turn of the conversation, enabling LLM-ConvRec to provide a dynamic, interactive, and engaging conversational recommendation experience.
