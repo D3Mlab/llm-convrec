@@ -89,110 +89,7 @@ This process is repeated at each turn of the conversation, enabling LLM-ConvRec 
 
 ## Domain Initialization and Customization
 
-## 1.Few shots for prompts
-Few-shot examples are crucial in training the LLM-ConvRec system. They are a set of input-output pairs that demonstrate the type of behavior we want the system to exhibit. In the context of our system, few-shot examples help train the classifiers and provide the necessary prompts for information extraction.
-
-Few-shot learning is a powerful tool in AI because it enables models to understand and perform tasks after seeing just a few examples. This is crucial for conversational systems where a diverse array of utterances are possible. By providing the LLM-ConvRec system with few-shot examples, the model can learn to generate appropriate responses to a wide range of user inputs.
-
-When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
-
-Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
-
-Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
-
-### 1.1 Few-shots for Intent Classification Prompts
-
-For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: 'User Input' and 'Response'. 'User Input' should contain examples of user utterances, while 'Response' indicates whether the input corresponds to the respective intent (True) or not (False).
-
-#### 1.1.1 `accept_classification_fewshots.csv`: 
-This file should contain examples of user utterances that express acceptance of a recommendation.
-
-| User Input | Response |
-|------------|----------|
-| That sounds good, let's go there | True |
-| I don't like that type of food | False |
-
-#### 1.1.2 `reject_classification_fewshots.csv`: 
-This file should contain examples where the user rejects a recommendation.
-
-| User Input | Response |
-|------------|----------|
-| No, I don't want to go to that place | True |
-| Sure, that sounds nice | False |
-
-#### 1.1.3 `inquire_classification_fewshots.csv`: 
-This file should contain examples where the user is inquiring or asking a question.
-
-| User Input | Response |
-|------------|----------|
-| What's on their menu? | True |
-| I think we should try something else | False |
-
-### 1.2 Few-shots for Constraint Updater prompt
-
-The 'constraints_updater_fewshots.csv' file plays an instrumental role in enhancing the personalization of recommendations by keeping track of explicit and implicit user preferences. It's fundamental in identifying and storing the constraints from the user's conversation, categorizing them as hard or soft constraints. Hard constraints are strict requirements, such as a specific location or cuisine type, which must be adhered to. On the other hand, soft constraints denote user preferences that are desirable but not necessarily mandatory, like a preference for a place offering free parking or a patio.
-
-#### 1.2.1 `constraints_updater_fewshots.csv`:
-This file should be structured with five columns: 'user_input', 'old_hard_constraints', 'old_soft_constraints', 'new_hard_constraints', and 'new_soft_constraints'. 
-
-- 'user_input' represents a user's utterance.
-- 'old_hard_constraints' and 'old_soft_constraints' denote the previously identified hard and soft constraints, respectively.
-- 'new_hard_constraints' and 'new_soft_constraints' represent the updated set of hard and soft constraints after processing the user's input.
-
-Here is an example of the structure of this CSV file:
-
-| user_input | old_hard_constraints | old_soft_constraints | new_hard_constraints | new_soft_constraints |
-|------------|----------------------|----------------------|----------------------|----------------------|
-| pizza and pasta | "location=[""Toronto""]" |  | "location=[""toronto""], cuisine type=[""italian""], dish type=[""pizza"", ""pasta""]" |  |
-| does it have a patio? | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking""]" | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking"", ""patio""]" |
-| What kind of menu does I Love Sushi offer? | "location=[""jasper avenue""], cuisine type=[""japanese""]" |  | "location=[""jasper avenue""], cuisine type=[""japanese""]" 
-
-The ability to track and update these evolving constraints allows the system to fine-tune its recommendations, significantly enhancing the overall conversation experience.
-
-
-
-### 1.4 Few-shots for 'Answer' Recommender Action Prompts
-
-This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
-
-#### 1.4.1 `answer_extract_category_fewshots.csv`
-This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (metadata category that corresponds to the user's question).
-
-| input | output |
-|-------|--------|
-| What's their addresses? | address |
-| Can you recommend any dishes or specialties? | none |
-| Can I make a reservation? | HasReservations |
-| What are the meals it's known for? | PopularMeals |
-
-#### 1.4.2 `answer_ir_fewshots.csv`
-This file trains the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
-
-| question | information | answer |
-|----------|-------------|--------|
-| Do they have a slide in the restaurant? | I really like this place. They have great food. | I do not know. |
-
-#### 1.4.3 `answer_separate_questions_fewshots.csv`
-This file aids the system in breaking down complex user queries into simpler, individual questions. It requires 'question' (user's question) and 'individual_questions' (decomposed questions).
-
-| question | individual_questions |
-|----------|----------------------|
-| Do they have wine? | Do they have wine? |
-| What are dishes, cocktails and types of wine do you recommend? | What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend? |
-
-#### 1.4.4 `answer_verify_metadata_resp_fewshots.csv`
-This file trains the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
-
-| question | answer | response |
-|----------|--------|----------|
-| Do they have a high chair? | Subway is kid friendly. | No. |
-| Do they serve vodka? | They have a full bar. | No. |
-| Are there gluten free options? | Yes, there are gluten free options. | Yes. |
-
-Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
-
-
-## 2. Constraints Configuration
+## 1. Constraints Configuration
 
 To provide personalized recommendations, the LLM-ConvRec system takes into account user constraints that can be both explicit (provided directly by the user) or implicit (derived from the user's input). For efficient constraint management, it is crucial to set up a `constraints_config.csv` that defines the various constraints and their properties.
 
@@ -214,6 +111,107 @@ Below is an example of how the `constraints_config.csv` file should look:
 
 The configuration of these constraints will allow the system to capture user preferences more accurately, leading to more personalized and relevant recommendations.
 
+## 2.Few shots for prompts
+Few-shot examples are crucial in training the LLM-ConvRec system. They are a set of input-output pairs that demonstrate the type of behavior we want the system to exhibit. In the context of our system, few-shot examples help train the classifiers and provide the necessary prompts for information extraction.
+
+Few-shot learning is a powerful tool in AI because it enables models to understand and perform tasks after seeing just a few examples. This is crucial for conversational systems where a diverse array of utterances are possible. By providing the LLM-ConvRec system with few-shot examples, the model can learn to generate appropriate responses to a wide range of user inputs.
+
+When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
+
+Few-shot examples should be provided in CSV format. Each row in the file should correspond to a unique example, with separate columns for the input and the desired output.
+
+Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
+
+### 2.1 Few-shots for Intent Classification Prompts
+
+For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: 'User Input' and 'Response'. 'User Input' should contain examples of user utterances, while 'Response' indicates whether the input corresponds to the respective intent (True) or not (False).
+
+#### 2.1.1 `accept_classification_fewshots.csv`: 
+This file should contain examples of user utterances that express acceptance of a recommendation.
+
+| User Input | Response |
+|------------|----------|
+| That sounds good, let's go there | True |
+| I don't like that type of food | False |
+
+#### 2.1.2 `reject_classification_fewshots.csv`: 
+This file should contain examples where the user rejects a recommendation.
+
+| User Input | Response |
+|------------|----------|
+| No, I don't want to go to that place | True |
+| Sure, that sounds nice | False |
+
+#### 2.1.3 `inquire_classification_fewshots.csv`: 
+This file should contain examples where the user is inquiring or asking a question.
+
+| User Input | Response |
+|------------|----------|
+| What's on their menu? | True |
+| I think we should try something else | False |
+
+### 2.2 Few-shots for Constraint Updater prompt
+
+The 'constraints_updater_fewshots.csv' file plays an instrumental role in enhancing the personalization of recommendations by keeping track of explicit and implicit user preferences. It's fundamental in identifying and storing the constraints from the user's conversation, categorizing them as hard or soft constraints. Hard constraints are strict requirements, such as a specific location or cuisine type, which must be adhered to. On the other hand, soft constraints denote user preferences that are desirable but not necessarily mandatory, like a preference for a place offering free parking or a patio.
+
+#### 2.2.1 `constraints_updater_fewshots.csv`:
+This file should be structured with five columns: 'user_input', 'old_hard_constraints', 'old_soft_constraints', 'new_hard_constraints', and 'new_soft_constraints'. 
+
+- 'user_input' represents a user's utterance.
+- 'old_hard_constraints' and 'old_soft_constraints' denote the previously identified hard and soft constraints, respectively.
+- 'new_hard_constraints' and 'new_soft_constraints' represent the updated set of hard and soft constraints after processing the user's input.
+
+Here is an example of the structure of this CSV file:
+
+| user_input | old_hard_constraints | old_soft_constraints | new_hard_constraints | new_soft_constraints |
+|------------|----------------------|----------------------|----------------------|----------------------|
+| pizza and pasta | "location=[""Toronto""]" |  | "location=[""toronto""], cuisine type=[""italian""], dish type=[""pizza"", ""pasta""]" |  |
+| does it have a patio? | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking""]" | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking"", ""patio""]" |
+| What kind of menu does I Love Sushi offer? | "location=[""jasper avenue""], cuisine type=[""japanese""]" |  | "location=[""jasper avenue""], cuisine type=[""japanese""]" 
+
+The ability to track and update these evolving constraints allows the system to fine-tune its recommendations, significantly enhancing the overall conversation experience.
+
+
+
+### 2.4 Few-shots for 'Answer' Recommender Action Prompts
+
+This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
+
+#### 2.4.1 `answer_extract_category_fewshots.csv`
+This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (metadata category that corresponds to the user's question).
+
+| input | output |
+|-------|--------|
+| What's their addresses? | address |
+| Can you recommend any dishes or specialties? | none |
+| Can I make a reservation? | HasReservations |
+| What are the meals it's known for? | PopularMeals |
+
+#### 2.4.2 `answer_ir_fewshots.csv`
+This file trains the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
+
+| question | information | answer |
+|----------|-------------|--------|
+| Do they have a slide in the restaurant? | I really like this place. They have great food. | I do not know. |
+
+#### 2.4.3 `answer_separate_questions_fewshots.csv`
+This file aids the system in breaking down complex user queries into simpler, individual questions. It requires 'question' (user's question) and 'individual_questions' (decomposed questions).
+
+| question | individual_questions |
+|----------|----------------------|
+| Do they have wine? | Do they have wine? |
+| What are dishes, cocktails and types of wine do you recommend? | What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend? |
+
+#### 2.4.4 `answer_verify_metadata_resp_fewshots.csv`
+This file trains the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
+
+| question | answer | response |
+|----------|--------|----------|
+| Do they have a high chair? | Subway is kid friendly. | No. |
+| Do they serve vodka? | They have a full bar. | No. |
+| Are there gluten free options? | Yes, there are gluten free options. | Yes. |
+
+Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
 
 ## 3.Hard-Coded Responses
 
