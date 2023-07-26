@@ -77,8 +77,8 @@ After identifying the user's intent, the system updates its internal state. This
 ### 3.Action Classification
 With the updated state, the system then decides the action to take next. This could be any of the following:
 
-- **Request More Information:** The system may ask the user for additional details to refine its understanding or recommendations. (Example: "Can you provide your location?")
-- **Make a Recommendation:** The system might suggest an item that matches the user's stated preferences.
+- **Request Information:** The system may ask the user for additional details to refine its understanding or recommendations. (Example: "Can you provide your location?")
+- **Give Recommendation:** The system might suggest an item that matches the user's stated preferences.
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
 ### 4.Action Generation
