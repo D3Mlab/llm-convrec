@@ -297,10 +297,80 @@ By providing these hard-coded responses, you can control the behavior of the sys
 
 ## 4.filter configs
 
+### 4.1 `filter_config.csv`
+
+The `filter_config.csv` is a configuration file that allows you to specify the filters you want to apply in the system. This CSV file consists of three columns: `type_of_filter`, and `item`.
+
+- `type_of_filter`: This column specifies the type of filter you want to use. Valid types include `"exact word matching"`, `"word in"`, `"value range"`, `"item"`, and `"location"`.
+
+- `key_in_state`: This column lists the keys in the hard constraint that you want to check against `metadata_field`. Depending on the filter type, this could be a list of keys or a single key.
+
+- `metadata_field`: This column contains the field you want to check against `key_in_state`.
+
+Here is an example of what this file might look like:
+
 | type_of_filter | key_in_state | metadata_field |
 | -------------- | ------------ | -------------- |
 | word in | "cuisine type, dish type" | categories |
 | item | recommended_items | name |
+
+
+
+
+Below, we describe several types of filters that can be used in the system. They allow you to filter out items based on various criteria.
+
+### 1.Exact Word Matching Filter
+
+This filter retains an item if any value in `key_in_state` exactly matches a value in `metadata_field`. This filter is case insensitive.
+
+**Type of filter:** `"exact word matching"`
+
+**key_in_state:** List of keys in the hard constraint you want to check against `metadata_field`.
+
+**metadata_field:** The field you want to check against `key_in_state`. The value in this field should be a string, a list-like string (e.g. “A, B, C”), or a list. If it is neither a string nor a list, the item will be retained.
+
+### 2.Word In Filter
+
+This filter retains an item if any value in `key_in_state` is present in `metadata_field`, or vice versa. It also considers plural forms. This filter is case insensitive.
+
+**Type of filter:** `"word in"`
+
+**key_in_state:** List of keys in the hard constraint you want to check against `metadata_field`.
+
+**metadata_field:** The field you want to check against `key_in_state`. The value in this field should be a string, a list-like string (e.g. “A, B, C”), or a list. If it is neither a string nor a list, the item will be retained.
+
+### 3.Value Range Filter
+
+This filter retains an item if any value in `metadata_field` falls within a value range in `key_in_state`, or if any value range in `metadata_field` overlaps with a value range in `key_in_state`.
+
+**Type of filter:** `"value range"`
+
+**key_in_state:** A key in the hard constraint containing the value ranges to check against `metadata_field`. Value ranges should be in the format of "(lower bound value (with units))-(upper bound value (with units))".
+
+**metadata_field:** The field you want to check against `key_in_state`. The value in this field should be a string (either a value or a value range), a list-like string of values (e.g. “A, B, C”), or a list of values. If it is neither a string nor a list, the item will be retained.
+
+### 4.Item Filter
+
+This filter retains an item if it is not in the list of recommended items specified by `key_in_state`.
+
+**Type of filter:** `"item"`
+
+**key_in_state:** A key in the state manager that contains a list of recommended items to check against `metadata_field`.
+
+**metadata_field:** The field to use for checking whether an item is not in the value of `key_in_state`. Must be either `item_id` or `name`.
+
+### Location Filter
+
+This filter retains an item if it is close enough to one of the locations in `constraint_key`. "Close enough" means that the item falls within a circle whose radius is half the diagonal length of the location's boundary (or the `default_max_distance_in_km` if it is larger), with the location at the center.
+
+**constraint_key:** A key in the hard constraint that contains location information.
+
+**metadata_field:** A list with two elements, where the first element is the metadata field containing item latitude, and the second element contains item longitude.
+
+**default_max_distance_in_km:** Default maximum distance in km. If half the diagonal length of the location boundary is smaller than this value, the filter will use the default distance as the circle radius.
+
+**geocoder_wrapper:** The geocoder wrapper to use.
+
 
 
 ## 5.domain specific config
