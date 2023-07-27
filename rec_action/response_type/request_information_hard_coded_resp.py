@@ -22,7 +22,7 @@ class RequestInformationHardCodedBasedResponse(HardCodedBasedResponse):
         """
 
         for status in self._constraint_statuses:
-            response = status.get_response()
+            response = status.get_response_from_status()
             if response is not None:
                 return response
         

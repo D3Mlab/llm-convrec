@@ -8,14 +8,14 @@ class NominatimWrapper(GeocoderWrapper):
     Wrapper for Nominatim geocoder.
     """
 
-    _geocoder_cash: dict[str, Location]
+    _geocoder_history: dict[str, Location]
     _max_attempts: int
 
     def __init__(self, max_attempts: int = 5, mandatory_address_key='road'):
         super().__init__()
         self._geocoder = Nominatim(user_agent='d3m-2023-convrec-demo')
         self._mandatory_address_key = mandatory_address_key
-        self._geocoder_cash = {}
+        self._geocoder_history = {}
         self._max_attempts = max_attempts
 
     def geocode(self, query, **kwargs) -> Location:
@@ -26,20 +26,20 @@ class NominatimWrapper(GeocoderWrapper):
         :param kwargs: other arguments
         :return: location object corresponding to the given query
         """
-        if query not in self._geocoder_cash:
+        if query not in self._geocoder_history:
             attempts = 0
             while attempts < self._max_attempts:
                 try:
-                    self._geocoder_cash[query] = self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True, 'timeout': None}})
+                    self._geocoder_history[query] = self._geocoder.geocode(query, **{**kwargs, **{'addressdetails': True, 'timeout': None}})
                     break
-                except Exception as e:
+                except Exception:
                     attempts += 1
                     time.sleep(attempts * 10)
 
                 if attempts == self._max_attempts:
                     return None
 
-        return self._geocoder_cash[query]
+        return self._geocoder_history[query]
 
     def is_location_specific(self, location: Location) -> bool:
         """
