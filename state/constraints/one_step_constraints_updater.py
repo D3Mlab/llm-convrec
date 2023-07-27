@@ -21,7 +21,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     """
 
     def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict],
-                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger], config: dict):
+                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger],
+                 config: dict):
         self._llm_wrapper = llm_wrapper
         self._constraints_categories = constraints_categories
         self._constraint_keys = [

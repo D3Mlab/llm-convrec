@@ -14,7 +14,8 @@ class PDSearchEngine(SearchEngine):
     """
 
     _embedder: BERT_model
-    _items_id: np.ndarray
+    _review_item_ids: np.ndarray
+    _reviews: np.ndarray
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model):
@@ -41,7 +42,7 @@ class PDSearchEngine(SearchEngine):
         """
         query_embedding = self._embedder.get_tensor_embedding(query)
         similarity_score_review = self._similarity_score_each_review(
-            query_embedding, self._reviews_embedding_matrix)
+            query_embedding)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
         similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
@@ -51,17 +52,12 @@ class PDSearchEngine(SearchEngine):
 
         return list_of_item_id, list_of_review
 
-    @staticmethod
-    def _similarity_score_each_review(query: torch.Tensor, reviews: torch.Tensor) -> torch.Tensor:
+    def _similarity_score_each_review(self, query: torch.Tensor) -> torch.Tensor:
         """
         This function finds and returns a tensor that contains the similarity score for each review
 
         :param query: A tensor containing the query embedding
-        :param reviews: A matrix of all the review embedding
         :return: A pytorch tensor that contains the similarity score for each review
         """
-
-        # Get the similarity score using matrix multiplication
-        similarity_score = torch.matmul(reviews, query)
-
+        similarity_score = torch.matmul(self._reviews_embedding_matrix, query)
         return similarity_score

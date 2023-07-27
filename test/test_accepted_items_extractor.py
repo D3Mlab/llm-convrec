@@ -1,13 +1,16 @@
+import os
+
 import pytest
 import pandas as pd
 
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+from domain_specific_config_loader import DomainSpecificConfigLoader
+from information_retrievers.item.item_loader import ItemLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from state.message import Message
 from user_intent.extractors.accepted_items_extractor import AcceptedItemsExtractor
 
-test_file_path = 'test/accepted_restaurants_extractor_test.csv'
+test_file_path = 'test/accepted_clothing_extractor_test.csv'
+path_to_domain_configs = "domain_specific/configs/clothing_configs"
 test_df = pd.read_csv(test_file_path, encoding='latin1')
 test_data = [
     (
@@ -23,23 +26,27 @@ test_data = [
 ]
 
 
-class TestAcceptedRestaurantsExtractorTest:
+class TestAcceptedItemsExtractor:
 
-    @pytest.fixture(params=[GPTWrapper()])
-    def accepted_restaurants_extractor(self, request):
-        yield AcceptedItemsExtractor(request.param, "restaurants")
+    @pytest.fixture(params=[GPTWrapper(os.environ['OPENAI_API_KEY'])])
+    def accepted_items_extractor(self, request):
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
+        yield AcceptedItemsExtractor(request.param, domain_specific_config_loader.load_domain(),
+                                     domain_specific_config_loader.load_accepted_items_fewshots(),
+                                     domain_specific_config_loader.system_config)
 
-    @pytest.mark.parametrize("utterance,all_mentioned_restaurant_names,recently_mentioned_restaurant_names,accepted_restaurant_names", test_data)
-    def test_extract(self, accepted_restaurants_extractor, utterance, all_mentioned_restaurant_names, recently_mentioned_restaurant_names, accepted_restaurant_names):
-
-        _recently_mentioned_restaurant_names = set(recently_mentioned_restaurant_names)
-        _accepted_restaurant_names = set(accepted_restaurant_names)
-        all_mentioned_restaurants = [RecommendedItem(Item("item_id", {"name": name}), "", []) for name in all_mentioned_restaurant_names]
-        recently_mentioned_restaurants = [restaurant for restaurant in all_mentioned_restaurants if restaurant.get_name() in _recently_mentioned_restaurant_names]
-        accepted_restaurants = [restaurant.get_name() for restaurant in all_mentioned_restaurants if restaurant.get_name() in _accepted_restaurant_names]
+    @pytest.mark.parametrize("utterance,all_mentioned_item_names,recently_mentioned_item_names,accepted_item_names", test_data)
+    def test_extract(self, accepted_items_extractor, utterance, all_mentioned_item_names, recently_mentioned_item_names, accepted_item_names):
+        item_loader = ItemLoader()
+        _recently_mentioned_item_names = set(recently_mentioned_item_names)
+        _accepted_item_names = set(accepted_item_names)
+        all_mentioned_items = [item_loader.create_recommended_item("", {'item_id': '', 'name': name, 'optional': {}}, []) for name in all_mentioned_item_names]
+        recently_mentioned_items = [item for item in all_mentioned_items if item.get_name() in _recently_mentioned_item_names]
+        accepted_items = [item.get_name() for item in all_mentioned_items if item.get_name() in _accepted_item_names]
 
         conv_history = [Message("user", utterance)]
 
-        actual = accepted_restaurants_extractor.extract(conv_history, all_mentioned_restaurants, recently_mentioned_restaurants)
+        actual = accepted_items_extractor.extract(conv_history, all_mentioned_items, recently_mentioned_items)
 
-        assert [restaurant.get_name() for restaurant in actual] == accepted_restaurants
+        assert [item.get_name() for item in actual] == accepted_items
