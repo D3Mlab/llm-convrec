@@ -4,23 +4,28 @@ from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 
 from itertools import chain
-from jinja2 import Environment, FileSystemLoader
-import yaml
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class AcceptRecommendation(UserIntent):
     """
     Class representing the Accept Recommendation user intent.
 
-    :param current_items_extractor: object used to extract the item that the user is referring to from the users input
     :param accepted_items_extractor: object used to extract accepted items
-
+    :param current_items_extractor: object used to extract the item that the user is referring to from the users input
+    :param few_shots: few shot examples used in the prompt
+    :param domain: domain of the recommendation (e.g. "restaurants")
+    :param config: config of the system
     """
 
     _current_items_extractor: CurrentItemsExtractor
     _accepted_items_extractor: AcceptedItemsExtractor
+    _few_shots: list[dict]
+    _domain: str
+    template: Template
 
-    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor, current_items_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str, config: dict):
+    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor, current_items_extractor: CurrentItemsExtractor,
+                 few_shots: list[dict], domain: str, config: dict):
         self._accepted_items_extractor = accepted_items_extractor
         self._current_items_extractor = current_items_extractor
 
@@ -56,14 +61,14 @@ class AcceptRecommendation(UserIntent):
         :return: new updated state
         """
         # Update current item
-        reccommended_items = curr_state.get("recommended_items")
+        recommended_items = curr_state.get("recommended_items")
 
-        if reccommended_items is not None and reccommended_items != []:
+        if recommended_items is not None and recommended_items != []:
             curr_item = self._current_items_extractor.extract(
-                reccommended_items, curr_state.get("conv_history"))
+                recommended_items, curr_state.get("conv_history"))
 
             # If current items are not an empty array then user talking about new item
-            if curr_item != []:
+            if curr_item:
                 curr_state.update("curr_items", curr_item)
 
         if curr_state.get("recommended_items") is not None:

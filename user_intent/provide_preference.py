@@ -6,7 +6,7 @@ from state.status import Status
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 import threading
 from utility.thread_utility import start_thread
 
@@ -18,11 +18,13 @@ class ProvidePreference(UserIntent):
     :param constraints_updater: object used to update constraints based on the user's input
     :param current_items_extractor: object used to extract the items that the user is referring to from the users input
     :param constraint_statuses: list of status objects used to represent the status of constraints
+    :param config: config of the system
     """
-
     _constraints_updater: ConstraintsUpdater
     _current_items_extractor: CurrentItemsExtractor
     _constraint_statuses: list[Status]
+    template: Template
+    enable_threading: bool
 
     def __init__(self, constraints_updater: ConstraintsUpdater,
                  current_items_extractor: CurrentItemsExtractor, constraint_statuses: list[Status], config: dict):
@@ -37,7 +39,6 @@ class ProvidePreference(UserIntent):
             config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
         
         self.enable_threading = config['ENABLE_MULTITHREADING']
-           
 
     def get_name(self) -> str:
         """
@@ -64,8 +65,7 @@ class ProvidePreference(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        
-        if (self.enable_threading):
+        if self.enable_threading:
             curr_item_thread = threading.Thread(
                 target=self._update_curr_item, args=(curr_state,))
 
@@ -76,8 +76,7 @@ class ProvidePreference(UserIntent):
         else:
             self._update_curr_item(curr_state)
             self._constraints_updater.update_constraints(curr_state)
-            
-        
+
         # Update constraint status
         if self._constraint_statuses is not None:
             for constraint in self._constraint_statuses:
@@ -85,23 +84,21 @@ class ProvidePreference(UserIntent):
 
         return curr_state
 
-    def _update_curr_item(self, curr_state: StateManager):
+    def _update_curr_item(self, curr_state: StateManager) -> None:
         """
         Update the current item 
 
         :param curr_state: current state representing the conversation
-        :return: None
         """
-        reccommended_items = curr_state.get("recommended_items")
+        recommended_items = curr_state.get("recommended_items")
 
-        if reccommended_items is not None and reccommended_items != []:
+        if recommended_items is not None and recommended_items != []:
             curr_item = self._current_items_extractor.extract(
-                reccommended_items, curr_state.get("conv_history"))
+                recommended_items, curr_state.get("conv_history"))
 
             # If current items are [] then just keep it the same
-            if curr_item != []:
+            if curr_item:
                 curr_state.update("curr_items", curr_item)
-        
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
@@ -110,8 +107,6 @@ class ProvidePreference(UserIntent):
         :param curr_state: current state representing the conversation
         :return: the prompt in string format
         """
-
         user_input = curr_state.get("conv_history")[-1].get_content()
         prompt = self.template.render(user_input=user_input)
-
         return prompt

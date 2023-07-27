@@ -1,5 +1,5 @@
 from state.state_manager import StateManager
-from typing import Dict, Any
+from typing import Any
 
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
@@ -9,34 +9,49 @@ from rec_action.response_type.recommend_resp import RecommendResponse
 
 from intelligence.llm_wrapper import LLMWrapper
 import logging
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from warning_observer import WarningObserver
 from utility.thread_utility import start_thread
 import threading
 
 logger = logging.getLogger('recommend')
 
+
 class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     """
     Class representing the prompt based response for recommend
+
+    :param llm_wrapper: wrapper of LLM used to generate response
+    :param filter_applier: object used to apply filter items
+    :param information_retriever: object used to retrieve item reviews based on the query
+    :param domain: domain of the recommendation (e.g. restaurants)
+    :param hard_coded_responses: list that defines every hard coded response
+    :param config: config for this system
+    :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
-    _observers: list[WarningObserver]
+
     _llm_wrapper: LLMWrapper
-    _filter_items: FilterApplier
+    _filter_applier: FilterApplier
     _information_retriever: InformationRetrieval
-    _topk_items: str
-    _topk_reviews: str
-    _convert_state_to_query_prompt: str
-    _explain_recommendation_prompt: str
-    _format_recommendation_prompt: str
-    _summarize_review_prompt: str
+    _hard_coded_responses: list[dict]
+    _observers: list[WarningObserver]
+    _topk_items: int
+    _topk_reviews: int
+    _convert_state_to_query_prompt: Template
+    _explain_recommendation_prompt: Template
+    _format_recommendation_prompt: Template
+    _summarize_review_prompt: Template
+    query: str
+    explanation: dict
+    item_ids: list
+    enable_threading: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict], config: dict, observers = None):
-
+    def __init__(self, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
+                 config: dict, observers: list[WarningObserver] = None):
         super().__init__(domain)
         
-        self._filter_items = filter_items
+        self._filter_applier = filter_applier
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
@@ -70,7 +85,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: response to be returned to user
         """
         
-        if (self.enable_threading):
+        if self.enable_threading:
             state_to_query_thread = threading.Thread(
                 target=self._get_query, args=(state_manager,))
 
@@ -84,7 +99,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             self._get_item_ids(state_manager)
 
         try:
-            if (self.enable_threading):
+            if self.enable_threading:
                 explanation_thread = threading.Thread(
                     target=self._get_explanation, args=(state_manager,))
 
@@ -114,8 +129,6 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         Get query from the state
 
         :param state_manager: current state representing the conversation
-        :param ir_params: dict representing the parameters needed for IR
-        :return: None
         """
         self.query = self.convert_state_to_query(state_manager)
         logger.debug(f'Query: { self.query}')
@@ -125,28 +138,21 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         Get filtered embedding matrix
 
         :param state_manager: current state representing the conversation
-        :param ir_params: dict representing the parameters needed for IR
-        :return: None
         """
         self.item_ids = \
-            self._filter_items.apply_filter(state_manager)
+            self._filter_applier.apply_filter(state_manager)
     
     def _get_explanation(self, state_manager: StateManager) -> None:
         """
         Get explanation
 
         :param state_manager: current state representing the conversation
-        :param explanation: set representing the explanation
-        :return: None
         """
         self._get_explanation_for_each_item(state_manager)
 
     def _get_recommendation(self) -> None:
         """
         Get recommendation
-
-        :param ir_params: dict representing the parameters needed for IR
-        :return: None
         """
         self._current_recommended_items = self._information_retriever.get_best_matching_items(self.query, self._topk_items,
                                                                     self._topk_reviews, self.item_ids)
@@ -183,12 +189,15 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         return query
     
     def get_current_recommended_items(self):
+        """
+        Get most recently recommended items
+        """
         return self._current_recommended_items 
 
     def _get_prompt_to_format_recommendation(self):
         """
         Get the prompt to get recommendation text with explanation.
-        :param explanation: explanation of why the items are recommended
+
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
@@ -198,9 +207,10 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         return self._format_recommendation_prompt.render(
             item_names=item_names, explanation=explanation_str, domain=self._domain)
 
-    def _get_explanation_for_each_item(self, state_manager: StateManager) -> dict[Any, str]:
+    def _get_explanation_for_each_item(self, state_manager: StateManager) -> None:
         """
         Returns the explanation on why recommending each item
+
         :param state_manager: current state representing the conversation
         :return: explanation for each item stored in dict where key is item name and value is explanation
         """
@@ -253,6 +263,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                                               hard_constraints: dict, soft_constraints: dict) -> str:
         """
         Get the prompt to get explanation.
+
         :param item_names: item name
         :param metadata: metadata of the item
         :param reviews: reviews of the item
@@ -267,17 +278,21 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     def _get_prompt_to_summarize_review(self, constraints: dict, review: str) -> str:
         """
         Get prompt to summarize a review.
+
         :param constraints: both hard and soft constraints combined in current statemanager
         :param review: a review to be summarized
+        :return: prompt to summarize a review
         """
         constraints_str = ', '.join(
             [f'{key}: {val}' for key, val in constraints.items()])
         return self._summarize_review_prompt.render(constraints=constraints_str, review=review, domain=self._domain)
 
-    def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem):
+    def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem) -> str:
         """
         Get metadata of an item used for recommend
+
         :param recommended_item: recommended item whose metadata to be returned
+        :return: string representation of metadata
         """
         attributes = ', '.join(
             [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items()] +

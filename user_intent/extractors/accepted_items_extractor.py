@@ -1,7 +1,7 @@
 from information_retrievers.item.recommended_item import RecommendedItem
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class AcceptedItemsExtractor:
@@ -10,9 +10,13 @@ class AcceptedItemsExtractor:
 
     :param llm_wrapper: LLM used to extract items
     :param domain: domain of recommendation
+    :param accepted_items_fewshots: few shot examples for the prompt
+    :param config: config of the system
     """
     _llm_wrapper: LLMWrapper
     _domain: str
+    _fewshots: list
+    template: Template
 
     def __init__(self, llm_wrapper: LLMWrapper, domain: str, accepted_items_fewshots: list, config: dict):
         self._llm_wrapper = llm_wrapper
@@ -31,7 +35,7 @@ class AcceptedItemsExtractor:
 
         :param conv_history: past messages
         :param all_mentioned_items: all previously mentioned items
-        :param recently_mentioned_itmes: most recently mentioned items
+        :param recently_mentioned_items: most recently mentioned items
         :return: list of items accepted by the user
         """
         prompt = self._generate_prompt(

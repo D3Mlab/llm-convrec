@@ -9,7 +9,10 @@ from state.message import Message
 
 class PostRejectionAction(RecAction):
     """
-    Class representing Answer recommender action.
+    Class representing recommender action that is classified after user rejecting recommendation.
+
+    :param reject_hard_code_resp: object used to generate response
+    :param priority_score_range: range of priority score for this rec action
     """
     _reject_resp: RejectHardCodedBasedResponse
 
@@ -69,9 +72,6 @@ class PostRejectionAction(RecAction):
         :param state_manager: current state representing the conversation
         :param response: recommender response msg that is returned to the user
         :param **kwargs: misc. arguments 
-
-        :return: none
         """
-
         message = Message("recommender", response)
         state_manager.update_conv_history(message)

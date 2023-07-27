@@ -1,9 +1,12 @@
 from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
 from state.state_manager import StateManager
 
+
 class AcceptHardCodedBasedResponse(HardCodedBasedResponse):
     """
     Class representing the hard code based response for post acceptance action
+
+    :param hard_coded_responses: list that defines every hard coded response
     """
     _hard_coded_responses: list[dict]
             

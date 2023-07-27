@@ -1,6 +1,7 @@
 from state.constraints.constraint_merger import ConstraintMerger
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 
+
 class LocationConstraintMerger(ConstraintMerger):
     def __init__(self):
         super().__init__("location")

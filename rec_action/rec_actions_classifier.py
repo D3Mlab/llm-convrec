@@ -7,13 +7,13 @@ class RecActionsClassifier:
     Abstract class responsible for classifying recommender action for the recommender's response to the most recent
     user's input.
 
-    :param _rec_actions: all possible recommender actions
+    :param rec_actions: all possible recommender actions
     """
 
-    _rec_actions: list[RecAction]
+    rec_actions: list[RecAction]
 
-    def __init__(self, _rec_actions: list[RecAction]):
-        self._rec_actions = _rec_actions
+    def __init__(self, rec_actions: list[RecAction]):
+        self._rec_actions = rec_actions
 
     def classify(self, state_manager: StateManager, k: int = 1) -> list[RecAction]:
         """

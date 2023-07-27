@@ -1,5 +1,6 @@
 from state.state_manager import StateManager
 
+
 class PromptBasedResponse:
     """
     Abstract class representing the prompt based response

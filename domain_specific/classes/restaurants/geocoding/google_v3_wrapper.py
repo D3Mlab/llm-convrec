@@ -2,6 +2,8 @@ from geopy import GoogleV3, Location
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 import os
+import dotenv
+dotenv.load_dotenv()
 
 
 class GoogleV3Wrapper(GeocoderWrapper):
@@ -9,7 +11,7 @@ class GoogleV3Wrapper(GeocoderWrapper):
     """
     Wrapper for GoogleV3 geocoder.
 
-    :param mandatory_address_key: key used to determine if location is specific enough
+    :param mandatory_address_keys: keys used to determine if location is specific enough
     """
 
     def __init__(self, mandatory_address_keys=None):

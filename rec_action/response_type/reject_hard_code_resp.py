@@ -1,9 +1,12 @@
 from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
 from state.state_manager import StateManager
 
+
 class RejectHardCodedBasedResponse(HardCodedBasedResponse):
     """
     Class representing the hard code based response for post rejection action
+
+    :param hard_coded_responses: list that defines every hard coded response
     """
     _hard_coded_responses: list[dict]
             
@@ -17,7 +20,6 @@ class RejectHardCodedBasedResponse(HardCodedBasedResponse):
         :param state_manager: current state representing the conversation
         :return: hard coded recommender's response corresponding to this action
         """
-        
         for response_dict in self._hard_coded_responses:
             if response_dict['action'] == 'PostRejectionAction':
                 return response_dict['response']

@@ -50,16 +50,24 @@ from rec_action.response_type.request_information_hard_coded_resp import Request
 from rec_action.response_type.accept_hard_code_resp import AcceptHardCodedBasedResponse
 from rec_action.response_type.reject_hard_code_resp import RejectHardCodedBasedResponse
 
+
 class ConvRecSystem(WarningObserver):
     """
     Class responsible for setting up and running the conversational recommendation system.
 
     :param config: storing how conv rec system should be setup
+    :param openai_api_key_or_gradio_url: api key for Open AI used to run ChatGPT or gradio URL used to run Alpaca Lora
+    :param user_defined_constraint_mergers: constraint merger created by the user
+    :param user_constraint_status_objects: objects that keep tracks the status of the constraints
+    :param user_defined_filter: filters defined by the user
+    :param user_interface_str: string that determines which user interface to use
     """
 
     is_gpt_retry_notified: bool
+    is_warning_notified: bool
     user_interface: UserInterface
     dialogue_manager: DialogueManager
+    init_msg: str
 
     def __init__(self, config: dict, openai_api_key_or_gradio_url: str,
                  user_defined_constraint_mergers: list = None,
@@ -183,16 +191,17 @@ class ConvRecSystem(WarningObserver):
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         
         # Initialize Rec Action
-        recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,  config, observers=[self])
+        recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain,
+                                                 hard_coded_responses, config, observers=[self])
  
         if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
             recc_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
         
-        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain,
+                                                hard_coded_responses, observers=[self])
         requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
-
 
         rec_actions = [Answer(answer_resp),
                        ExplainPreference(),
@@ -215,10 +224,9 @@ class ConvRecSystem(WarningObserver):
         self.is_warning_notified = False
         self.init_msg = f'Recommender: Hello there! I am a {domain} recommender. Please provide me with some preferences for what you are looking for. For example, {constraints_categories[0]["key"]}, {constraints_categories[1]["key"]}, or {constraints_categories[2]["key"]}. Thanks!'
 
-
     def run(self) -> None:
         """
-        Run the conv rec system.
+        Run the conv rec system. User can quit by typing 'quit' or 'q'.
         """
         self.user_interface.display_to_user(self.init_msg)
         while True:
@@ -248,6 +256,8 @@ class ConvRecSystem(WarningObserver):
     def get_response(self, user_input: str) -> str:
         """
         Respond to the user input
+
+        :param user_input: input from the user
         """
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False

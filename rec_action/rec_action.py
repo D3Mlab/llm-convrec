@@ -4,6 +4,8 @@ from state.state_manager import StateManager
 class RecAction:
     """
     Abstract class representing the recommender action from WWW-21 paper.
+
+    :param priority_score_range: range of priority score for this rec action
     """
     priority_score_range: tuple[float, float]
 
@@ -61,5 +63,4 @@ class RecAction:
 
         :return: none
         """
-
         raise NotImplementedError()

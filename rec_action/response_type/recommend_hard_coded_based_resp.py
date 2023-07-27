@@ -1,17 +1,16 @@
-from state.state_manager import StateManager
+import logging
+from jinja2 import Environment, FileSystemLoader, Template
 
+from state.state_manager import StateManager
 from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
-import logging
-from jinja2 import Environment, FileSystemLoader
-
-
 from rec_action.response_type.recommend_resp import RecommendResponse
 
 logger = logging.getLogger('recommend')
+
 
 class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse):
     """
@@ -20,9 +19,9 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
     _llm_wrapper: LLMWrapper
     _filter_restaurants: FilterApplier
     _information_retriever: InformationRetrieval
-    _topk_items: str
-    _topk_reviews: str
-    _convert_state_to_query_prompt: str
+    _topk_items: int
+    _topk_reviews: int
+    _convert_state_to_query_prompt: Template
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_restaurants: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, config: dict, hard_coded_reponses: list[dict]):
@@ -49,7 +48,7 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
         :param state_manager: current representation of the state
         :return: response to be returned to user
         """
-
+        # TODO: make it work for newest filter
         query = self.convert_state_to_query(state_manager)
 
         logger.debug(f'Query: {query}')

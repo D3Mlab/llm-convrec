@@ -34,5 +34,3 @@ class LLMWrapper:
         :return: the total cost of the LLM so far.
         """
         return self.total_cost
-
-    # TODO: implement interface for log likelihood or perplexity

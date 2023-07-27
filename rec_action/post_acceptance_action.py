@@ -10,7 +10,10 @@ from state.message import Message
 
 class PostAcceptanceAction(RecAction):
     """
-    Class representing Answer recommender action.
+    Class representing recommender action that is classified after user accepting recommendation.
+
+    :param accept_response: object used to generate response
+    :param priority_score_range: range of priority score for this rec action
     """
     _accept_response: AcceptHardCodedBasedResponse
 

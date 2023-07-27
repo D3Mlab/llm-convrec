@@ -22,30 +22,33 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 class DomainSpecificConfigLoader:
 
+    """
+    Class responsible for loading domain specific data.
+    """
+
     def __init__(self):
         with open('system_config.yaml') as f:
             self.system_config = yaml.load(f, Loader=yaml.FullLoader)
 
-    @staticmethod
-    def _load_dict_in_cell(data_string):
-        pattern = r'([^,]+)\s*=\s*\[([^\]]+)\]'
-        matches = re.findall(pattern, data_string)
-        data_dict = {key.strip(): [value.strip().removesuffix('"').removeprefix('"').removesuffix('.').strip().lower() for value in
-                     re.split(''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', lst)] for key, lst in matches}
-        return data_dict
-
     def load_domain(self) -> str:
+        """
+        Load domain name (e.g. restaurants)
+        """
         return self.load_domain_specific_config()['DOMAIN']
 
     def load_constraints_categories(self) -> list[dict]:
-        constraints_category_filename = self.load_domain_specific_config()[
-            'CONSTRAINTS_CATEGORIES']
-
+        """
+        Load constraints categories that defines the constraint details
+        """
+        constraints_category_filename = self.load_domain_specific_config()['CONSTRAINTS_CATEGORIES']
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
-        constraints_df = pd.read_csv(path_to_csv, encoding='latin1',keep_default_na=False)
+        constraints_df = pd.read_csv(path_to_csv, encoding='latin1', keep_default_na=False)
         return constraints_df.to_dict("records")
 
     def load_accepted_items_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in accepted items extractor
+        """
         filename = self.load_domain_specific_config()['ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         accepted_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -65,6 +68,9 @@ class DomainSpecificConfigLoader:
         return accepted_items_fewshots
 
     def load_rejected_items_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in rejected items extractor
+        """
         filename = self.load_domain_specific_config()['REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         rejected_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -84,6 +90,9 @@ class DomainSpecificConfigLoader:
         return rejected_items_fewshots
 
     def load_current_items_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in current items extractor
+        """
         filename = self.load_domain_specific_config()['CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         current_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -97,6 +106,9 @@ class DomainSpecificConfigLoader:
         return current_items_fewshots
 
     def load_constraints_updater_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in constraints updater
+        """
         constraints_updater_fewshot_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_UPDATER_FEWSHOTS']
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_updater_fewshot_filename}'
@@ -118,6 +130,9 @@ class DomainSpecificConfigLoader:
         return constraints_fewshots
 
     def load_answer_extract_category_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in extract category prompt in answer rec action
+        """
         filename = self.load_domain_specific_config()['ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_extract_category_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -131,6 +146,9 @@ class DomainSpecificConfigLoader:
         return answer_extract_category_fewshots
 
     def load_answer_ir_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in prompt for answering question based on information retrieval
+        """
         filename = self.load_domain_specific_config()['ANSWER_IR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_ir_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -145,6 +163,10 @@ class DomainSpecificConfigLoader:
         return answer_ir_fewshots
 
     def load_answer_separate_questions_fewshots(self) -> list[dict]:
+        """
+        Load few shot examples that is used in prompt for dividing up user input containing multiple questions
+        to individual question
+        """
         filename = self.load_domain_specific_config()['ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_separate_questions_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -158,6 +180,9 @@ class DomainSpecificConfigLoader:
         return answer_separate_questions_fewshots
 
     def load_answer_verify_metadata_resp_fewshots(self) -> list[dict]:
+        """
+        Load fewshot example for prompt used to verify whether metadata answering is correct.
+        """
         filename = self.load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_verify_metadata_resp_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -171,16 +196,25 @@ class DomainSpecificConfigLoader:
         ]
         return answer_verify_metadata_resp_fewshots
 
-    def load_domain_specific_config(self):
+    def load_domain_specific_config(self) -> dict:
+        """
+        Load domain_specific_config.yaml.
+        """
         path_to_domain = self._get_path_to_domain()
 
         with open(f'{path_to_domain}/domain_specific_config.yaml') as f:
             return yaml.load(f, Loader=yaml.FullLoader)
 
-    def _get_path_to_domain(self):
+    def _get_path_to_domain(self) -> str:
+        """
+        Load path to folder containing domain specific configs.
+        """
         return self.system_config['PATH_TO_DOMAIN_CONFIGS']
 
     def load_inquire_classification_fewshots(self) -> list[dict]:
+        """
+        Load few shot example used for user intent classification corresponding to inquire user intent
+        """
         filename = self.load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         inquire_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -194,6 +228,9 @@ class DomainSpecificConfigLoader:
         return inquire_classification_fewshots
     
     def load_accept_classification_fewshots(self) -> list[dict]:
+        """
+        Load few shot example used for user intent classification corresponding to accept recommendation user intent
+        """
         filename = self.load_domain_specific_config()['ACCEPT_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         accept_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -207,6 +244,9 @@ class DomainSpecificConfigLoader:
         return accept_classification_fewshots
     
     def load_reject_classification_fewshots(self) -> list[dict]:
+        """
+        Load few shot example used for user intent classification corresponding to reject recommendation user intent
+        """
         filename = self.load_domain_specific_config()['REJECT_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         reject_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -220,6 +260,9 @@ class DomainSpecificConfigLoader:
         return reject_classification_fewshots
 
     def load_filters(self) -> list[Filter]:
+        """
+        Load config details about metadata filtering used in information retrieval
+        """
         filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         filter_config_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -244,10 +287,17 @@ class DomainSpecificConfigLoader:
         return filters_list
 
     def get_path_to_item_metadata(self) -> str:
+        """
+        Load path to data storing metadata for items
+        """
         filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
         return f'{self._get_path_to_domain()}/{filename}'
 
     def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, np.ndarray, torch.Tensor]:
+        """
+        Load data (item id corresponding to each review, review texts and embedding matrix)
+        used for initializing PD Search Engine
+        """
         path_to_domain = self._get_path_to_domain()
         filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
@@ -263,6 +313,10 @@ class DomainSpecificConfigLoader:
         return review_item_ids, reviews, embedding_matrix
 
     def load_data_for_vector_database_search_engine(self) -> tuple[np.ndarray, np.ndarray, VectorDataBase]:
+        """
+        Load data (item id corresponding to each review, review texts and faiss database)
+        for initializing vector database search engine
+        """
         filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
         reviews_df = pd.read_csv(filepath)
@@ -277,7 +331,14 @@ class DomainSpecificConfigLoader:
         reviews = reviews_df["Review"].to_numpy()
         return review_item_ids, reviews, VectorDataBase(database)
 
-    def _create_database(self, reviews_df: pd.DataFrame, path_to_database: str):
+    def _create_database(self, reviews_df: pd.DataFrame, path_to_database: str) -> faiss.Index:
+        """
+        Create or load vector database. If database already exists in path_to_database, load database. Otherwise,
+        create database and save them to path_to_database from embedding matrix or reviews_df.
+
+        :param reviews_df: dataframe containing reviews
+        :param path_to_database: path to vector database
+        """
         # initialize vector database creator
         model_name = "sebastian-hofstaetter/distilbert-dot-tas_b-b256-msmarco"
         bert_model = BERT_model(model_name, model_name)
@@ -301,6 +362,14 @@ class DomainSpecificConfigLoader:
         return database
 
     def _create_embedding_matrix(self, reviews_df: pd.DataFrame, path_to_embedding_matrix: str) -> torch.tensor:
+        """
+        Create or load matrix containing embedding matrix. If embedding matrix already exists in
+        path_to_embedding_matrix, load embedding matrix.
+         Otherwise, create embedding matrix and save them to path_to_database from vector database or reviews_df.
+
+        :param reviews_df: dataframe containing reviews
+        :param path_to_embedding_matrix: path to embedding matrix
+        """
         # initialize embedding matrix creator
         model_name = "sebastian-hofstaetter/distilbert-dot-tas_b-b256-msmarco"
         bert_model = BERT_model(model_name, model_name)
@@ -333,6 +402,9 @@ class DomainSpecificConfigLoader:
         return embedding_matrix
 
     def load_hard_coded_responses(self) -> list[dict]:
+        """
+        Load config that defines hard coded response.
+        """
         filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         responses_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -345,3 +417,19 @@ class DomainSpecificConfigLoader:
             for row in responses_df.to_dict("records")
         ]
         return responses
+
+    @staticmethod
+    def _load_dict_in_cell(data_string: str) -> dict:
+        """
+        load dict in csv cell format as following:
+
+        key1=[value1, value2], key2=[value3]
+
+        :param data_string: string in the csv cell
+        :return: dict loaded from the given string
+        """
+        pattern = r'([^,]+)\s*=\s*\[([^\]]+)\]'
+        matches = re.findall(pattern, data_string)
+        data_dict = {key.strip(): [value.strip().removesuffix('"').removeprefix('"').removesuffix('.').strip().lower() for value in
+                     re.split(''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', lst)] for key, lst in matches}
+        return data_dict

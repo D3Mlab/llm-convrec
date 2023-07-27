@@ -12,12 +12,14 @@ from user_intent.reject_recommendation import RejectRecommendation
 from user_intent.user_intent import UserIntent
 from rec_action.rec_action import RecAction
 
+
 class CommonStateManager(StateManager):
     """
     Implementation of StateManager that uses dictionary.
 
-    :param data: default content of the state as a dictionary
     :param possible_goals: set of user intent that can be goals
+    :param default_goal: default goal stored in the state
+    :param data: default content of the state as a dictionary
     """
 
     _data_original: dict[str, Any]
@@ -26,7 +28,7 @@ class CommonStateManager(StateManager):
     _default_goal_original: UserIntent
     _default_goal: UserIntent
 
-    def __init__(self, possible_goals: set[UserIntent], default_goal: UserIntent = None, data=None):
+    def __init__(self, possible_goals: set[UserIntent], default_goal: UserIntent = None, data: dict[str, Any] = None):
         if data is None:
             data = {}
 
@@ -69,7 +71,6 @@ class CommonStateManager(StateManager):
 
         :param user_intents: user intents corresponding to the most recent user's input 
         """
-
         # move satisfied goals
         unsatisfied_goals = self.get("unsatisfied_goals")
         if unsatisfied_goals is not None:
@@ -108,9 +109,8 @@ class CommonStateManager(StateManager):
         """
         Store the recommender response 
 
-        :param response: recommender response corresponsing to the most recent user input
-        :param **kwargs: additional parameters needed to update the state
-
+        :param response: recommender response corresponding to the most recent user input
+        :param kwargs: additional parameters needed to update the state
         """
 
         rec_actions: list[RecAction] = self.get("current_rec_actions")
@@ -165,6 +165,11 @@ class CommonStateManager(StateManager):
         return False
 
     def __str__(self) -> str:
+        """
+        Return string representation of the state.
+
+        :return: string representation of the state
+        """
         return str(self._data)
 
     def reset_state(self) -> None:

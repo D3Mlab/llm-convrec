@@ -5,10 +5,11 @@ from state.state_manager import StateManager
 class RequestInformationHardCodedBasedResponse(HardCodedBasedResponse):
     """
     Class representing the hard code based response for request information
+
+    :param hard_coded_responses: list that defines every hard coded response
     """
     _hard_coded_responses: list[dict]
 
-            
     def __init__(self, hard_coded_responses: list[dict]):
         self._hard_coded_responses = hard_coded_responses
     

@@ -1,7 +1,7 @@
 from information_retrievers.item.recommended_item import RecommendedItem
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class RejectedItemsExtractor:
@@ -10,10 +10,14 @@ class RejectedItemsExtractor:
 
     :param llm_wrapper: LLM used to extract items
     :param domain: domain of recommendation
+    :param rejected_items_fewshots: few shots we use with prompts
+    :param config: config of the system
     """
 
     _llm_wrapper: LLMWrapper
     _domain: str
+    _fewshots: list
+    template: Template
 
     def __init__(self, llm_wrapper: LLMWrapper, domain: str, rejected_items_fewshots: list, config: dict):
         self._llm_wrapper = llm_wrapper

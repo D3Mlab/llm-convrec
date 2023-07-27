@@ -1,5 +1,6 @@
 from state.state_manager import StateManager
 
+
 class HardCodedBasedResponse:
     """
     Abstract class representing the hard coded based response

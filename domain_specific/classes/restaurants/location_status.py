@@ -10,12 +10,10 @@ class LocationStatus(Status):
     _constraint: str
     _status_types: list[str]
     _state_key: str
-    
+
     def __init__(self):
         super().__init__("location")
-        
         self._geocoder_wrapper = GoogleV3Wrapper()
-
             
     def update_status(self, curr_state: StateManager):
         """

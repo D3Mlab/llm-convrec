@@ -6,12 +6,14 @@ from state.message import Message
 class ExplainPreference(RecAction):
     """
     Class representing Explain Preference recommender action.
+
+    :param priority_score_range: range of priority score for this rec action
     """
 
     def __init__(self, priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         Returns the name of this recommender action.
 
@@ -19,7 +21,7 @@ class ExplainPreference(RecAction):
         """
         return "Explain Preference"
 
-    def get_description(self):
+    def get_description(self) -> str:
         """
         Returns the description of this recommender action.
 
@@ -40,6 +42,7 @@ class ExplainPreference(RecAction):
     def is_response_hard_coded(self) -> bool:
         """
         Returns whether hard coded response exists or not.
+
         :return: whether hard coded response exists or not.
         """
         return False
@@ -51,19 +54,14 @@ class ExplainPreference(RecAction):
         :param state_manager: current state representing the conversation
         :return: score representing how much this is appropriate recommender action for the current conversation.
         """
-        # TODO: Implement this part
         return self.priority_score_range[0] - 1
 
-    def update_state(self, state_manager: StateManager, response: str, **kwargs):
+    def update_state(self, state_manager: StateManager, response: str, **kwargs) -> None:
         """
         Updates the state based off of recommenders response
 
         :param state_manager: current state representing the conversation
         :param response: recommender response msg that is returned to the user
-        :param **kwargs: misc. arguments 
-
-        :return: none
         """
-
         message = Message("recommender", response)
         state_manager.update_conv_history(message)

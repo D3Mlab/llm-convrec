@@ -14,9 +14,9 @@ class Recommend(RecAction):
     """
     Class representing Recommend recommender action.
 
-    :param llm_wrapper: object to make request to LLM
-    :param mandatory_constraints: constraints that state must have in order to recommend
-    :param information_retriever: information retriever that is used to fetch restaurant recommendations
+    :param constraint_statuses: objects that keep tracks the status of the constraints
+    :param recommend_response: object used to generate the response corresponding to this rec action
+    :param config: config of this system
     :param priority_score_range: range of scores for classifying recaction
     """
 
@@ -25,9 +25,9 @@ class Recommend(RecAction):
     _recommend_response: HardCodedBasedResponse | PromptBasedResponse
     _is_hard_coded_response: bool
 
-    def __init__(self,  constraint_statuses: list,
-                 hard_coded_response_list: list[dict], recommend_response: HardCodedBasedResponse | PromptBasedResponse, config: dict,
-                 priority_score_range=(1, 10)):
+    def __init__(self, constraint_statuses: list,
+                 hard_coded_response_list: list[dict], recommend_response: HardCodedBasedResponse | PromptBasedResponse,
+                 config: dict, priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
 
         self._mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_response_list
@@ -41,7 +41,7 @@ class Recommend(RecAction):
         else:
             self._is_hard_coded_response = False
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         Returns the name of this recommender action.
 
@@ -70,6 +70,7 @@ class Recommend(RecAction):
     def is_response_hard_coded(self) -> bool:
         """
         Returns whether hard coded response exists or not.
+
         :return: whether hard coded response exists or not.
         """
         return self._is_hard_coded_response
@@ -100,15 +101,13 @@ class Recommend(RecAction):
                         self.priority_score_range[1] - self.priority_score_range[0])
         return self.priority_score_range[0] - 1
 
-    def update_state(self, state_manager: StateManager, response: str, **kwargs):
+    def update_state(self, state_manager: StateManager, response: str, **kwargs) -> None:
         """
         Updates the state based off of recommenders response
 
         :param state_manager: current state representing the conversation
         :param response: recommender response msg that is returned to the user
-        :param **kwargs: misc. arguments
-
-        :return: none
+        :param kwargs: misc. arguments
         """
         current_recommended_items = self._recommend_response.get_current_recommended_items()
 

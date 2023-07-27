@@ -17,8 +17,8 @@ class DialogueManager:
     :param state_manager: object to keep track of the current state of the conversation
     :param user_intents_classifier: object used to classify user intent
     :param rec_actions_classifier: object used to classify recommender actions
-    :param default_response: default response provided when appropriate response cannot be determined
     :param llm_wrapper: object to make request to LLM
+    :param hard_coded_responses: list that defines all hard coded responses
     """
 
     state_manager: StateManager
@@ -26,9 +26,10 @@ class DialogueManager:
     _rec_actions_classifier: RecActionsClassifier
     _default_response: str
     _llm_wrapper: LLMWrapper
+    _hard_coded_responses: list[dict]
 
     def __init__(self, state_manager: StateManager, user_intents_classifier: UserIntentsClassifier,
-                 rec_actions_classifier: RecActionsClassifier, llm_wrapper: LLMWrapper, hard_coded_responses):
+                 rec_actions_classifier: RecActionsClassifier, llm_wrapper: LLMWrapper, hard_coded_responses: list[dict]):
         self.state_manager = state_manager
         self._user_intents_classifier = user_intents_classifier
         self._rec_actions_classifier = rec_actions_classifier
@@ -39,7 +40,6 @@ class DialogueManager:
         """
         Generate and return recommender's response by classifying user intent, update state,
         classify recommender action, and generating the response.
-        Return self._default_response if any other appropriate response cannot be determined.
 
         :param user_input: current user's input
         :return: response from the recommender
@@ -53,6 +53,7 @@ class DialogueManager:
             self.state_manager)
         logger.debug(f'user_intents={str(user_intents)}')
         if not user_intents:
+            rec_response = ""
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'DefaultResponse':
                     rec_response = response_dict['response']
@@ -85,7 +86,6 @@ class DialogueManager:
         :param rec_actions: list of recommender actions
         :return: response from the recommender
         """
-        
         # Note only works for 1 rec action for now
         for action in rec_actions:
             resp = action.get_response(self.state_manager)            

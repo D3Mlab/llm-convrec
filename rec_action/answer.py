@@ -11,10 +11,9 @@ logger = logging.getLogger('answer')
 class Answer(RecAction):
     """
     Class representing Answer recommender action.
-    :param config: config values from system_config.yaml
-    :param priority_score_range: range of scores for smth TODO: fill in smth
-    :param information_retriever: information retriever that is used to fetch restaurant recommendations
-    :param llm_wrapper: object to make request to LLM
+
+    :param answer_response: object used to generate the response
+    :param priority_score_range: range of priority score for this rec action
     """
     _answer_response: AnswerPromptBasedResponse
 
@@ -63,20 +62,18 @@ class Answer(RecAction):
     def is_response_hard_coded(self) -> bool:
         """
         Returns whether hard coded response exists or not.
+
         :return: whether hard coded response exists or not.
         """
         return False
 
-    def update_state(self, state_manager: StateManager, response: str, **kwargs):
+    def update_state(self, state_manager: StateManager, response: str, **kwargs) -> None:
         """
         Updates the state based off of recommenders response
 
         :param state_manager: current state representing the conversation
         :param response: recommender response msg that is returned to the user
-        :param **kwargs: misc. arguments 
-
-        :return: none
+        :param kwargs: misc. arguments
         """
-
         message = Message("recommender", response)
         state_manager.update_conv_history(message)
