@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 
 
 class VectorDataBase:
@@ -6,15 +6,22 @@ class VectorDataBase:
     This class functions as a vector database
 
     :param storage: Stores the vector database
-    :param review: Review numpy array
     """
+
     _ntotal: int
 
     def __init__(self, storage):
         self._storage = storage
         self._ntotal = self._storage.ntotal
 
-    def find_similarity_vector(self, query: np.ndarray) -> np.ndarray:
+    def find_similarity_vector(self, query: torch.Tensor) -> torch.Tensor:
+        """
+        This function finds the similarity between the query and the vectors in the database
+
+        :param query: query embedding
+
+        :return: The similarity score between the query and each vector in the database in respect to the index.
+        """
         query = query.reshape(-1, self._storage.d)
         D, I = self._storage.search(query, self._storage.ntotal)
         D = D[0]
@@ -24,7 +31,7 @@ class VectorDataBase:
         for i, index in enumerate(I):
             output[index] = D[i]
 
-        output = np.array(output)
+        output = torch.tensor(output)
 
         return output
 

@@ -1,0 +1,68 @@
+utterance 1,utterance 2,utterance 3,old hard constraints,old soft constraints,new hard constraints,new soft constraints
+,,I want recommendation in Toronto,,,"location=[""Toronto""]",
+,,I want italian restaurants,,,"cuisine type=[""Italian""]",
+,,I want the price to be cheap,,,"price range=[""cheap""]",
+,,I don't want to wait more than 15 minutes,,,"wait times=[""15 minutes or less""]",
+,,I am planning to go to dinner with my friends today. Can you recommend some restaurants?,,,"type of meal=[""dinner""]",
+,,I want the restaurant to be formal.,,,"atmosphere=[""formal""]",
+,,I want restaurants with good pizza. ,,,"cuisine type=[""italian""], dish type=[""pizza""]",
+,,I have lactose intolerance,,,"dietary restrictions=[""lactose intolerance""]",
+,,I need free wifi,,,"others=[""free wifi""]",
+,,Can you recommend me French restaurant with moderate price range in Tokyo?,,,"location=[""Tokyo""], cuisine type=[""French""], price range=[""moderate""], ",
+,,"Recommend me some restaurants. I am vegan. If possible, I also prefer having kids menu.",,,"dietary restrictions=[""vegan""]","others=[""kids menu""]"
+,I recommend Moxies and Adega!,Do they have patio?,,,,"others=[""patio""]"
+,How about Alo Restaurant?,Is it romantic?,,,,"atmosphere=[""romantic""]"
+,I recommend Harriet's Rooftop. It has very high rating and famous for having romantic atmosphere.,Does it have gluten free menu?,,,,"dietary restrictions=[""gluten free""]"
+,I recommend Casa Madera.,Is it expensive?,,,,
+,How about House of Gourmet?,Does it have Chinese food?,,,,"cuisine type=[""chinese""]"
+,I highly recommend Estiatorio VOLOS!,Does it have free parking?,,,,"others=[""free parking""]"
+,Could you provide location?,Nashville,,,"location=[""Nashville""]",
+,Could you provide cuisine type?,Indian restaurant,,,"cuisine type=[""indian""]",
+,Could you provide cuisine type?,Maybe indian?,,,"cuisine type=[""indian""]",
+,Is there any additional preferences that you would like to share?,I prefer cozy place,,,,"atmosphere=[""cozy""]"
+,Why do you not like this restaurant?,Because it has no free parking,,,"others=[""free parking""]",
+,I recommend Kinka Izakaya because it has fun and energetic atmosphere. ,I don't like it because I like more quiet place. ,,,"atmosphere=[""quiet""]",
+,I recommend Manchu Wok.,I like it because it's affordable.,,,"price range=[""affordable""]",
+,,I am planning to go to restaurant with my girlfriend tonight.,,,"type of meal=[""dinner""]","atmosphere=[""romantic""]"
+,,I want to go eat this morning,,,"type of meal=[""breakfast""]",
+,I reocmmend Aji Sai Restaurant.,Does it have sushi?,,,,"cuisine type=[""japanese""], dish type=[""sushi""]"
+,I recommend subway.,I like it because I like sandwich,,,"dish type=[""sandwich""]",
+,How about Kinka Izakaya?,I prefer having nice salad,,,,"dish type=[""salad""]"
+,,I want restaurant,,,,
+,How about Washoku Bistro in Edmonton with 4.0 stars out of 82 reviews or Kiwado Japanese Cuisine in Edmonton with 4.0 stars out of 17 reviews?,What kind of menu do they offer?,,,,
+,I recommend Dagu Rice noodle.,What is the price range for dagu rice noodle?,,,,
+,Can you provide the location?,"Tower Road NW & Kingsway NW, Edmonton",,,"location=[""Tower Road NW & Kingsway NW, Edmonton""]",
+,,I want a bubble tea shop that is locally owned located near downtown.,,,"location=[""downtown""], dish type=[""bubble tea""], others=[""locally owned""]",
+,,I want a restaurant near a mall that has short wait times.,,,"location=[""near a mall""], wait times=[""short""]",
+,,I want the price range to be within $30.,,,"price range=[""within $30""]",
+,"Based on your budget of $30, I would recommend Barbecue King City for their affordable prices and generous portions of Chinese BBQ. Another great option would be Dagu Rice Noodle, which also offers delicious food and fantastic bubble tea options at an affordable price point.",What are the best dishes of barbecue king city?,,,,
+,,How many seatings does it have?,,,,
+,,I want a restaurant.,,,,
+,,I want sandwiches,,,"dish type=[""sandwiches""]",
+,,I live on 90th Avenue North West Edmonton,,,"location=[""90th Avenue North West Edmonton""]",
+,,I want moose burgers,,,"dish type=[""moose burgers""]",
+,I recommend BBQ Chicken,Does it have soju?,,,,"dish type=[""soju""]"
+,"Sorry, there is no restaurant near 124 Street, Edmonton.",Edmonton,"location=[""124 street, edmonton""], cuisine type=[""italian""], ",,"location=[""edmonton""], cuisine type=[""italian""], ",
+,can you find me a steakhouse?,,,,"cuisine type=[""steakhouse""]",
+,Corso 32 is an intimate Italian restaurant located downtown ,That sounds great! I love Italian food and handmade pasta. Can you tell me more about the atmosphere at Corso 32?,"cuisine type=[""italian""]",,"cuisine type=[""italian""], dish type=[""handmade pasta""]",
+,I recommend Terroni.,i don't like it,,,,
+,,I want restaurants in Toronto,"location=[""Nashville""]",,"location=[""Toronto""]",
+,Could you provide cuisine type or dish type?,Italian,"location=[""Nashville""]",,"location=[""Nashville""], cuisine type=[""italian""]",
+,How about Mandarin?,I actually want Japanese restaurants,"location=[""Nashville""], cuisine type=[""chinese""]",,"location=[""Nashville""], cuisine type=[""japanese""]",
+,How about Italian Cetre Shop?,I also want good pizza,"location=[""Jasper Avenue, Edmonton""], cuisine type=[""italian""], dish type=[""pasta""]",,"location=[""Jasper Avenue, Edmonton""], cuisine type=[""italian""], dish type=[""pasta"", ""pizza""]",
+,How about Terroni or Canoue?,I want sushi instead.,"location=[""Spadina, Toronto""], cuisine type=[""Italian""], dish type=[""pizza""]",,"location=[""Spadina, Toronto""], cuisine type=[""Japanese""], dish type=[""Sushi""]",
+,I recommend Ajisai restaurant.,Do they have sushi? ,"location=[""Downtown""], cuisine type=[""Japanese""]",,"location=[""Downtown""], cuisine type=[""Japanese""]","dish type=[""Sushi""]"
+,I recommend Oretta Midtown and Wild Chicory!,Do they have patio?,"location=[""Downtown""], cuisine type=[""Japanese""],  dietary restrictions=[""vegan""]","atmosphere=[""quiet"", ""cozy""],","location=[""Downtown""], cuisine type=[""Japanese""],  dietary restrictions=[""vegan""]","atmosphere=[""quiet"", ""cozy""], others=[""patio""]"
+,How about Monkey Sushi and Kawa Sushi?,Give me more options.,"location=[""Downtown""], cuisine type=[""Japanese""],  dietary restrictions=[""vegan""]","atmosphere=[""quiet"", ""cozy""],","location=[""Downtown""], cuisine type=[""Japanese""],  dietary restrictions=[""vegan""]","atmosphere=[""quiet"", ""cozy""],"
+Do they have patio?,"Famoso Italian Pizzaria has patio, but Pizza Pizza doesn��ft. ",Do they have free parking?,"cuisine type=[""Italian""], dish type=[""Pizza""]","others=[""patio""]","cuisine type=[""Italian""], dish type=[""Pizza""]","others=[""patio"", ""free parking""]"
+,How about Touhenboku Ramen?,I don't care about the price range anymore,"price range=[""$10-$20""]",,,
+,How about Touhenboku Ramen?,I don't care about the price range anymore,,"price range=[""$10-$20""]",,
+,How about Alo Restaurant?,Forget everything I said,"location=[""Spadina, Toronto""], cuisine type=[""Thai""], price range=[""moderate""], atmosphere=[""cozy""]",,,
+Do they have romantic atmosphere?,"Yes, they both have romantic atmosphere. ",I want romantic atmosphere,"location=[""Near a mall""], cuisine type=[""French""]","atmosphere=[""romantic""]","location=[""Near a mall""], cuisine type=[""French""], atmosphere=[""romantic""]",
+I want to have bubble tea in Queen Street with wait times less than 15 minutes,"How about Cha Miao and Baroness? However, wait times for both restaurants likely to exceed 15 minutes.","Okay, I'm fine even if the wait times exceeds 15 minutes","location=[""Queen Street""], dish type=[""bubble tea""], wait times=[""less than 15 minutes""]",,"location=[""Queen Street""], dish type=[""bubble tea""]",
+,I recommend Jin Dal Lae!,"Actualy, I want it for dinner.","location=[""Queen's Park""], cuisine type=[""Korean""], type of meal=[""lunch""]",,"location=[""Queen's Park""], cuisine type=[""Korean""], type of meal=[""dinner""]",
+,I recommend  Sorrel Rosedale!,Is it good for family?,"location=[""Eglinton""], cuisine type=[""french""],atmosphere=[""fun""]","atmosphere=[""upscale""]","location=[""Eglinton""], cuisine type=[""french""], atmosphere=[""fun""]","atmosphere=[""upscale"", ""family friendly""]"
+I want to eat shawarma in downtown.,I couldn't find any restaurants with shawarma in downtown.,Forget about the shawarma. I want sushi.,"location=[""Downtown""], cuisine type=[""Middle Eastern""], dish type=[""shawarma""]",,"location=[""Downtown""], cuisine type=[""Japanese""], dish type=[""sushi""]",
+,How about Gino's Pizza?,Give me more options with pizza instead of pasta.,"location=[""Toronto""], cuisine type=[""italian""], dish type=[""pasta""]",,"location=[""Toronto""], cuisine type=[""italian""], dish type=[""pizza""]",
+,I recommend thai express.,Raise the budget to $30,"location=[""Toronto""], cuisine type=[""Thai""], price range=[""less than $20""]",,"location=[""Toronto""], cuisine type=[""Thai""], price range=[""less than $30""]",
+,"I recommend PAI Uptown. However, they don't offer outdoor seating.",I don't mind even if they don't have patio.,"location=[""Toronto""], cuisine type=[""Thai""]","others=[""patio""]","location=[""Toronto""], cuisine type=[""Thai""]",
