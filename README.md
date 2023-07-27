@@ -213,9 +213,9 @@ Here is an example of the structure of this CSV file:
 
 | user_input | old_hard_constraints | old_soft_constraints | new_hard_constraints | new_soft_constraints |
 |------------|----------------------|----------------------|----------------------|----------------------|
-| pizza and pasta | "location=[""Toronto""]" |  | "location=[""toronto""], cuisine type=[""italian""], dish type=[""pizza"", ""pasta""]" |  |
-| does it have a patio? | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking""]" | "location=[""jasper avenue, edmonton""], cuisine type=[""japanese""]" | "price range=[""moderate""], others=[""free parking"", ""patio""]" |
-| What kind of menu does I Love Sushi offer? | "location=[""jasper avenue""], cuisine type=[""japanese""]" |  | "location=[""jasper avenue""], cuisine type=[""japanese""]" 
+| pizza and pasta | "location=["Toronto"]" |  | "location=["toronto"], cuisine type=["italian"], dish type=["pizza", "pasta"]" |  |
+| does it have a patio? | "location=["jasper avenue, edmonton"], cuisine type=["japanese"]" | "price range=["moderate"], others=["free parking"]" | "location=["jasper avenue, edmonton"], cuisine type=["japanese"]" | "price range=["moderate"], others=["free parking", "patio"]" |
+| What kind of menu does I Love Sushi offer? | "location=["jasper avenue"], cuisine type=["japanese"]" |  | "location=["jasper avenue"], cuisine type=["japanese"]" 
 
 The ability to track and update these evolving constraints allows the system to fine-tune its recommendations, significantly enhancing the overall conversation experience.
 
