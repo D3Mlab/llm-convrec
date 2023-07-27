@@ -73,6 +73,9 @@ class ValueRangeFilter(Filter):
         for value_range in constraint_values:
             value_range_list = re.sub(r'[^0-9-.]', '', value_range).split("-")
 
+            if len(value_range_list) != 2:
+                return True
+
             for metadata_field_value in item_metadata_field_values:
                 metadata_field_value = re.sub(r'[^0-9.]', '', metadata_field_value)
 
@@ -95,6 +98,10 @@ class ValueRangeFilter(Filter):
         """
         for value_range in constraint_values:
             value_range_list = re.sub(r'[^0-9-.]', '', value_range).split("-")
+
+            if len(value_range_list) != 2:
+                return True
+
             metadata_value_range_lower = re.sub(r'[^0-9.]', '', item_metadata_field_values[0])
             metadata_value_range_upper = re.sub(r'[^0-9.]', '', item_metadata_field_values[1])
 
