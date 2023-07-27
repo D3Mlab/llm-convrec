@@ -1,35 +1,55 @@
 import pandas as pd
 import pytest
 import yaml
-
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+import os
+from dotenv import load_dotenv
 from intelligence.gpt_wrapper import GPTWrapper
-from rec_action.answer import Answer
+from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
+from information_retrievers.item.item_loader import ItemLoader
 
 
-domain = "restaurants"
-test_file_path = 'test/rec_action/qa_category_extraction_test.csv'
-test_df = pd.read_csv(test_file_path)
-test_data = [
-    (
-        row['utterance'],
-        {key.strip(): "" for key in row['restaurant attribute keys'].split()} if isinstance(row['restaurant attribute keys'], str) else {},
-        row['category']
-    )
-    for row in test_df.to_dict("records")]
+load_dotenv()
 
-class TestAnswer:
+def load_test_data(domain: str) -> list[(str, str)]:
+    """
+    Load test data using the domain name.
 
-    @pytest.fixture(params=[GPTWrapper()])
-    def answer(self, request):
-        with open("system_config.yaml") as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
-        yield Answer(config, request.param, None, None, domain)
+    :param domain: domain name
+    :return: test data which is a list od tuple whose first element has an utterance,
+             the second element has item attribute keys, and the third element has the expected category.
+    """
+    test_file_path = f'test/rec_action/qa_category_extraction_{domain}_test.csv'
+    test_df = pd.read_csv(test_file_path)
+    test_data = [
+        (
+            row['utterance'],
+            {key.strip(): "" for key in row['item attribute keys'].split(",")} if isinstance(row['item attribute keys'],
+                                                                                          str) else {},
+            row['expected category']
+        )
+        for row in test_df.to_dict("records")]
+    return test_data
 
-    @pytest.mark.parametrize('utterance,restaurant_attributes,category', test_data)
-    def test_extract_category_from_input(self, answer, utterance, restaurant_attributes, category) -> None:
-        dictionary_info = {"name": "name",
+
+domain1 = "restaurants"
+test_data1 = load_test_data(domain1)
+
+domain2 = "clothing"
+test_data2 = load_test_data(domain2)
+
+with open("system_config.yaml") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+item_loader = ItemLoader()
+
+
+class TestAnswerExtractCategory:
+
+    @pytest.mark.parametrize('utterance, restaurant_attributes, expected_category', test_data1)
+    def test_extract_category_from_input_restaurant(self, utterance, restaurant_attributes,
+                                                    expected_category) -> None:
+        dictionary_info = {"item_id": "id",
+                           "name": "name",
                            "address": "address",
                            "city": "city",
                            "state": "state",
@@ -42,7 +62,26 @@ class TestAnswer:
                            "optional": restaurant_attributes,
                            "categories": [],
                            "hours": {}}
-        restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
+        restaurant = item_loader.create_recommended_item("", dictionary_info, [""])
+        answer_resp = AnswerPromptBasedResponse(config,gpt_wrapper, None,
+                                                None, "restaurants", None)
+        actual = answer_resp._extract_category_from_input(utterance, restaurant)
+        assert actual == expected_category
 
-        actual = answer._extract_category_from_input(utterance, restaurant)
-        assert actual == category
+    @pytest.mark.parametrize('utterance, clothing_attributes, expected_category', test_data2)
+    def test_extract_category_from_input_clothing(self, utterance, clothing_attributes,
+                                                    expected_category) -> None:
+        dictionary_info = {"item_id": "id",
+                           "name": "name",
+                           "category": "category",
+                           "price": "price",
+                           "brand": "brand",
+                           "rating": 0,
+                           "num_reviews": 0,
+                           "rank": 0,
+                           "optional": clothing_attributes}
+        clothing = item_loader.create_recommended_item("", dictionary_info, [""])
+        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
+                                                None, "clothing", None)
+        actual = answer_resp._extract_category_from_input(utterance, clothing)
+        assert actual == expected_category
