@@ -31,6 +31,4 @@ class VectorDatabaseSearchEngine(SearchEngine):
         :param query: A tensor containing the query embedding
         :return: A pytorch tensor that contains the similarity score for each review
         """
-        similarity_score_review = self._database.find_similarity_vector(query)
-        similarity_score_review = torch.tensor(similarity_score_review)
-        return similarity_score_review
+        return self._database.find_similarity_vector(query)
