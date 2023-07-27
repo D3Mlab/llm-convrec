@@ -1,7 +1,15 @@
-#openai_api_key_or_gradio_url_box {
+#google_api_key_box {
     height: auto !important;
 }
 
-#submit_button {
+#openai_api_key_box {
+    height: auto !important;
+}
+
+#google_api_key_submit_button {
+    height: 100% !important;
+}
+
+#openai_api_key_submit_button {
     height: 100% !important;
 }
