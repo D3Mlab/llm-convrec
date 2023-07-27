@@ -23,7 +23,7 @@ Before you can use the system, you must first ensure that you have Python (versi
 
 Clone the repository from GitHub to your local machine by running the following command in your terminal:
 
-**git clone https://github.com/<your_username>/LLM-ConvRec.git**
+**git clone https://github.com/D3Mlab/llm-convrec.git**
 
 Please replace `<your_username>` with your actual GitHub username.
 
@@ -31,7 +31,7 @@ Please replace `<your_username>` with your actual GitHub username.
 
 Once you've cloned the repository, use the command line to navigate into the project's directory:
 
-**cd LLM-ConvRec**
+**cd llm-convrec**
 
 ### 3. Install the Required Packages
 
@@ -65,7 +65,7 @@ OPENAI_API_KEY='sk1234567890abcdef`.
 
 Please ensure you do not upload your `.env` file to public repositories to keep your OpenAI API key secure.
 
-After this step, you are ready to install the dependencies and run the system.
+
 
 ### 5. Configuring gradio URL
 
@@ -138,8 +138,15 @@ If you're looking to get started quickly, we've already set up two pre-configure
 
 - **Restaurant Domain:** This domain utilizes a dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
 
+  Note that the Restaurant domain is our MAIN domain -- we have spent the most time adjusting different components to ensure its stable behaviour.
+  
+  Due to data available, the location is restricted to Edmonton, Canada.
+
 - **Clothing Domain:** For the Clothing domain, we've integrated Amazon data related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
 
+Here is the link to the Google Colab for a quick start:
+
+https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
 
 ## 1. Constraints Configuration
 
@@ -168,6 +175,7 @@ Few-shot examples are crucial in training the LLM-ConvRec system. They are a set
 
 When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
 
+Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
 Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
 
 ### 2.1 Few-shots for Intent Classification Prompts
@@ -238,6 +246,8 @@ This file helps in mapping user queries to metadata categories. It needs two col
 #### 2.4.2 `answer_ir_fewshots.csv`
 This file instructs the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
 
+Note that the answer "I do not know." to the corresponding prompt is a special one that triggers a default response that is responsible for the situation where the question is not relevant to the information we have access to. Hence, one of the fewshot examples should always be an example question that should be answered with "I do not know.". This is illustrated in the below example too.
+
 | question | information | answer |
 |----------|-------------|--------|
 | Do they have a slide in the restaurant? | I really like this place. They have great food. | I do not know. |
@@ -259,7 +269,7 @@ This file instructs the model to verify if a system-generated response accuratel
 | Do they serve vodka? | They have a full bar. | No. |
 | Are there gluten free options? | Yes, there are gluten free options. | Yes. |
 
-Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
+Again, please note that all these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
 
 ## 3.Hard-Coded Responses
 
@@ -282,13 +292,13 @@ Here are some examples:
 
 | Action | Response | Constraints |
 | --- | --- | --- |
-| PostAcceptanceAction | "Great! If you need any more assistance, feel free to ask." |  |
+| PostAcceptanceAction | Great! If you need any more assistance, feel free to ask. |  |
 | PostRejectionAction | I'm sorry that you did not like the recommendation. Is there anything else I can assist you with? |  |
 | RequestInformation | Could you provide the location? | location |
-| RequestInformation | Could you provide the cuisine type or dish type? | "cuisine type, dish type" |
+| RequestInformation | Could you provide the cuisine type or dish type? | cuisine type, dish type |
 | RequestInformation | Do you have any other preferences? |  |
 | DefaultResponse | Could you provide more information? |  |
-| NoRecommendation | "Sorry, there is no restaurant that matches your constraints." |  |
+| NoRecommendation | Sorry, there is no restaurant that matches your constraints. |  |
 | NoAnswer | Please only ask questions about previously recommended restaurant. |  |
 
 By providing these hard-coded responses, you can control the behavior of the system and ensure that the conversation flow remains on track.
@@ -311,7 +321,7 @@ Here is an example of what this file might look like:
 
 | type_of_filter | key_in_state | metadata_field |
 | -------------- | ------------ | -------------- |
-| word in | "cuisine type, dish type" | categories |
+| word in | cuisine type, dish type | categories |
 | item | recommended_items | name |
 
 
