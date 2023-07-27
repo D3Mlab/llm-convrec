@@ -163,12 +163,12 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         """
         similar_items_metadata = {}
         num_similar_items = 0
-        
+                
         # Get first group of items where there is more than 1 item per group
         for group in current_recommended_items:
             if len(group) > 1:
                 for item in group:
-                    similar_items_metadata[item.get_name()] = item.get_optional_data()
+                    similar_items_metadata[num_similar_items] = item.get_optional_data()
                     num_similar_items +=1
                 break
                         
