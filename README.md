@@ -15,6 +15,36 @@ While unstructured conversational systems like ChatGPT can produce fluid, engagi
 
 The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
 
+
+## Example Conversations:
+
+Demonstration using the restaurant domain:
+
+User: I am looking for Japanese restaurants that serve excellent sushi, preferably in a casual setting.
+
+Recommender: Can you provide the location?
+
+User: Tower Road NW & Kingsway NW
+
+Recommender: How about trying Washoku Bistro for a comfortable and laid-back vibe while enjoying some delicious Japanese sushi? But if you're looking for something quick and easy without sacrificing taste, Tokyo Express is another great option near the same location.
+
+User: What kind of menu do they offer?
+
+Recommender: For Washoku Bistro, they offer a lunch menu with bento boxes and entrées, with limited options. They also have sushi rolls, such as spicy salmon rolls and California rolls. As for Tokyo Express, they have a wide variety of options including bento boxes, sushi combos, feature rolls, tempura, and noodles.
+
+User: Ok, then the first one doesn't seem to match my preference.
+
+Recommender: I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?
+
+User: Does Tokyo Express have a parking lot?
+
+Recommender: Tokyo Express has a parking lot.
+
+User: Great. I will go there then. Thanks!
+
+Recommender: Great! Enjoy your meal! If you need any more assistance, feel free to ask.
+
+
 ## Installation and Running the System
 
 Before you can use the system, you must first ensure that you have Python (version 3.7 or higher) installed on your machine. You will also need pip for installing the necessary Python packages.
@@ -66,23 +96,7 @@ OPENAI_API_KEY='sk1234567890abcdef`.
 Please ensure you do not upload your `.env` file to public repositories to keep your OpenAI API key secure.
 
 
-
-### 5. Configuring gradio URL
-
-1. Open Colab (https://colab.research.google.com/drive/1FfKTLmVV0rQSQWkvoGpiyb1RuK7E1l6k?usp=sharing#scrollTo=9_rc9X75fFT5) and run first 4 and 11th cells
-
-2. Copy the public URL (should be something like this https://8b4a0f826a0deb0ec1.gradio.live)
-
-3. Change GRADIO_URL under the Gradio.live API call cell to the public URL you copied.
-
-You must update this based on the URL listed in the output cell above
-GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live" <- change this URL
-
-3. Add public URL to .env where the key is GRADIO_URL
-   example: GRADIO_URL = "https://8b4a0f826a0deb0ec1.gradio.live"
-
-
-### 6. Run the System
+### 5. Run the System
 If you want to run the restaurant demo, execute following command in the terminal: 
 
 ```
@@ -136,13 +150,13 @@ This system is designed to be flexible and adaptable, allowing you to initialize
 
 If you're looking to get started quickly, we've already set up two pre-configured domains: **Restaurant** and **Clothing**.
 
-- **Restaurant Domain:** This domain utilizes a dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
+- **Restaurant Domain:** This domain utilizes a Yelp dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
 
   Note that the Restaurant domain is our MAIN domain -- we have spent the most time adjusting different components to ensure its stable behaviour.
   
   Due to data available, the location is restricted to Edmonton, Canada.
 
-- **Clothing Domain:** For the Clothing domain, we've integrated Amazon data related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
+- **Clothing Domain:** For the Clothing domain, we've integrated an Amazon dataset related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
 
 Here is the link to the Google Colab for a quick start:
 
@@ -411,33 +425,5 @@ An example of a metadata structure is as follows:
 
 ## 7.User defined classes
   
-
-## Example Conversations:
-
-Demonstration using the restaurant domain:
-
-User: I am looking for Japanese restaurants that serve excellent sushi, preferably in a casual setting.
-
-Recommender: Can you provide the location?
-
-User: Tower Road NW & Kingsway NW
-
-Recommender: How about trying Washoku Bistro for a comfortable and laid-back vibe while enjoying some delicious Japanese sushi? But if you're looking for something quick and easy without sacrificing taste, Tokyo Express is another great option near the same location.
-
-User: What kind of menu do they offer?
-
-Recommender: For Washoku Bistro, they offer a lunch menu with bento boxes and entrées, with limited options. They also have sushi rolls, such as spicy salmon rolls and California rolls. As for Tokyo Express, they have a wide variety of options including bento boxes, sushi combos, feature rolls, tempura, and noodles.
-
-User: Ok, then the first one doesn't seem to match my preference.
-
-Recommender: I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?
-
-User: Does Tokyo Express have a parking lot?
-
-Recommender: Tokyo Express has a parking lot.
-
-User: Great. I will go there then. Thanks!
-
-Recommender: Great! Enjoy your meal! If you need any more assistance, feel free to ask.
 
 
