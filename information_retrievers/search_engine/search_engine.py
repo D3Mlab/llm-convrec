@@ -107,6 +107,10 @@ class SearchEngine:
         """
         values, indices = torch.sort(similarity_score_item, descending = True)
         
+        num_non_zero_value = torch.nonzero(values).size(0)
+        if num_non_zero_value == 0:
+            raise Exception("There are no items that match.")
+        
         topk_indices = torch.full((top_k_items, max_number_similar_items), -1)
         topk_indices[0][0] = indices[0]
         
@@ -133,10 +137,6 @@ class SearchEngine:
                         break
                 
                 topk_indices[num_groups][num_vals] = indices[iteration]
-      
-        num_non_zero_value = torch.nonzero(values).size(0)
-        if num_non_zero_value == 0:
-            raise Exception("There is no restaurants near that location.")
 
         # sometimes indices are a float for whatever reason
         return topk_indices.to(torch.int64)
@@ -166,7 +166,8 @@ class SearchEngine:
             for j in range(len(most_similar_item_index[i])):
                 if int(most_similar_item_index[i][j]) != -1:
                     id_group.append(self._review_item_ids[index_most_similar_review[int(most_similar_item_index[i][j])][0]])
-            list_of_id.append(id_group)
+            if id_group != []:
+                list_of_id.append(id_group)
         return list_of_id
 
     def _get_review(self, most_similar_item_index: torch.Tensor, index_most_similar_review: torch.Tensor) \
@@ -188,6 +189,7 @@ class SearchEngine:
                     for j in index_most_similar_review[index]:
                         item_review_list.append(self._reviews[j])
                     item_group_review_list.append(item_review_list)
-            review_list.append(item_group_review_list)
+            if item_group_review_list != []:
+                review_list.append(item_group_review_list)
         
         return review_list
