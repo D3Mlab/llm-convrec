@@ -34,5 +34,3 @@ class VectorDatabaseSearchEngine(SearchEngine):
         similarity_score_review = self._database.find_similarity_vector(query)
         similarity_score_review = torch.tensor(similarity_score_review)
         return similarity_score_review
-
-

@@ -55,11 +55,23 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
+        self._preference_elicitation_prompt = env.get_template(
+            config['PREFERENCE_ELICITATION_PROMPT'])
         
         self.query = ""
         self.explanation = {}
         self.item_ids = []
         
+        self._enable_preference_elicitation = config["ENABLE_PREFERENCE_ELICITATION"]
+        
+        if self._enable_preference_elicitation:
+            self._unacceptable_similarity_range = config['UNACCEPTABLE_SIMILARITY_SCORE_RANGE']
+            self._max_number_similar_items = config["MAX_NUMBER_SIMILAR_ITEMS"]
+        else:
+            self._unacceptable_similarity_range = 0
+            self._max_number_similar_items = 1
+            
+            
         self.enable_threading = config['ENABLE_MULTITHREADING']
        
     def get(self, state_manager: StateManager) -> str:
@@ -82,20 +94,9 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         else:
             self._get_query(state_manager)
             self._get_item_ids(state_manager)
-
         try:
-            if (self.enable_threading):
-                explanation_thread = threading.Thread(
-                    target=self._get_explanation, args=(state_manager,))
-
-                reccommendation_thread = threading.Thread(
-                    target=self._get_recommendation)
-
-                start_thread(
-                    [explanation_thread, reccommendation_thread])
-            else:
-                self._get_explanation(state_manager)
-                self._get_recommendation()
+            current_recommended_items = self._information_retriever.get_best_matching_items(self.query, self._topk_items,
+                                                                    self._topk_reviews, self.item_ids,  self._unacceptable_similarity_range, self._max_number_similar_items)
                 
         except Exception as e:
             logger.debug(f'There is an error: {e}')
@@ -104,8 +105,17 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                 if response_dict['action'] == 'NoRecommendation':
                     return response_dict['response']
        
-        prompt = self._get_prompt_to_format_recommendation()
-        resp = self._llm_wrapper.make_request(prompt)
+        # If too many similar items
+        if self._has_similar_items(current_recommended_items) and self._enable_preference_elicitation:
+           prompt = self._get_prompt_to_ask_user_q(current_recommended_items, state_manager)
+           resp = self._llm_wrapper.make_request(prompt)
+        else:
+            self._current_recommended_items = [group[0] for group in current_recommended_items]
+                        
+            self._get_explanation_for_each_item(state_manager)
+            
+            prompt = self._get_prompt_to_format_recommendation()
+            resp = self._llm_wrapper.make_request(prompt)
         
         return self._clean_llm_response(resp)
 
@@ -114,7 +124,6 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         Get query from the state
 
         :param state_manager: current state representing the conversation
-        :param ir_params: dict representing the parameters needed for IR
         :return: None
         """
         self.query = self.convert_state_to_query(state_manager)
@@ -125,31 +134,51 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         Get filtered embedding matrix
 
         :param state_manager: current state representing the conversation
-        :param ir_params: dict representing the parameters needed for IR
         :return: None
         """
         self.item_ids = \
             self._filter_items.apply_filter(state_manager)
+            
     
-    def _get_explanation(self, state_manager: StateManager) -> None:
+    def _has_similar_items(self, current_recommended_items: list[list[RecommendedItem]]) -> bool:
         """
-        Get explanation
+        See if the current recommended items are similar or if they are different enough to recommend
 
+        :param current_recommended_items: current recommended items from IR
+        :return: bool
+        """
+        for group in current_recommended_items:
+            if len(group) > 1:
+                return True
+        
+        return False
+        
+    def _get_prompt_to_ask_user_q(self, current_recommended_items: list[list[RecommendedItem]], state_manager: StateManager) -> str:
+        """
+        Get prompt for preference elicitation
+
+        :param current_recommended_items: current recommended items from IR
         :param state_manager: current state representing the conversation
-        :param explanation: set representing the explanation
-        :return: None
+        :return: str
         """
-        self._get_explanation_for_each_item(state_manager)
-
-    def _get_recommendation(self) -> None:
-        """
-        Get recommendation
-
-        :param ir_params: dict representing the parameters needed for IR
-        :return: None
-        """
-        self._current_recommended_items = self._information_retriever.get_best_matching_items(self.query, self._topk_items,
-                                                                    self._topk_reviews, self.item_ids)
+        similar_items_metadata = {}
+        num_similar_items = 0
+                
+        # Get first group of items where there is more than 1 item per group
+        for group in current_recommended_items:
+            if len(group) > 1:
+                for item in group:
+                    similar_items_metadata[num_similar_items] = item.get_optional_data()
+                    num_similar_items +=1
+                break
+                        
+        if (state_manager.get('hard_constraints') is not None):
+            constraints = state_manager.get('hard_constraints')
+        
+        if state_manager.get('soft_constraints') is not None:
+            constraints = constraints | state_manager.get('soft_constraints')
+            
+        return self._preference_elicitation_prompt.render(domain=self._domain, constraints=constraints, num_similar_items=num_similar_items, similar_items_metadata=similar_items_metadata)
     
     @staticmethod
     def _clean_llm_response(resp: str) -> str:
