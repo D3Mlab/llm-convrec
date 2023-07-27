@@ -87,7 +87,7 @@ class SearchEngine:
         """
         values, indices = torch.sort(similarity_score_item, descending = True)
         
-        topk_indices = torch.zeros(top_k_items, max_number_similar_items)
+        topk_indices = torch.full((top_k_items, max_number_similar_items), -1)
         topk_indices[0][0] = indices[0]
         
         item_score = values[0]
@@ -96,19 +96,17 @@ class SearchEngine:
         # number of groups = number of top k items
         # max values (or items) per group 
         num_groups = 0
-        num_vals = 0       
+        num_vals = 0
         
         for iteration in range(1, len(values)):            
             if values[iteration] != 0:
-                if item_score - values[iteration] <= unacceptable_similarity_range:
+                if item_score - values[iteration] <= unacceptable_similarity_range and num_vals <= max_number_similar_items -2:
                     num_vals +=1
+
                 else:
                     item_score = values[iteration]
                     num_groups +=1
                     num_vals = 0
-                    # If it exceeds max number of items per group
-                    if num_vals == max_number_similar_items:
-                        break
                     
                     # If it exceeds max number of items per group
                     if num_groups == top_k_items:
@@ -146,7 +144,7 @@ class SearchEngine:
         for i in range(len(most_similar_item_index)):
             id_group = []
             for j in range(len(most_similar_item_index[i])):
-                if int(most_similar_item_index[i][j]) != 0:
+                if int(most_similar_item_index[i][j]) != -1:
                     id_group.append(self._review_item_ids[index_most_similar_review[int(most_similar_item_index[i][j])][0]])
             list_of_id.append(id_group)
         return list_of_id
@@ -165,7 +163,7 @@ class SearchEngine:
         for i in most_similar_item_index:
             item_group_review_list = []
             for index in i:
-                if index != 0:
+                if index != -1:
                     item_review_list = []
                     for j in index_most_similar_review[index]:
                         item_review_list.append(self._reviews[j])
