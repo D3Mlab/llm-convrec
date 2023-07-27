@@ -1,0 +1,11 @@
+utterance,item attribute keys,expected category
+What's the rating of Terroni?,,stars
+What kind of dishes does it offer? ,,none
+Do they patio?,"OutdoorSeating, BusinessAcceptsCreditCards",OutdoorSeating
+Is Soto Soto loud?,NoiseLevel,NoiseLevel
+Is Soto Soto loud?,"NoiseLevel, BusinessParking, RestaurantsAttire, HasTV, ",NoiseLevel
+Where is Super Sushi Kyo Hin located?,,address
+Is smoking allowed in Bar One?,"Smoking, WiFi, RestaurantsGoodForGroups",Smoking
+I want to know if Subway has free wifi,"BusinessParking, OutdoorSeating",none
+What is the opening hours for Craft Hall?,"RestaurantsPriceRange2, DogsAllowed",hours
+How much review are there?,,review_count

@@ -1,9 +1,10 @@
+import os
+import dotenv
 import pandas as pd
 import pytest
 import re
 
 from intelligence.gpt_wrapper import GPTWrapper
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from state.common_state_manager import CommonStateManager
 from state.constraints.constraints_classifier import ConstraintsClassifier
 from state.constraints.constraints_remover import ConstraintsRemover
@@ -15,6 +16,9 @@ from state.message import Message
 from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
+dotenv.load_dotenv()
+
+
 def load_dict(data_string):
     pattern = r'([^,]+)\s*=\s*\[([^\]]+)\]'
     matches = re.findall(pattern, data_string)
@@ -23,18 +27,25 @@ def load_dict(data_string):
     return data_dict
 
 
-test_file_path = 'test/constraints_updater_test.csv'
-test_df = pd.read_csv(test_file_path, encoding='latin1')
-test_data = [
-    (
-        [row[f'utterance {i}'] for i in range(1, 4) if f'utterance {i}' in row and isinstance(row[f'utterance {i}'], str)],
-        load_dict(row["old hard constraints"]) if isinstance(row["old hard constraints"], str) else None,
-        load_dict(row["old soft constraints"]) if isinstance(row["old soft constraints"], str) else None,
-        load_dict(row["new hard constraints"]) if isinstance(row["new hard constraints"], str) else None,
-        load_dict(row["new soft constraints"]) if isinstance(row["new soft constraints"], str) else None,
-    )
-    for row in test_df.to_dict("records")
-]
+def parse_data(filepath):
+    test_df = pd.read_csv(filepath, encoding='latin1')
+    return [
+        (
+            [row[f'utterance {i}'] for i in range(1, 4) if f'utterance {i}' in row and isinstance(row[f'utterance {i}'], str)],
+            load_dict(row["old hard constraints"]) if isinstance(row["old hard constraints"], str) else None,
+            load_dict(row["old soft constraints"]) if isinstance(row["old soft constraints"], str) else None,
+            load_dict(row["new hard constraints"]) if isinstance(row["new hard constraints"], str) else None,
+            load_dict(row["new soft constraints"]) if isinstance(row["new soft constraints"], str) else None,
+        )
+        for row in test_df.to_dict("records")
+    ]
+
+
+# choose 'restaurant' or 'clothing' to configure which test to run
+domain = 'clothing'
+
+test_data = parse_data(f'test/{domain}_constraints_updater_test.csv')
+path_to_domain_configs = f'domain_specific/configs/{domain}_configs'
 
 
 class TestConstraintsUpdater:
@@ -63,18 +74,17 @@ class TestConstraintsUpdater:
         ]
 
     @pytest.fixture(params=[
-        ('one_step_constraints_updater', GPTWrapper(temperature=0), GoogleV3Wrapper()),
-        ('three_steps_constraints_updater', GPTWrapper(), GoogleV3Wrapper()),
-        ('safe_three_steps_constraints_updater', GPTWrapper(), GoogleV3Wrapper())
+        ('one_step_constraints_updater', GPTWrapper(os.environ['OPENAI_API_KEY'], temperature=0)),
     ])
-    def updater(self, request, constraints, constraint_descriptions, cumulative_constraints):
+    def updater(self, request, constraints, cumulative_constraints):
         domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
         if request.param[0] == 'one_step_constraints_updater':
-            yield OneStepConstraintsUpdater(request.param[1], request.param[2], constraints_categories,
-                                            constraints_fewshots,'restaurants',
-                                            enable_location_merge=True)
+            yield OneStepConstraintsUpdater(request.param[1], constraints_categories,
+                                            constraints_fewshots, domain_specific_config_loader.load_domain(), [],
+                                            domain_specific_config_loader.system_config)
         else:
             constraints_extractor = KeyValuePairConstraintsExtractor(
                 request.param[1], constraints)
