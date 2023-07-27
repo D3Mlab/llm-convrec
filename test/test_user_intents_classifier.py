@@ -12,6 +12,9 @@ from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.message import Message
 import time
 from domain_specific_config_loader import DomainSpecificConfigLoader
+import os
+from dotenv import load_dotenv
+import yaml
 
 
 class TestUserIntentsClassifier:
@@ -24,9 +27,10 @@ class TestUserIntentsClassifier:
     @pytest.mark.parametrize("input_message, expected_intent_1, expected_intent_2, leng",
                              [(row['Input'], row['Output1'], row['Output2'], row['leng']) for index, row in pd.read_csv('test/clothing_user_intent_test.csv', encoding='ISO-8859-1').iterrows()])
     def test_multilabel_user_intents_classifier(self, input_message, expected_intent_1, expected_intent_2, leng):
-        gpt_wrapper = GPTWrapper()
-        
-        ask_for_recommendation = AskForRecommendation()
+        gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+        with open('system_config.yaml') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        ask_for_recommendation = AskForRecommendation(config)
 
         possible_goals = {ask_for_recommendation}
         domain_specific_config_loader = DomainSpecificConfigLoader()
@@ -36,11 +40,11 @@ class TestUserIntentsClassifier:
         accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
         reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
-        user_intents = [Inquire(None, inquire_classification_fewshots,domain),
+        user_intents = [Inquire(None, inquire_classification_fewshots,domain,config),
                         AcceptRecommendation(
-                            None,None, accept_classification_fewshots, domain),
-                        RejectRecommendation(None,None, reject_classification_fewshots, domain)]
-        classifier = MultilabelUserIntentsClassifier(user_intents, gpt_wrapper)
+                            None,None, accept_classification_fewshots, domain,config),
+                        RejectRecommendation(None,None, reject_classification_fewshots, domain,config)]
+        classifier = MultilabelUserIntentsClassifier(user_intents, gpt_wrapper,config)
         message = Message("user", input_message)
         state = CommonStateManager(possible_goals)
         state.update_conv_history(message)
