@@ -1,6 +1,6 @@
 from state.state_manager import StateManager
 from geopy.distance import geodesic
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 from information_retrievers.filter.filter import Filter
 import pandas as pd
 
@@ -18,14 +18,14 @@ class LocationFilter(Filter):
     _constraint_key: str
     _metadata_field: list[str]
     _default_max_distance_in_km: float
-    _geocoder_wrapper: GoogleV3Wrapper
+    _geocoder_wrapper: GeocoderWrapper
 
     def __init__(self, constraint_key: str, metadata_field: list[str],
-                 default_max_distance_in_km: float) -> None:
+                 default_max_distance_in_km: float, geocoder_wrapper: GeocoderWrapper) -> None:
         self._constraint_key = constraint_key
         self._metadata_field = metadata_field
         self._default_max_distance_in_km = default_max_distance_in_km
-        self._geocoder_wrapper = GoogleV3Wrapper()
+        self._geocoder_wrapper = geocoder_wrapper
 
     def filter(self, state_manager: StateManager,
                metadata: pd.DataFrame) -> pd.DataFrame:

@@ -1,10 +1,11 @@
 from state.constraints.constraint_merger import ConstraintMerger
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
+from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
+
 
 class LocationConstraintMerger(ConstraintMerger):
-    def __init__(self):
+    def __init__(self, geocoder_wrapper: GeocoderWrapper):
         super().__init__("location")
-        self._geocoder_wrapper = GoogleV3Wrapper()
+        self._geocoder_wrapper = geocoder_wrapper
 
     def merge_constraint(self, og_constraint_value, new_constraint_vaue) -> list[str]:
         """
