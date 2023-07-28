@@ -32,7 +32,7 @@ The system retains important information about the conversation, ensuring that c
     - [7. User Defined Classes](#7-user-defined-classes)
 
 
-## Example Conversations:
+## Example Conversation:
 
 Demonstration using the restaurant domain:
 
