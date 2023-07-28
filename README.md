@@ -302,6 +302,7 @@ Descriptions of each action:
 - **DefaultResponse**: Used when the system failed to classify an intent and cannot decide on any specific action until the user provides more information.
 - **NoRecommendation**: This response is given when the system cannot find a restaurant that meets the user's constraints.
 - **NoAnswer**: Used when the system cannot answer the user's question with the information it has retrieved.
+- **InitMessage**: This message is given to the user at the beginning. 
 
 Here are some examples:
 
@@ -315,6 +316,7 @@ Here are some examples:
 | DefaultResponse | Could you provide more information? |  |
 | NoRecommendation | Sorry, there is no restaurant that matches your constraints. |  |
 | NoAnswer | Please only ask questions about previously recommended restaurant. |  |
+| InitMessage | Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, location, cuisine type, or dish type. Thanks! |  |
 
 By providing these hard-coded responses, you can control the behavior of the system and ensure that the conversation flow remains on track.
 
