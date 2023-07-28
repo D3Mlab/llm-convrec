@@ -1,0 +1,11 @@
+utterance,item attribute keys,expected category
+What's the rating of the t-shirt?,,rating
+What are the available sizes for this item?,,category
+What is the price of the hat?,,price
+is the pants ranked in a good position?,,rank
+How much review are there?,,num_reviews
+what's the color of the dress shirt?,"color, material",color
+what is that clothing made of?,"color, material",material
+is that shirt for men or women?,,category
+Does the shirt have pockets?,,category
+what is the heel height?,"color, material, details",details

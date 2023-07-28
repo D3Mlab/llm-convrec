@@ -233,13 +233,16 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         try:
             reviews = self._information_retriever.get_best_matching_reviews_of_item(
-                query, self._num_of_reviews_to_return, item_index)[0]
+                query, self._num_of_reviews_to_return, item_index, 0, 1)[0]
         except Exception as e:
             logger.debug(f'There is an error: {e}')
             return "I do not know."
 
+        # flatten list because don't want to do preference elicitation
+        topk_reviews_flattened_list = [group[0] for group in reviews]
+                    
         return self._format_review_resp(
-            question, reviews, curr_mentioned_item)
+            question, topk_reviews_flattened_list, curr_mentioned_item)
 
     def _is_category_valid(self, classified_category: str, recommended_item: RecommendedItem) -> bool:
         """

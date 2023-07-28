@@ -95,8 +95,9 @@ class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse)
         """
 
         recomm_resp = "How about "
-        for item in recommended_items:
-            recomm_resp += f'{item.get_name()} or '
+        for group in recommended_items:
+            for item in group:
+                recomm_resp += f'{item.get_name()} or '
 
         return f'{recomm_resp[:-4]}?'
     

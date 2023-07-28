@@ -1,28 +1,47 @@
 from rec_action.request_information import RequestInformation
 from state.common_state_manager import CommonStateManager
+from state.state_manager import StateManager
+from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
+import pytest
+
+hard_coded_responses = [{'action': 'RequestInformation',
+                         'response': 'Could you provide the cuisine type or dish type?',
+                         'constraints': ['cuisine type', 'dish type']},
+                        {'action': 'RequestInformation',
+                         'response': 'Do you have any other preferences?',
+                         'constraints': []}]
+request_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
+request_info = RequestInformation([], hard_coded_responses, request_info_resp)
+
+state_manager1 = CommonStateManager(set())
+state_manager1.update("hard_constraints", {"cuisine type": ["dummy_value"], "dish type": ["dummy_value"]})
+
+state_manager2 = CommonStateManager(set())
+state_manager2.update("hard_constraints", {"cuisine type": ["dummy_value"]})
+
+state_manager3 = CommonStateManager(set())
+state_manager3.update("hard_constraints", {"dish type": ["dummy_value"]})
 
 
 class TestRequestInformation:
 
-    def test_get_hard_coded_response_no_mandatory_constraints(self) -> None:
+    def test_get_response_with_no_constraints_provided(self) -> None:
         """
         Test whether get_hard_coded_response returns correct response when mandatory constraints
         isn't filled.
         """
-        ri = RequestInformation(None, mandatory_constraints=["dummy1", "dummy2"])
         state_manager = CommonStateManager(set())
         state_manager.update("hard_constraints", {})
-        expected = "Can you provide the dummy1?"
-        assert ri.get_hard_coded_response(state_manager) == expected
+        expected = "Could you provide the cuisine type or dish type?"
+        assert request_info.get_response(state_manager) == expected
 
-    def test_get_hard_coded_response_with_mandatory_constraints(self) -> None:
+    @pytest.mark.parametrize("state_manager", [state_manager1, state_manager2, state_manager3])
+    def test_get_response_with_mandatory_constraints_provided(self, state_manager: StateManager) -> None:
         """
         Test whether get_hard_coded_response returns correct response when mandatory constraints
         is filled.
+
+        :param state_manager: current state
         """
-        ri = RequestInformation(None, mandatory_constraints=["dummy1", "dummy2"])
-        state_manager = CommonStateManager(set())
-        state_manager.update("hard_constraints", {"dummy1": ["dummy_value"], "dummy2": ["dummy_value"]})
-        expected = "Are there any additional preferences, requirements, or specific features you would like the " \
-                   "restaurant to have?"
-        assert ri.get_hard_coded_response(state_manager) == expected
+        expected = "Do you have any other preferences?"
+        assert request_info.get_response(state_manager) == expected
