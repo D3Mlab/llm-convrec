@@ -179,6 +179,13 @@ Here is the link to the Google Colab for a quick start:
 
 https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
 
+### Setting Up Customized Domain
+The domain specific files reside in the domain_specific folder, where there are two subfolders: classes and configs.
+1. The classes folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
+2. The config folder stores all of the domain specific configs necessary in order to make a recommendation.
+
+You must create a folder representing the new domain in both the config and classes folders. For example, we named the restaurant domain folder restaurant_configs in the config folder and restaurants in the classes folder.
+
 ## 1. Constraints Configuration
 
 To provide personalized recommendations, the LLM-ConvRec system takes into account user constraints that can be both explicit (provided directly by the user) or implicit (derived from the user's input). For efficient constraint management, it is crucial to set up a `constraints_config.csv` that defines the various constraints and their properties.
@@ -448,16 +455,17 @@ An example of a review file structure is as follows:
     
 
 ## 7.User defined classes
+User defined classes are used to implement domain specific tasks, for example, filtering recommendations based off of specific constraints or metadata. You can create your own implementations of the following classes
 
-### Constraint Merger:
+### Constraint Merger (state/constraints/constraint_merger.py):
 Defines special way to merge constraint 
-E.g. Location Merger merges two location using geocoding 
+E.g. Location Merger merges two location using geocoding
 
-Status: 
+### Status (state/status.py): 
 Allows constraint to have custom status 
 E.g. location can be “invalid”, “valid”, or “specific”
 
-Filter:
+### Filter:
 Defines a way of filtering item based on the constraints and metadata 
 
 ### Location Filter
