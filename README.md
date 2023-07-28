@@ -438,7 +438,7 @@ In addition, the metadata must have an "optional" key where the value contains t
 An example of a metadata structure is as follows:
 
 
-{
+
     {
     "item_id": "001",
     "name": "Brits Fish & Chips",
@@ -447,7 +447,7 @@ An example of a metadata structure is as follows:
     "categories": ["Fish & Chips", "Restaurants"],
     "optional": {"GoodForKids": "True", "OutdoorSeating": "False"}
     }...
-}
+
 
 ### 5.2 Review data
 
