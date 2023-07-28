@@ -249,7 +249,7 @@ The ability to track and update these evolving constraints allows the system to 
 This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
 
 #### 2.4.1 `answer_extract_category_fewshots.csv`
-This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (metadata category that corresponds to the user's question).
+This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (one of the metadata field or one of the key in optional field).
 
 | input | output |
 |-------|--------|
@@ -411,7 +411,9 @@ The LLM-ConvRec system requires two main types of data: metadata and reviews.
 
 ### 6.1 Metadata
 
-The metadata must include name and unique item identifiers (item_id) as keys. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
+The metadata must include name and unique item identifiers (item_id) as keys. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. 
+
+In addition, the metadata must have an "optional" key where the value contains the key-value pairs of optional categories.
 
 An example of a metadata structure is as follows:
 
@@ -421,7 +423,9 @@ An example of a metadata structure is as follows:
     "name": "Brits Fish & Chips",
     "address": "6940 77 Street NW",
     "city": "Edmonton",
-    "categories": ["Fish & Chips", "Restaurants"]
+    "categories": ["Fish & Chips", "Restaurants"],
+    "optional": {"GoodForKids": "True", "OutdoorSeating": "False"}
+    
 }
 
 ### 6.2 Review data
