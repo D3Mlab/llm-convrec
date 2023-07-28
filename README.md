@@ -163,7 +163,9 @@ The response is not only contextually in sync with the ongoing dialogue, but als
 ## Domain Initialization and Customization
 This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs. 
 
-### Quick Start
+
+
+## Quick Start
 
 If you're looking to get started quickly, we've already set up two pre-configured domains: **Restaurant** and **Clothing**.
 
@@ -179,12 +181,14 @@ Here is the link to the Google Colab for a quick start:
 
 https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
 
-### Setting Up Customized Domain
-The domain specific files reside in the domain_specific folder, where there are two subfolders: classes and configs.
-1. The classes folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
-2. The config folder stores all of the domain specific configs necessary in order to make a recommendation.
+## Setting Up Customized Domain
+The domain specific files reside in the domain_specific folder, where there are two subfolders: `classes` and `configs`.
+1. The `classes` folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
+2. The `config` folder stores all of the domain specific configs necessary in order to make a recommendation.
 
-You must create a folder representing the new domain in both the config and classes folders. For example, we named the restaurant domain folder restaurant_configs in the config folder and restaurants in the classes folder.
+You must create a folder representing the new domain in both the `config` and `classes` folders. For example, we named the restaurant domain folders `restaurant_configs` (`domain_specific/configs/restaurant_configs`) and restaurants (`domain_specific/classes/restaurants`).
+
+Note that key files should be stored in domain_specific folder, with all CSV and yaml files being stored in `domain_specific/configs/<YOUR_DOMAIN_CONFIG_FOLDER>`.
 
 ## 1. Constraints Configuration
 
@@ -217,9 +221,11 @@ When providing few-shot examples, make sure that they are representative of the 
 Please note that these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
 Remember, the quality of the few-shot examples can significantly impact the performance of the system. Carefully curating these examples will lead to a more responsive and accurate conversational system.
 
+
 ### 2.1 Few-shots for Intent Classification Prompts
 
 For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: 'User Input' and 'Response'. 'User Input' should contain examples of user utterances, while 'Response' indicates whether the input corresponds to the respective intent (True) or not (False).
+
 
 #### 2.1.1 `accept_classification_fewshots.csv`: 
 This file should contain examples of user utterances that express acceptance of a recommendation.
@@ -346,7 +352,8 @@ By providing these hard-coded responses, you can control the behavior of the sys
 
 
 
-## 4.filter configs
+
+## 4. Filter Configs
 
 ### 4.1 `filter_config.csv`
 
@@ -411,7 +418,7 @@ This filter retains an item if it is not in the list of recommended items specif
 **metadata_field:** The field to use for checking whether an item is not in the value of `key_in_state`. Must be either `item_id` or `name`.
 
 
-## 5.domain specific config
+## 5.Domain Specific Config
 - domain name
 - file path to files, shouldnt change normally
 - EXPLANATION_METADATA_BLACKLIST: all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage
@@ -455,7 +462,8 @@ An example of a review file structure is as follows:
     
 
 ## 7.User defined classes
-User defined classes are used to implement domain specific tasks, for example, filtering recommendations based off of specific constraints or metadata. You can create your own implementations of the following classes
+User defined classes are used to implement domain specific tasks, for example, merging constraints in a specialized way. 
+You can create your own implementations of the following classes:
 
 ### Constraint Merger (state/constraints/constraint_merger.py):
 Defines special way to merge constraint 
@@ -465,7 +473,7 @@ E.g. Location Merger merges two location using geocoding
 Allows constraint to have custom status 
 E.g. location can be “invalid”, “valid”, or “specific”
 
-### Filter:
+### Filter ():
 Defines a way of filtering item based on the constraints and metadata 
 
 ### Location Filter
