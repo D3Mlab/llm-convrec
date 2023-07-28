@@ -38,6 +38,8 @@ class DomainSpecificConfigLoader:
     def load_constraints_categories(self) -> list[dict]:
         """
         Load constraints categories that defines the constraint details
+
+        :return: constraints categories that defines the constraint details
         """
         constraints_category_filename = self.load_domain_specific_config()['CONSTRAINTS_CATEGORIES']
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
@@ -47,6 +49,8 @@ class DomainSpecificConfigLoader:
     def load_accepted_items_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in accepted items extractor
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -69,6 +73,8 @@ class DomainSpecificConfigLoader:
     def load_rejected_items_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in rejected items extractor
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -91,6 +97,8 @@ class DomainSpecificConfigLoader:
     def load_current_items_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in current items extractor
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -107,6 +115,8 @@ class DomainSpecificConfigLoader:
     def load_constraints_updater_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in constraints updater
+
+        :return: list of few shot examples
         """
         constraints_updater_fewshot_filename = self.load_domain_specific_config()[
             'CONSTRAINTS_UPDATER_FEWSHOTS']
@@ -131,6 +141,8 @@ class DomainSpecificConfigLoader:
     def load_answer_extract_category_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in extract category prompt in answer rec action
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -147,6 +159,8 @@ class DomainSpecificConfigLoader:
     def load_answer_ir_fewshots(self) -> list[dict]:
         """
         Load few shot examples that is used in prompt for answering question based on information retrieval
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ANSWER_IR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -165,6 +179,8 @@ class DomainSpecificConfigLoader:
         """
         Load few shot examples that is used in prompt for dividing up user input containing multiple questions
         to individual question
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -181,6 +197,8 @@ class DomainSpecificConfigLoader:
     def load_answer_verify_metadata_resp_fewshots(self) -> list[dict]:
         """
         Load fewshot example for prompt used to verify whether metadata answering is correct.
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -198,6 +216,8 @@ class DomainSpecificConfigLoader:
     def load_domain_specific_config(self) -> dict:
         """
         Load domain_specific_config.yaml.
+
+        :return: dict representation of domain_specific_config.yaml.
         """
         path_to_domain = self._get_path_to_domain()
 
@@ -207,12 +227,16 @@ class DomainSpecificConfigLoader:
     def _get_path_to_domain(self) -> str:
         """
         Load path to folder containing domain specific configs.
+
+        :return: path to folder containing domain specific configs.
         """
         return self.system_config['PATH_TO_DOMAIN_CONFIGS']
 
     def load_inquire_classification_fewshots(self) -> list[dict]:
         """
         Load few shot example used for user intent classification corresponding to inquire user intent
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -229,6 +253,8 @@ class DomainSpecificConfigLoader:
     def load_accept_classification_fewshots(self) -> list[dict]:
         """
         Load few shot example used for user intent classification corresponding to accept recommendation user intent
+
+        :return: list of few shot examples
         """
         filename = self.load_domain_specific_config()['ACCEPT_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -261,6 +287,8 @@ class DomainSpecificConfigLoader:
     def load_filters(self) -> list[Filter]:
         """
         Load config details about metadata filtering used in information retrieval
+
+        :return: list of filters to apply
         """
         filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -288,6 +316,8 @@ class DomainSpecificConfigLoader:
     def load_item_metadata(self) -> pd.DataFrame:
         """
         Load metadata of all items
+
+        :return: metadata of all items
         """
         filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
         path_to_items_metadata = f'{self._get_path_to_domain()}/{filename}'
@@ -297,6 +327,8 @@ class DomainSpecificConfigLoader:
         """
         Load data (item id corresponding to each review, review texts and embedding matrix)
         used for initializing PD Search Engine
+
+        :return: data used for initializing pd search engine
         """
         path_to_domain = self._get_path_to_domain()
         filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
@@ -316,6 +348,8 @@ class DomainSpecificConfigLoader:
         """
         Load data (item id corresponding to each review, review texts and faiss database)
         for initializing vector database search engine
+
+        :return: data used for initializing vector database search engine
         """
         filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
@@ -338,6 +372,7 @@ class DomainSpecificConfigLoader:
 
         :param reviews_df: dataframe containing reviews
         :param path_to_database: path to vector database
+        :return: FAISS database
         """
         # initialize vector database creator
         model_name = "sebastian-hofstaetter/distilbert-dot-tas_b-b256-msmarco"
@@ -369,6 +404,7 @@ class DomainSpecificConfigLoader:
 
         :param reviews_df: dataframe containing reviews
         :param path_to_embedding_matrix: path to embedding matrix
+        :return: embedding matrix
         """
         # initialize embedding matrix creator
         model_name = "sebastian-hofstaetter/distilbert-dot-tas_b-b256-msmarco"
@@ -404,6 +440,8 @@ class DomainSpecificConfigLoader:
     def load_hard_coded_responses(self) -> list[dict]:
         """
         Load config that defines hard coded response.
+
+        :return: config that defines hard coded response.
         """
         filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
@@ -417,6 +455,14 @@ class DomainSpecificConfigLoader:
             for row in responses_df.to_dict("records")
         ]
         return responses
+
+    def load_explanation_metadata_blacklist(self) -> list[str]:
+        """
+        load and return list of metadata keys that should be IGNORED when explanation recommended item
+
+        :return: list of metadata keys that should be IGNORED when explanation recommended item
+        """
+        return self.load_domain_specific_config()['EXPLANATION_METADATA_BLACKLIST']
 
     @staticmethod
     def _load_dict_in_cell(data_string: str) -> dict:

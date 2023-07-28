@@ -26,6 +26,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
     :param hard_coded_responses: list that defines every hard coded response
     :param config: config for this system
     :param constraint_categories: list of dictionaries that defines the constraint details
+    :param explanation_metadata_blacklist: list of metadata keys that should be ignored in recommendation explanation
     :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
 
@@ -33,6 +34,8 @@ class RecommendPromptBasedResponse(RecommendResponse):
     _filter_applier: FilterApplier
     _information_retriever: InformationRetrieval
     _hard_coded_responses: list[dict]
+    _constraint_categories: list[dict]
+    _explanation_metadata_blacklist: list[str]
     _observers: list[WarningObserver]
     _topk_items: int
     _topk_reviews: int
@@ -47,15 +50,20 @@ class RecommendPromptBasedResponse(RecommendResponse):
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
-                 config: dict, constraint_categories: list[dict], observers: list[WarningObserver] = None):
+                 config: dict, constraint_categories: list[dict], explanation_metadata_blacklist: list[str] = None,
+                 observers: list[WarningObserver] = None):
         super().__init__(domain)
-        
+
+        if explanation_metadata_blacklist is None:
+            explanation_metadata_blacklist = []
+
         self._filter_applier = filter_applier
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
         self._hard_coded_responses = hard_coded_responses
         self._constraint_categories = constraint_categories
+        self._explanation_metadata_blacklist = explanation_metadata_blacklist
 
         self._topk_items = int(config["TOPK_ITEMS"])
         self._topk_reviews = int(config["TOPK_REVIEWS"])
@@ -270,7 +278,6 @@ class RecommendPromptBasedResponse(RecommendResponse):
                 prompt = self._get_prompt_to_explain_recommendation(item_name, metadata, reviews,
                                                                     filtered_hard_constraints,
                                                                     filtered_soft_constraints)
-
                 explanation[item_name] = self._llm_wrapper.make_request(
                     prompt)
             except Exception as e:
@@ -339,8 +346,10 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :return: string representation of metadata
         """
         attributes = ', '.join(
-            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items()] +
-            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items()])
+            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items() if key not in
+             self._explanation_metadata_blacklist] +
+            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items() if key not in
+             self._explanation_metadata_blacklist])
         return attributes
     
     def _notify_observers(self) -> None:

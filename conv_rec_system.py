@@ -154,6 +154,7 @@ class ConvRecSystem(WarningObserver):
         recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain,
                                                  hard_coded_responses, config,
                                                  domain_specific_config_loader.load_constraints_categories(),
+                                                 domain_specific_config_loader.load_explanation_metadata_blacklist(),
                                                  observers=[self])
 
         answer_resp = AnswerPromptBasedResponse(
