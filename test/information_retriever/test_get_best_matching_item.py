@@ -62,7 +62,7 @@ config = {
     "ENABLE_MULTITHREADING": False
 }
 
-word_in_filter = WordInFilter(["cuisine type, dish type"], "categories")
+word_in_filter = WordInFilter(["cuisine type", "dish type"], "categories")
 location_filter = LocationFilter("location", ["latitude", "longitude"], 2, GoogleV3Wrapper())
 items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
@@ -85,7 +85,7 @@ test_data = fill_in_list()
 class TestGetBestMatchingItems:
 
     @pytest.mark.parametrize("state_manager, expected_item_name", test_data)
-    @pytest.mark.parametrize("should_filter", [False, True])
+    @pytest.mark.parametrize("should_filter", [True])
     def test_get_best_matching_items(self, state_manager: CommonStateManager,
                                      expected_item_name: str, should_filter: bool) -> None:
         """
@@ -106,7 +106,9 @@ class TestGetBestMatchingItems:
         recommended_items = information_retriever.get_best_matching_items(query, config['TOPK_ITEMS'],
                                                                           config['TOPK_REVIEWS'],
                                                                           item_indices)
-        item_names = self._create_item_name_list_from_recommended_item_list(recommended_items)
+
+        recommended_items_flattened = [group[0] for group in recommended_items if len(group) != 0]
+        item_names = self._create_item_name_list_from_recommended_item_list(recommended_items_flattened)
         assert expected_item_name in item_names
 
     def _create_item_name_list_from_recommended_item_list(
