@@ -14,7 +14,7 @@ from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from state.message import Message
 from domain_specific_config_loader import DomainSpecificConfigLoader
-
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 dotenv.load_dotenv()
 
@@ -42,7 +42,7 @@ def parse_data(filepath):
 
 
 # choose 'restaurant' or 'clothing' to configure which test to run
-domain = 'clothing'
+domain = 'restaurant'
 
 test_data = parse_data(f'test/{domain}_constraints_updater_test.csv')
 path_to_domain_configs = f'domain_specific/configs/{domain}_configs'
@@ -75,6 +75,7 @@ class TestConstraintsUpdater:
 
     @pytest.fixture(params=[
         ('one_step_constraints_updater', GPTWrapper(os.environ['OPENAI_API_KEY'], temperature=0)),
+        ('one_step_constraints_updater', AlpacaLoraWrapper(os.environ['GRADIO_URL'], temperature=0))
     ])
     def updater(self, request, constraints, cumulative_constraints):
         domain_specific_config_loader = DomainSpecificConfigLoader()
