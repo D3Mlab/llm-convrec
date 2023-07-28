@@ -1,4 +1,4 @@
-from rec_action.response_type.prompt_based_resp import PromptBasedResponse
+from rec_action.response_type.response import Response
 from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
@@ -17,7 +17,7 @@ from string import ascii_letters
 logger = logging.getLogger('answer')
 
 
-class AnswerPromptBasedResponse(PromptBasedResponse):
+class AnswerPromptBasedResponse(Response):
     """
     Class representing the prompt based response for answer
 

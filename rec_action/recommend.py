@@ -1,11 +1,10 @@
 from rec_action.rec_action import RecAction
+from rec_action.response_type.recommend_resp import RecommendResponse
 from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
 from state.message import Message
 import logging
 from state.status import Status
-from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
-from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 
 logger = logging.getLogger('recommend')
 
@@ -22,11 +21,11 @@ class Recommend(RecAction):
 
     _mandatory_constraints: list[list[str]]
     _constraint_statuses: list[Status]
-    _recommend_response: HardCodedBasedResponse | PromptBasedResponse
+    _recommend_response: RecommendResponse
     _is_hard_coded_response: bool
 
     def __init__(self, constraint_statuses: list,
-                 hard_coded_response_list: list[dict], recommend_response: HardCodedBasedResponse | PromptBasedResponse,
+                 hard_coded_response_list: list[dict], recommend_response: RecommendResponse,
                  config: dict, priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
 
@@ -120,13 +119,13 @@ class Recommend(RecAction):
         if recommended_restaurants is None:
             recommended_restaurants = []
 
-        if current_recommended_items != []:
+        if current_recommended_items:
             recommended_restaurants.append(
                 current_recommended_items)
 
             state_manager.update("recommended_items",
                                  recommended_restaurants)
 
-            # Store new currrent restaurants
+            # Store new current restaurants
             state_manager.update("curr_items",
                                  current_recommended_items)

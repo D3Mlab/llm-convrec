@@ -1,10 +1,8 @@
 from state.state_manager import StateManager
-from typing import Any
 
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
-from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 from rec_action.response_type.recommend_resp import RecommendResponse
 
 from intelligence.llm_wrapper import LLMWrapper
@@ -17,7 +15,7 @@ import threading
 logger = logging.getLogger('recommend')
 
 
-class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
+class RecommendPromptBasedResponse(RecommendResponse):
     """
     Class representing the prompt based response for recommend
 

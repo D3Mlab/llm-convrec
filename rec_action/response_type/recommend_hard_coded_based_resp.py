@@ -2,7 +2,6 @@ import logging
 from jinja2 import Environment, FileSystemLoader, Template
 
 from state.state_manager import StateManager
-from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
@@ -12,7 +11,7 @@ from rec_action.response_type.recommend_resp import RecommendResponse
 logger = logging.getLogger('recommend')
 
 
-class RecommendHardCodedBasedResponse(RecommendResponse, HardCodedBasedResponse):
+class RecommendHardCodedBasedResponse(RecommendResponse):
     """
     Class representing the hard coded based response for recommend
     """

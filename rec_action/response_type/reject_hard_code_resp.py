@@ -1,8 +1,8 @@
-from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
+from rec_action.response_type.response import Response
 from state.state_manager import StateManager
 
 
-class RejectHardCodedBasedResponse(HardCodedBasedResponse):
+class RejectHardCodedBasedResponse(Response):
     """
     Class representing the hard code based response for post rejection action
 
