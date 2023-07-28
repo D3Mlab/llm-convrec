@@ -494,7 +494,7 @@ This filter retains an item if it is close enough to one of the locations in `co
 
 Once all the mentioned csv files and data files have been created, they can be put into one folder under the domain_specific/configs folder, and then modify the PATH_TO_DOMAIN_CONFIGS to be:
 
-PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
+```PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
 
 Then, create a domain_specific_config.yaml file and modify the file paths, similar to the below example:
 
