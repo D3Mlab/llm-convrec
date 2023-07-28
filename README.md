@@ -213,7 +213,7 @@ Below is an example of how the `constraints_config.csv` file should look:
 
 The configuration of these constraints will allow the system to capture user preferences more accurately, leading to more personalized and relevant recommendations.
 
-## 2.Few shots for prompts
+## 2. Few shots for prompts
 Few-shot examples are crucial in training the LLM-ConvRec system. They are a set of input-output pairs that demonstrate the type of behavior we want the system to exhibit. In the context of our system, few-shot examples help train the classifiers and provide the necessary prompts for information extraction.
 
 When providing few-shot examples, make sure that they are representative of the tasks you want the model to perform. For instance, if you want the system to recognize when a user is expressing a preference, include examples where users express preferences in different ways.
@@ -316,7 +316,7 @@ This file instructs the model to verify if a system-generated response accuratel
 
 Again, please note that all these examples are illustrative. The content of your files will be determined by the specific nature of your domain and the complexity of the user's queries. 
 
-## 3.Hard-Coded Responses
+## 3. Hard-Coded Responses
 
 The `hard_coded_responses.csv` file includes specific, structured responses that the system should use under certain conditions. This file has three columns: 'Action', 'Response', and 'Constraints'.
 
@@ -407,7 +407,7 @@ This filter retains an item if any value in `metadata_field` falls within a valu
 
 **metadata_field:** The field you want to check against `key_in_state`. The value in this field should be a string (either a value or a value range), a list-like string of values (e.g. “A, B, C”), or a list of values. If it is neither a string nor a list, the item will be retained.
 
-### 4.Item Filter
+### 4. Item Filter
 
 This filter retains an item if it is not in the list of recommended items specified by `key_in_state`.
 
@@ -418,7 +418,7 @@ This filter retains an item if it is not in the list of recommended items specif
 **metadata_field:** The field to use for checking whether an item is not in the value of `key_in_state`. Must be either `item_id` or `name`.
 
 
-## 5.Domain Specific Config
+## 5. Domain Specific Config
 - domain name
 - file path to files, shouldnt change normally
 - EXPLANATION_METADATA_BLACKLIST: all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage
@@ -461,7 +461,7 @@ An example of a review file structure is as follows:
     
     
 
-## 7.User defined classes
+## 7. User defined classes
 User defined classes are used to implement domain specific tasks, for example, merging constraints in a specialized way. 
 You can create your own implementations of the following classes:
 
