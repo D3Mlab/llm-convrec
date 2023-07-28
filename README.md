@@ -10,6 +10,7 @@ The system retains important information about the conversation, ensuring that c
 
 - [Introduction: A Semi-Structured Conversational Recommendation System](#introduction-a-semi-structured-conversational-recommendation-system)
 - [Example Conversation](#example-conversations)
+- [Quick Start](#quick-start)
 - [Installation and Running the System](#installation-and-running-the-system)
     - [1. Clone the GitHub Repository](#1-clone-the-github-repository)
     - [2. Navigate to the Project Directory](#2-navigate-to-the-project-directory)
@@ -59,6 +60,12 @@ Recommender: Tokyo Express has a parking lot.
 User: Great. I will go there then. Thanks!
 
 Recommender: Great! Enjoy your meal! If you need any more assistance, feel free to ask.
+
+## Quick Start
+
+Here is the link to the Google Colab for a quick start:
+
+https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
 
 
 ## Installation and Running the System
