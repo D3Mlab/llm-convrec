@@ -471,24 +471,13 @@ You can create your own implementations of the following classes:
 Defines special way to merge constraint 
 E.g. Location Merger merges two location using geocoding
 
-### Status (state/status.py): 
-Allows constraint to have custom status 
+### Constraint Status (state/constraints/constraint_status.py): 
+Allows constraint to have custom status and corresponding to response from the recommender
 E.g. location can be “invalid”, “valid”, or “specific”
 
-### Filter ():
+### Filter (information_retriever/filter/filter.py):
 Defines a way of filtering item based on the constraints and metadata 
 
-### Location Filter
-
-This filter retains an item if it is close enough to one of the locations in `constraint_key`. "Close enough" means that the item falls within a circle whose radius is half the diagonal length of the location's boundary (or the `default_max_distance_in_km` if it is larger), with the location at the center.
-
-**constraint_key:** A key in the hard constraint that contains location information.
-
-**metadata_field:** A list with two elements, where the first element is the metadata field containing item latitude, and the second element contains item longitude.
-
-**default_max_distance_in_km:** Default maximum distance in km. If half the diagonal length of the location boundary is smaller than this value, the filter will use the default distance as the circle radius.
-
-**geocoder_wrapper:** The geocoder wrapper to use.
 
 ## 7. Domain specific Config
 
