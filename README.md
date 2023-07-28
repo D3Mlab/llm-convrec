@@ -479,7 +479,7 @@ E.g. location can be “invalid”, “valid”, or “specific”
 Defines a way of filtering item based on the constraints and metadata 
 
 
-## 7. Domain specific Config
+## 7. Domain Specific Config
 
 Once all the mentioned csv files and data files have been created, they can be put into one folder under the `domain_specific/configs` folder, and then modify the `PATH_TO_DOMAIN_CONFIGS` to be:
 
