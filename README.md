@@ -107,6 +107,10 @@ If you want to run the clothing demo, execute following command in the terminal:
 python clothing_main.py
 ```
 
+Or, here is the link to the Google Colab for a quick start:
+
+https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+
 
 ## Overall Conversation Flow
 
