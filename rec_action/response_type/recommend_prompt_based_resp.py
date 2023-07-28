@@ -123,7 +123,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
            prompt = self._get_prompt_to_ask_user_q(current_recommended_items, state_manager)
            resp = self._llm_wrapper.make_request(prompt)
         else:
-            self._current_recommended_items = [group[0] for group in current_recommended_items]
+            self._current_recommended_items = [group[0] for group in current_recommended_items if len(group) != 0]
                         
             self._get_explanation_for_each_item(state_manager)
             

@@ -85,7 +85,7 @@ test_data = fill_in_list()
 class TestGetBestMatchingItems:
 
     @pytest.mark.parametrize("state_manager, expected_item_name", test_data)
-    @pytest.mark.parametrize("should_filter", [True])
+    @pytest.mark.parametrize("should_filter", [False, True])
     def test_get_best_matching_items(self, state_manager: CommonStateManager,
                                      expected_item_name: str, should_filter: bool) -> None:
         """

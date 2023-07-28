@@ -236,7 +236,7 @@ class AnswerPromptBasedResponse(Response):
             return "I do not know."
 
         # flatten list because don't want to do preference elicitation
-        topk_reviews_flattened_list = [group[0] for group in reviews]
+        topk_reviews_flattened_list = [group[0] for group in reviews if len(group) != 0]
                     
         return self._format_review_resp(
             question, topk_reviews_flattened_list, curr_mentioned_item)
