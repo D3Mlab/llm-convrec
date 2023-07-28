@@ -171,16 +171,17 @@ The `constraints_config.csv` file should include the following columns:
 - **key**: The constraint's key name.
 - **description**: Description of the constraint.
 - **is_cumulative**: A Boolean value (TRUE or FALSE) indicating if the constraint's value is cumulative. If `is_cumulative` is TRUE, the system appends the newly extracted values to the existing values of the constraint rather than overwriting them. If FALSE, any newly identified value replaces the previous value.
+- **in_explanation**: A Boolean value (TRUE or FALSE) indicating if the constraint's value should be considered when giving explanation about the item to the user, during recommendation stage.
 - **default_value**: The default value of the constraint when it is not specified by the user.
 
 Below is an example of how the `constraints_config.csv` file should look:
 
-| key | description | is_cumulative | default_value |
-|-----|-------------|---------------|---------------|
-| location | The desired location of the restaurants. | FALSE | None |
-| cuisine type | The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza"). | FALSE | None |
-| dish type | The desired menu item or dish in the restaurant that user shows interests. | TRUE | None |
-| type of meal | The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner"). | TRUE | None |
+| key | description | is_cumulative | in_explanation | default_value |
+|-----|-------------|---------------|----------------|---------------|
+| location | The desired location of the restaurants. | FALSE | FALSE          | None          |
+| cuisine type | The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza"). | FALSE | TRUE           | None          |
+| dish type | The desired menu item or dish in the restaurant that user shows interests. | TRUE | TRUE|  None         |
+| type of meal | The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner"). | TRUE | TRUE           | None          |
 
 The configuration of these constraints will allow the system to capture user preferences more accurately, leading to more personalized and relevant recommendations.
 
@@ -400,6 +401,7 @@ This filter retains an item if it is close enough to one of the locations in `co
 ## 5.domain specific config
 - domain name
 - file path to files, shouldnt change normally
+- EXPLANATION_METADATA_BLACKLIST: all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage
 
 ## 6. Data
 
