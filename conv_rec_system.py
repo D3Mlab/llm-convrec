@@ -152,7 +152,9 @@ class ConvRecSystem(WarningObserver):
         
         # Initialize Rec Action
         recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain,
-                                                 hard_coded_responses, config, observers=[self])
+                                                 hard_coded_responses, config,
+                                                 domain_specific_config_loader.load_constraints_categories(),
+                                                 observers=[self])
 
         answer_resp = AnswerPromptBasedResponse(
             config, llm_wrapper, filter_item, information_retrieval, domain,
@@ -186,7 +188,10 @@ class ConvRecSystem(WarningObserver):
             state, user_intents_classifier, rec_action_classifier, llm_wrapper, hard_coded_responses)
         self.is_gpt_retry_notified = False
         self.is_warning_notified = False
-        self.init_msg = f'Recommender: Hello there! I am a {domain} recommender. Please provide me with some preferences for what you are looking for. For example, {constraints_categories[0]["key"]}, {constraints_categories[1]["key"]}, or {constraints_categories[2]["key"]}. Thanks!'
+        self.init_msg = 'Hello I am your conversational recommender! Please state your preference!'
+        for hard_coded_response in hard_coded_responses:
+            if hard_coded_response['action'] == 'InitMessage':
+                self.init_msg = hard_coded_response['response']
 
     def run(self) -> None:
         """

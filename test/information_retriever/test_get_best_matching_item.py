@@ -96,7 +96,7 @@ class TestGetBestMatchingItems:
         """
         llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
         recommend = RecommendPromptBasedResponse(
-            llm_wrapper, filter_item, information_retriever, "restaurants", [], config)
+            llm_wrapper, filter_item, information_retriever, "restaurants", [], config, [])
         query = recommend.convert_state_to_query(state_manager)
         if should_filter:
             item_indices = filter_item.apply_filter(state_manager)

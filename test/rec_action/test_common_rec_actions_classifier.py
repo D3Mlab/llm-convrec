@@ -39,10 +39,10 @@ class TestCommonRecActionsClassifier:
         when user asks for recommendation, but it doesn't have the mandatory constraints and k = 1.
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
-                                                 [], config)
+                                                 [], config, [])
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
-                                                [], observers=[self])
+                                                [],  [], [], [], [])
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
@@ -71,10 +71,10 @@ class TestCommonRecActionsClassifier:
         when user asks for recommendation with mandatory constraints filled and k = 1.
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
-                                                 [], config)
+                                                 [], config, [])
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
-                                                [], observers=[self])
+                                                [], [], [], [], [])
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
@@ -104,10 +104,10 @@ class TestCommonRecActionsClassifier:
         when unsatisfied goal has user intent, Inquire, and k = 1.
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
-                                                 [], config)
+                                                 [], config, [])
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
-                                                [], observers=[self])
+                                                [], [], [], [], [])
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
@@ -135,10 +135,10 @@ class TestCommonRecActionsClassifier:
         doesn't exist
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
-                                                 [], config)
+                                                 [], config, [])
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
-                                                [], observers=[self])
+                                                [], [], [], [], [])
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
@@ -163,10 +163,10 @@ class TestCommonRecActionsClassifier:
         unsatisfied goals.
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
-                                                 [], config)
+                                                 [], config, [])
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
-                                                [], observers=[self])
+                                                [], [], [], [], [])
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
