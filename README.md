@@ -55,8 +55,6 @@ Clone the repository from GitHub to your local machine by running the following 
 
 **git clone https://github.com/D3Mlab/llm-convrec.git**
 
-Please replace `<your_username>` with your actual GitHub username.
-
 ### 2. Navigate to the Project Directory
 
 Once you've cloned the repository, use the command line to navigate into the project's directory:
@@ -431,6 +429,16 @@ An example of a review file structure is as follows:
 
 ## 7.User defined classes
 
+### Constraint Merger:
+Defines special way to merge constraint 
+E.g. Location Merger merges two location using geocoding 
+
+Status: 
+Allows constraint to have custom status 
+E.g. location can be “invalid”, “valid”, or “specific”
+
+Filter:
+Defines a way of filtering item based on the constraints and metadata 
 
 ### Location Filter
 
