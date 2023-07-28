@@ -3,9 +3,9 @@
 ## Table of Content
 
 - [Introduction: A Semi-Structured Conversational Recommendation System](#introduction-a-semi-structured-conversational-recommendation-system)
-- [2. Installation and Running the System](#2-installation-and-running-the-system)
-- [3. Overall Conversation Flow](#3-overall-conversation-flow)
-- [4. Domain Initialization and Customization](#4-domain-initialization-and-customization)
+- [Installation and Running the System](#installation-and-running-the-system)
+- [Overall Conversation Flow](#overall-conversation-flow)
+- [Domain Initialization and Customization](#domain-initialization-and-customization)
 
 
 ## Introduction: A Semi-Structured Conversational Recommendation System
