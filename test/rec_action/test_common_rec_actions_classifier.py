@@ -7,12 +7,25 @@ from state.common_state_manager import CommonStateManager
 from state.message import Message
 from user_intent.ask_for_recommendation import AskForRecommendation
 from user_intent.inquire import Inquire
+from rec_action.post_acceptance_action import PostAcceptanceAction
+from rec_action.post_rejection_action import PostRejectionAction
+from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
+from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
+from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
+from rec_action.response_type.accept_hard_code_resp import AcceptHardCodedBasedResponse
+from rec_action.response_type.reject_hard_code_resp import RejectHardCodedBasedResponse
+from intelligence.gpt_wrapper import GPTWrapper
 import yaml
+import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 with open("system_config.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
+
+llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+domain = "restaurants"
 
 
 class TestCommonRecActionsClassifier:
@@ -25,16 +38,28 @@ class TestCommonRecActionsClassifier:
         Test whether CommonRecActionsClassifier classifies recommender action to RequestInformation
         when user asks for recommendation, but it doesn't have the mandatory constraints and k = 1.
         """
-        mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
-                       RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
+        recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
+                                                 [], config)
+
+        answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
+                                                [], observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
+        accept_resp = AcceptHardCodedBasedResponse([])
+        reject_resp = RejectHardCodedBasedResponse([])
+
+        rec_actions = [Answer(answer_resp),
+                       ExplainPreference(),
+                       Recommend([], [], recc_resp),
+                       RequestInformation([], [], requ_info_resp),
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(
             Message("user", "I want recommendation in Toronto"))
         state_manager.update("hard_constraints", {"location": "Toronto"})
         state_manager.update("unsatisfied_goals", [
-                             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
+                             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -45,10 +70,21 @@ class TestCommonRecActionsClassifier:
         Test whether CommonRecActionsClassifier classifies recommender action to Recommend
         when user asks for recommendation with mandatory constraints filled and k = 1.
         """
+        recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
+                                                 [], config)
 
-        mandatory_constraints = ["location", "cuisine type"]
-        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(None, None, config, set(mandatory_constraints), specific_location_required=False),
-                       RequestInformation(None, mandatory_constraints=mandatory_constraints, specific_location_required=False)]
+        answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
+                                                [], observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
+        accept_resp = AcceptHardCodedBasedResponse([])
+        reject_resp = RejectHardCodedBasedResponse([])
+
+        rec_actions = [Answer(answer_resp),
+                       ExplainPreference(),
+                       Recommend([], [], recc_resp),
+                       RequestInformation([], [], requ_info_resp),
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(
@@ -56,7 +92,7 @@ class TestCommonRecActionsClassifier:
         state_manager.update("hard_constraints", {
                              "location": "Toronto", "cuisine type": "italian"})
         state_manager.update("unsatisfied_goals", [
-                             {"user_intent": AskForRecommendation(), "utterance_index": 0}])
+                             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -67,14 +103,27 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers classifies recommender action to Answer
         when unsatisfied goal has user intent, Inquire, and k = 1.
         """
-        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(
-            None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
+                                                 [], config)
+
+        answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
+                                                [], observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
+        accept_resp = AcceptHardCodedBasedResponse([])
+        reject_resp = RejectHardCodedBasedResponse([])
+
+        rec_actions = [Answer(answer_resp),
+                       ExplainPreference(),
+                       Recommend([], [], recc_resp),
+                       RequestInformation([], [], requ_info_resp),
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(
             Message("user", "Do they have patio?"))
         state_manager.update("unsatisfied_goals", [
-                             {"user_intent": Inquire(None), "utterance_index": 0}])
+                             {"user_intent": Inquire(None, None, domain, config), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -85,8 +134,21 @@ class TestCommonRecActionsClassifier:
         Test whether RecActionsClassifiers doesn't classify to any recommender action when unsatisfied goals
         doesn't exist
         """
-        rec_actions = [Answer(config, None, None, "restaurants"), ExplainPreference(), Recommend(
-            None, None, config, specific_location_required=False), RequestInformation(None, specific_location_required=False)]
+        recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
+                                                 [], config)
+
+        answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
+                                                [], observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
+        accept_resp = AcceptHardCodedBasedResponse([])
+        reject_resp = RejectHardCodedBasedResponse([])
+
+        rec_actions = [Answer(answer_resp),
+                       ExplainPreference(),
+                       Recommend([], [], recc_resp),
+                       RequestInformation([], [], requ_info_resp),
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message("user", "Hello"))
@@ -100,12 +162,25 @@ class TestCommonRecActionsClassifier:
         Test whether CommonRecActionsClassifier two recommender actions correctly by prioritizing more recent
         unsatisfied goals.
         """
-        rec_actions = [RequestInformation(None, specific_location_required=False), ExplainPreference(), Recommend(
-            None, None, config, specific_location_required=False), Answer(config, None, None, "restaurants")]
+        recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
+                                                 [], config)
+
+        answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
+                                                [], observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
+        accept_resp = AcceptHardCodedBasedResponse([])
+        reject_resp = RejectHardCodedBasedResponse([])
+
+        rec_actions = [Answer(answer_resp),
+                       ExplainPreference(),
+                       Recommend([], [], recc_resp),
+                       RequestInformation([], [], requ_info_resp),
+                       PostRejectionAction(reject_resp),
+                       PostAcceptanceAction(accept_resp)]
         rec_action_classifier = CommonRecActionsClassifier(rec_actions)
         state_manager = CommonStateManager(set())
         state_manager.update("conv_history", [Message("DUMMY", "DUMMY")] * 4)
-        state_manager.update("unsatisfied_goals", [{"user_intent": AskForRecommendation(), "utterance_index": 0},
-                                                   {"user_intent": Inquire(None), "utterance_index": 4}])
+        state_manager.update("unsatisfied_goals", [{"user_intent": AskForRecommendation(config), "utterance_index": 0},
+                                                   {"user_intent": Inquire(None, None, domain, config), "utterance_index": 4}])
         result = rec_action_classifier.classify(state_manager, k=5)
         assert len(result) == 2 and result == [rec_actions[3], rec_actions[0]]

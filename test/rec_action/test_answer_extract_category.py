@@ -6,9 +6,10 @@ from dotenv import load_dotenv
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from information_retrievers.item.item_loader import ItemLoader
-
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 load_dotenv()
+
 
 def load_test_data(domain: str) -> list[(str, str)]:
     """
@@ -43,10 +44,11 @@ gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 item_loader = ItemLoader()
 
 
+@pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
 class TestAnswerExtractCategory:
 
     @pytest.mark.parametrize('utterance, restaurant_attributes, expected_category', test_data1)
-    def test_extract_category_from_input_restaurant(self, utterance, restaurant_attributes,
+    def test_extract_category_from_input_restaurant(self, llm_wrapper, utterance, restaurant_attributes,
                                                     expected_category) -> None:
         dictionary_info = {"item_id": "id",
                            "name": "name",
@@ -63,14 +65,14 @@ class TestAnswerExtractCategory:
                            "categories": [],
                            "hours": {}}
         restaurant = item_loader.create_recommended_item("", dictionary_info, [""])
-        answer_resp = AnswerPromptBasedResponse(config,gpt_wrapper, None,
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
                                                 None, "restaurants", None)
         actual = answer_resp._extract_category_from_input(utterance, restaurant)
         assert actual == expected_category
 
     @pytest.mark.parametrize('utterance, clothing_attributes, expected_category', test_data2)
-    def test_extract_category_from_input_clothing(self, utterance, clothing_attributes,
-                                                    expected_category) -> None:
+    def test_extract_category_from_input_clothing(self, llm_wrapper, utterance, clothing_attributes,
+                                                  expected_category) -> None:
         dictionary_info = {"item_id": "id",
                            "name": "name",
                            "category": "category",
@@ -81,7 +83,7 @@ class TestAnswerExtractCategory:
                            "rank": 0,
                            "optional": clothing_attributes}
         clothing = item_loader.create_recommended_item("", dictionary_info, [""])
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
                                                 None, "clothing", None)
         actual = answer_resp._extract_category_from_input(utterance, clothing)
         assert actual == expected_category

@@ -7,6 +7,7 @@ from intelligence.gpt_wrapper import GPTWrapper
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 load_dotenv()
 
@@ -38,26 +39,26 @@ test_data2 = load_test_data(domain2)
 
 with open("system_config.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
-gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
 
+@pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
 class TestAnswerSeparateQuestions:
 
     @pytest.mark.parametrize('question, individual_questions', test_data1)
-    def test_separate_question_restaurant(self, question: str, individual_questions: str) -> None:
+    def test_separate_question_restaurant(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
                                                 None, "restaurants", None)
-        actual = answer_resp._seperate_input_into_multiple_qs(state_manager)
+        actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
                == str(individual_questions).lower().strip()
 
     @pytest.mark.parametrize('question, individual_questions', test_data2)
-    def test_separate_question_clothing(self, question: str, individual_questions: str) -> None:
+    def test_separate_question_clothing(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
                                                 None, "clothing", None)
         actual = answer_resp._seperate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \

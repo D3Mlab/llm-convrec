@@ -9,6 +9,7 @@ from intelligence.gpt_wrapper import GPTWrapper
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.common_state_manager import CommonStateManager
 from state.message import Message
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 dotenv.load_dotenv()
 
@@ -51,8 +52,8 @@ for row in test_data:
 class TestCurrItemsExtractor:
 
     @pytest.mark.parametrize('user_input,list_curr_item_objs,recommended_items', tuple(test_data))
-    def test_extract_category_from_input(self, user_input, list_curr_item_objs, recommended_items) -> None:
-        gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+    @pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
+    def test_extract_category_from_input(self, llm_wrapper, user_input, list_curr_item_objs, recommended_items) -> None:
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
 
@@ -62,7 +63,7 @@ class TestCurrItemsExtractor:
         conv_history = state_manager.get("conv_history")
 
         extractor = CurrentItemsExtractor(
-            gpt_wrapper,
+            llm_wrapper,
             domain_specific_config_loader.load_domain(),
             domain_specific_config_loader.load_current_items_fewshots(),
             domain_specific_config_loader.system_config
