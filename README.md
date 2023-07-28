@@ -425,7 +425,6 @@ An example of a metadata structure is as follows:
     "city": "Edmonton",
     "categories": ["Fish & Chips", "Restaurants"],
     "optional": {"GoodForKids": "True", "OutdoorSeating": "False"}
-    
 }
 
 ### 6.2 Review data
