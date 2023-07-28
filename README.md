@@ -9,7 +9,7 @@ The system retains important information about the conversation, ensuring that c
 ## Table of Content
 
 - [Introduction: A Semi-Structured Conversational Recommendation System](#introduction-a-semi-structured-conversational-recommendation-system)
-- [Example Conversation](#example-conversations)
+- [Example Conversation](#example-conversation)
 - [Quick Start](#quick-start)
 - [Installation and Running the System](#installation-and-running-the-system)
     - [1. Clone the GitHub Repository](#1-clone-the-github-repository)
@@ -33,7 +33,7 @@ The system retains important information about the conversation, ensuring that c
     - [7. Domain Specific Config](#7-domain-specific-config)
 
 
-## Example Conversation:
+## Example Conversation
 
 Demonstration using the restaurant domain:
 
