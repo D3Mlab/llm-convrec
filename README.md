@@ -325,7 +325,7 @@ Again, please note that all these examples are illustrative. The content of your
 
 ## 3. Hard-Coded Responses
 
-The `hard_coded_responses.csv` file includes specific, structured responses that the system should use under certain conditions. This file has three columns: 'Action', 'Response', and 'Constraints'.
+The `hard_coded_responses.csv` file includes specific, structured responses that the system should use under certain conditions. This file has three columns: `Action`, `Response`, and `Constraints`.
 
 - **Action**: This column refers to the action that the system should take.
 - **Response**: This column provides the exact response that should be given when the action is chosen.
