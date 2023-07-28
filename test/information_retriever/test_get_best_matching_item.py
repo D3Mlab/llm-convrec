@@ -50,7 +50,7 @@ config = {
     "TOPK_ITEMS": 3,
     "TOPK_REVIEWS": 5,
     "BERT_MODEL_NAME": "TASB",
-    "RECOMMEND_PROMPTS_PATH": "prompt_files/gpt/recaction_prompts/recommend_prompts",
+    "RECOMMEND_PROMPTS_PATH": "prompt_files/recaction_prompts/recommend_prompts",
     "CONVERT_STATE_TO_QUERY_PROMPT_FILENAME": "convert_state_to_query_prompt.jinja",
     "EXPLAIN_RECOMMENDATION_PROMPT_FILENAME": "explain_recommendation_prompt.jinja",
     "FORMAT_RECOMMENDATION_PROMPT_FILENAME": "format_recommendation_prompt.jinja",

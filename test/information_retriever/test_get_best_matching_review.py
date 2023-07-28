@@ -19,7 +19,7 @@ dotenv.load_dotenv()
 config = {
     "NUM_REVIEWS_TO_RETURN": 3,
     "BERT_MODEL_NAME": "TASB",
-    "ANSWER_PROMPTS_PATH": "prompt_files/gpt/recaction_prompts/answer_prompts",
+    "ANSWER_PROMPTS_PATH": "prompt_files/recaction_prompts/answer_prompts",
     "ANSWER_VERIFY_METADATA_RESP_PROMPT": "verify_metadata_resp_prompt.jinja",
     "ANSWER_FORMAT_MULTIPLE_RESP_PROMPT": "format_multiple_resp_prompt.jinja",
     "ANSWER_EXTRACT_CATEGORY_PROMPT": "extract_category_prompt.jinja",
