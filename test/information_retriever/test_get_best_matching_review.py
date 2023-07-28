@@ -1,3 +1,4 @@
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.embedder.bert_embedder import BERT_model
 from information_retrievers.embedder.statics import *
 from information_retrievers.information_retrieval import InformationRetrieval
@@ -11,6 +12,9 @@ import pytest
 import pandas as pd
 import os
 import torch
+import dotenv
+
+dotenv.load_dotenv()
 
 config = {
     "NUM_REVIEWS_TO_RETURN": 3,
@@ -25,7 +29,8 @@ config = {
     "ANSWER_MULT_QS_PROMPT": "seperate_questions_prompt.jinja",
     "ANSWER_GPT_PROMPT": "gpt_prompt.jinja",
     "ANSWER_MULT_QS_FORMAT_RESP_PROMPT": "format_mult_qs_prompt.jinja",
-    "ENABLE_MULTITHREADING": False
+    "ENABLE_MULTITHREADING": False,
+    'PATH_TO_DOMAIN_CONFIGS': 'domain_specific/configs/restaurant_configs'
 }
 
 hard_coded_responses = [
@@ -37,14 +42,14 @@ BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
 embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-metadata_wrapper = MetadataWrapper()
-metadata_wrapper.items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
-filter_item = FilterApplier(metadata_wrapper)
-search_engine = PDSearchEngine(embedder)
+items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
+metadata_wrapper = MetadataWrapper(items_metadata)
 reviews_df = pd.read_csv("test/information_retriever/data/Edmonton_restaurants_review.csv")
-search_engine._review_item_ids = reviews_df["item_id"].to_numpy()
-search_engine._reviews = reviews_df["Review"].to_numpy()
-search_engine._reviews_embedding_matrix = torch.load("test/information_retriever/data/matrix.pt")
+domain_specific_config_loader = DomainSpecificConfigLoader(config)
+
+filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
+search_engine = PDSearchEngine(embedder, reviews_df["item_id"].to_numpy(), reviews_df["Review"].to_numpy(),
+                               torch.load("test/information_retriever/data/matrix.pt"))
 information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
 llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
@@ -77,7 +82,12 @@ class TestGetBestMatchingReviewsOfRestaurant:
         recommended_item = item_loader.create_recommended_item(
             "", metadata_wrapper.get_item_dict_from_index(index_of_restaurant), [""])
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retriever,
-                                                "restaurant", hard_coded_responses)
+                                                "restaurant", hard_coded_responses,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         query = answer_resp.convert_state_to_query(question)
         item_index = filter_item.filter_by_current_item(recommended_item)
         reviews = information_retriever.get_best_matching_reviews_of_item(

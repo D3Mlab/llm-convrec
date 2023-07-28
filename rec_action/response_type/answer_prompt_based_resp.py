@@ -27,6 +27,10 @@ class AnswerPromptBasedResponse(Response):
     :param information_retriever: object used to retrieve item reviews based on the query
     :param domain: domain of the recommendation (e.g. restaurants)
     :param hard_coded_responses: list that defines every hard coded response
+    :param extract_category_few_shots: few shot examples used for extracting category from user's question
+    :param ir_prompt_few_shots: few shot examples used to answer question using IR
+    :param separate_qs_prompt_few_shots: few shot examples used to separate question in to multiple individual questions
+    :param verify_metadata_prompt_few_shots: few shot examples used to confirm whether metadata answering makes sense
     :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
 
@@ -39,6 +43,8 @@ class AnswerPromptBasedResponse(Response):
 
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
+                 extract_category_few_shots: list[dict], ir_prompt_few_shots: list[dict],
+                 separate_qs_prompt_few_shots: list[dict], verify_metadata_prompt_few_shots: list[dict],
                  observers=None) -> None:
         
         self._filter_applier = filter_applier
@@ -82,19 +88,10 @@ class AnswerPromptBasedResponse(Response):
         
         self.enable_threading = config['ENABLE_MULTITHREADING']
 
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-
-        self._extract_category_few_shots \
-            = domain_specific_config_loader.load_answer_extract_category_fewshots()
-
-        self._ir_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_ir_fewshots()
-
-        self._separate_qs_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_separate_questions_fewshots()
-
-        self._verify_metadata_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots()
+        self._extract_category_few_shots = extract_category_few_shots
+        self._ir_prompt_few_shots = ir_prompt_few_shots
+        self._separate_qs_prompt_few_shots = separate_qs_prompt_few_shots
+        self._verify_metadata_prompt_few_shots = verify_metadata_prompt_few_shots
 
     def get(self, state_manager: StateManager) -> str | None:
         """

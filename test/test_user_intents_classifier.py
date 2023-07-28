@@ -12,6 +12,9 @@ from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 import os
 import yaml
+import dotenv
+
+dotenv.load_dotenv()
 
 
 class TestUserIntentsClassifier:
@@ -30,7 +33,7 @@ class TestUserIntentsClassifier:
         ask_for_recommendation = AskForRecommendation(config)
 
         possible_goals = {ask_for_recommendation}
-        domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         domain = domain_specific_config_loader.load_domain()
 
         inquire_classification_fewshots = domain_specific_config_loader.load_inquire_classification_fewshots()

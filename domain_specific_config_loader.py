@@ -26,9 +26,8 @@ class DomainSpecificConfigLoader:
     Class responsible for loading domain specific data.
     """
 
-    def __init__(self):
-        with open('system_config.yaml') as f:
-            self.system_config = yaml.load(f, Loader=yaml.FullLoader)
+    def __init__(self, system_config):
+        self.system_config = system_config
 
     def load_domain(self) -> str:
         """
@@ -286,12 +285,13 @@ class DomainSpecificConfigLoader:
 
         return filters_list
 
-    def get_path_to_item_metadata(self) -> str:
+    def load_item_metadata(self) -> pd.DataFrame:
         """
-        Load path to data storing metadata for items
+        Load metadata of all items
         """
         filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
-        return f'{self._get_path_to_domain()}/{filename}'
+        path_to_items_metadata = f'{self._get_path_to_domain()}/{filename}'
+        return pd.read_json(path_to_items_metadata, orient='records', lines=True)
 
     def load_data_for_pd_search_engine(self) -> tuple[np.ndarray, np.ndarray, torch.Tensor]:
         """

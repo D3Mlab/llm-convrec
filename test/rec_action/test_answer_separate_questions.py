@@ -3,6 +3,8 @@ import pytest
 import yaml
 import os
 from dotenv import load_dotenv
+
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from state.common_state_manager import CommonStateManager
 from state.message import Message
@@ -48,8 +50,15 @@ class TestAnswerSeparateQuestions:
     def test_separate_question_restaurant(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
-                                                None, "restaurants", None)
+                                                None, "restaurants", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
                == str(individual_questions).lower().strip()
@@ -58,8 +67,16 @@ class TestAnswerSeparateQuestions:
     def test_separate_question_clothing(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
+
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
-                                                None, "clothing", None)
-        actual = answer_resp._seperate_input_into_multiple_qs(state_manager)
+                                                None, "clothing", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
+        actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
                == str(individual_questions).lower().strip()

@@ -70,7 +70,7 @@ class ConvRecSystem(WarningObserver):
             user_constraint_status_objects = []
         if user_defined_constraint_mergers is None:
             user_defined_constraint_mergers = []
-        domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         domain = domain_specific_config_loader.load_domain()
 
         model = config["MODEL"]
@@ -110,8 +110,8 @@ class ConvRecSystem(WarningObserver):
         curr_items_extractor = CurrentItemsExtractor(llm_wrapper, domain, curr_items_fewshots, config)
 
         # Initialize Filters
-        metadata_wrapper = MetadataWrapper()
-        filter_item = FilterApplier(metadata_wrapper)
+        metadata_wrapper = MetadataWrapper(domain_specific_config_loader.load_item_metadata())
+        filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
         if user_defined_filter:
             filter_item.filters.extend(user_defined_filter)
 
@@ -120,9 +120,13 @@ class ConvRecSystem(WarningObserver):
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
         embedder = BERT_model(BERT_model_name, tokenizer_name, False)
         if config['SEARCH_ENGINE'] == "pandas":
-            search_engine = PDSearchEngine(embedder)
+            reviews_item_ids, reviews, reviews_embedding_matrix = \
+                domain_specific_config_loader.load_data_for_pd_search_engine()
+            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix)
         else:
-            search_engine = VectorDatabaseSearchEngine(embedder)
+            reviews_item_ids, reviews, database = \
+                domain_specific_config_loader.load_data_for_vector_database_search_engine()
+            search_engine = VectorDatabaseSearchEngine(embedder, reviews_item_ids, reviews, database)
         information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         
         # Initialize User Intent
@@ -150,7 +154,15 @@ class ConvRecSystem(WarningObserver):
         recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain,
                                                  hard_coded_responses, config, observers=[self])
 
-        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
+        answer_resp = AnswerPromptBasedResponse(
+            config, llm_wrapper, filter_item, information_retrieval, domain,
+            hard_coded_responses,
+            domain_specific_config_loader.load_answer_extract_category_fewshots(),
+            domain_specific_config_loader.load_answer_ir_fewshots(),
+            domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+            domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+            observers=[self]
+        )
         requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses, user_constraint_status_objects)
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)

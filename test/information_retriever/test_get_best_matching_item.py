@@ -1,3 +1,4 @@
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from state.common_state_manager import CommonStateManager
 from information_retrievers.filter.word_in_filter import WordInFilter
@@ -56,24 +57,27 @@ config = {
     "NO_MATCHING_ITEM_PROMPT_FILENAME": "no_matching_item_prompt.jinja",
     "SUMMARIZE_REVIEW_PROMPT_FILENAME": "summarize_review_prompt.jinja",
     "RECOMMEND_RESPONSE_TYPE": "prompt",
+    'PREFERENCE_ELICITATION_PROMPT': "preference_elicitation_prompt.jinja",
+    'ENABLE_PREFERENCE_ELICITATION': False,
     "ENABLE_MULTITHREADING": False
 }
 
 word_in_filter = WordInFilter(["cuisine type, dish type"], "categories")
-location_filter = LocationFilter("location", ["latitude", "longitude"], 2)
-metadata_wrapper = MetadataWrapper()
-metadata_wrapper.items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
-filter_item = FilterApplier(metadata_wrapper)
-filter_item.filters = [word_in_filter, location_filter]
+location_filter = LocationFilter("location", ["latitude", "longitude"], 2, GoogleV3Wrapper())
+items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
+metadata_wrapper = MetadataWrapper(items_metadata)
+filter_item = FilterApplier(metadata_wrapper, [word_in_filter, location_filter])
 BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
 embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-search_engine = PDSearchEngine(embedder)
+
 reviews_df = pd.read_csv("test/information_retriever/data/Edmonton_restaurants_review.csv")
-search_engine._review_item_ids = reviews_df["item_id"].to_numpy()
-search_engine._reviews = reviews_df["Review"].to_numpy()
-search_engine._reviews_embedding_matrix = torch.load("test/information_retriever/data/matrix.pt")
+review_item_ids = reviews_df["item_id"].to_numpy()
+reviews = reviews_df["Review"].to_numpy()
+reviews_embedding_matrix = torch.load("test/information_retriever/data/matrix.pt")
+
+search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix)
 information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
 test_data = fill_in_list()
 

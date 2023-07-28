@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 import os
 import dotenv
+import yaml
 
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.item.item_loader import ItemLoader
@@ -54,8 +55,10 @@ class TestCurrItemsExtractor:
     @pytest.mark.parametrize('user_input,list_curr_item_objs,recommended_items', tuple(test_data))
     @pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
     def test_extract_category_from_input(self, llm_wrapper, user_input, list_curr_item_objs, recommended_items) -> None:
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
+        with open('system_config.yaml') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
 
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', user_input))

@@ -1,19 +1,18 @@
 import pandas as pd
 from typing import Any
-from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class MetadataWrapper:
     """
     Metadata wrapper that is responsible to get item metadata as dictionary.
+
+    :param items_metadata: metadata of all items
     """
 
     items_metadata: pd.DataFrame
 
-    def __init__(self) -> None:
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        path_to_items_metadata = domain_specific_config_loader.get_path_to_item_metadata()
-        self.items_metadata = pd.read_json(path_to_items_metadata, orient='records', lines=True)
+    def __init__(self, items_metadata: pd.DataFrame) -> None:
+        self.items_metadata = items_metadata
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, Any]:
         """

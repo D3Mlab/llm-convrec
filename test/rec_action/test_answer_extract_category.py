@@ -3,6 +3,8 @@ import pytest
 import yaml
 import os
 from dotenv import load_dotenv
+
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from information_retrievers.item.item_loader import ItemLoader
@@ -65,8 +67,15 @@ class TestAnswerExtractCategory:
                            "categories": [],
                            "hours": {}}
         restaurant = item_loader.create_recommended_item("", dictionary_info, [""])
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
-                                                None, "restaurants", None)
+                                                None, "restaurants", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         actual = answer_resp._extract_category_from_input(utterance, restaurant)
         assert actual == expected_category
 
@@ -83,7 +92,14 @@ class TestAnswerExtractCategory:
                            "rank": 0,
                            "optional": clothing_attributes}
         clothing = item_loader.create_recommended_item("", dictionary_info, [""])
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/clothing_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
-                                                None, "clothing", None)
+                                                None, "clothing", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         actual = answer_resp._extract_category_from_input(utterance, clothing)
         assert actual == expected_category

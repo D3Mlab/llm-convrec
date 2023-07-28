@@ -1,3 +1,4 @@
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.filter.word_in_filter import WordInFilter
 from information_retrievers.filter.exact_word_matching_filter import ExactWordMatchingFilter
 from domain_specific.classes.restaurants.location_filter import LocationFilter
@@ -16,14 +17,13 @@ import dotenv
 dotenv.load_dotenv()
 
 metadata = pd.read_json("test/information_retriever/filter/50_restaurants_metadata.json", orient='records', lines=True)
-metadata_wrapper = MetadataWrapper()
-metadata_wrapper.items_metadata = metadata
+metadata_wrapper = MetadataWrapper(metadata)
 
 exact_word_matching_filter = ExactWordMatchingFilter(["cuisine type"], "categories")
 word_in_filter = WordInFilter(["cuisine type"], "categories")
 item_filter = ItemFilter("recommended_items", "name")
 value_range_filter = ValueRangeFilter("rating", "stars")
-location_filter = LocationFilter("location", ["latitude", "longitude"], 2)
+location_filter = LocationFilter("location", ["latitude", "longitude"], 2, GoogleV3Wrapper())
 
 test_csv = pd.read_csv("test/information_retriever/filter/test_filter_applier.csv", encoding ="ISO-8859-1")
 num_rows = test_csv.shape[0]
@@ -78,7 +78,7 @@ rec_item2 = RecommendedItem(Item("", "Tuna Bar", {}), "", [""])
 class TestFilterApplier:
 
     @pytest.mark.parametrize("state_manager, filters, expected_indices", test_data)
-    def test_apply_filter(self, state_manager: CommonStateManager, filters: Filter,
+    def test_apply_filter(self, state_manager: CommonStateManager, filters: list[Filter],
                           expected_indices: list[int]):
         """
         Test exact word matching filter.
@@ -86,8 +86,7 @@ class TestFilterApplier:
         :param state_manager: state
         :param expected_indices: expected indices must be kept in the dataframe returned by the filter
         """
-        filter_applier = FilterApplier(metadata_wrapper)
-        filter_applier.filters = filters
+        filter_applier = FilterApplier(metadata_wrapper, filters)
         actual_indices = filter_applier.apply_filter(state_manager)
         assert actual_indices == expected_indices
 
@@ -101,6 +100,6 @@ class TestFilterApplier:
         :param current_item: current item
         :param expected_index: expected index must be kept in the dataframe returned by the filter
         """
-        filter_applier = FilterApplier(metadata_wrapper)
+        filter_applier = FilterApplier(metadata_wrapper, [])
         actual_index = filter_applier.filter_by_current_item(current_item)
         assert actual_index == expected_index

@@ -2,7 +2,6 @@ from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter import Filter
 from state.state_manager import StateManager
 from information_retrievers.item.recommended_item import RecommendedItem
-from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class FilterApplier:
@@ -10,15 +9,15 @@ class FilterApplier:
     Responsible to return item ids that must be kept.
 
     :param metadata_wrapper: metadata wrapper
+    :param filters: list of filters to apply
     """
 
     _metadata_wrapper: MetadataWrapper
     filters: list[Filter]
 
-    def __init__(self, metadata_wrapper: MetadataWrapper) -> None:
+    def __init__(self, metadata_wrapper: MetadataWrapper, filters: list[Filter]) -> None:
         self._metadata_wrapper = metadata_wrapper
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        self.filters = domain_specific_config_loader.load_filters()
+        self.filters = filters
 
     def apply_filter(self, state_manager: StateManager) -> list[int]:
         """
