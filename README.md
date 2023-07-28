@@ -6,6 +6,14 @@
 - [Installation and Running the System](#installation-and-running-the-system)
 - [Overall Conversation Flow](#overall-conversation-flow)
 - [Domain Initialization and Customization](#domain-initialization-and-customization)
+    [Quick Start](#quick-start)
+    [1. Constraints Configuration](#1-constraints-configuration)
+    [2. Few shots for prompts](#2-few-shots-for-prompts)
+    [3. Hard-Coded Responses](#3-hard-coded-responses)
+    [4. Filter Configs](#4-filter-configs)
+    [5. Domain Specific Config](#5-domain-specific-config)
+    [6. Data](#6-data)
+    [7. User Defined Classes](#7-user-defined-classes)
 
 
 ## Introduction: A Semi-Structured Conversational Recommendation System
