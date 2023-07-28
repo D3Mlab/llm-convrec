@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from information_retrievers.embedder.bert_embedder import BERT_model
+from information_retriever.embedder.bert_embedder import BERT_model
 
 
 class SearchEngine:

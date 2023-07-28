@@ -1,6 +1,6 @@
-from information_retrievers.filter.filter import Filter
+from information_retriever.filter.filter import Filter
 from state.state_manager import StateManager
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.item.recommended_item import RecommendedItem
 import pandas as pd
 from itertools import chain
 

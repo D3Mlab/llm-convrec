@@ -1,4 +1,4 @@
-from information_retrievers.filter.value_range_filter import ValueRangeFilter
+from information_retriever.filter.value_range_filter import ValueRangeFilter
 from state.common_state_manager import CommonStateManager
 import pandas as pd
 import pytest

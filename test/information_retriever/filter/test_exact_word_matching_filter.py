@@ -1,5 +1,5 @@
 from state.common_state_manager import CommonStateManager
-from information_retrievers.filter.exact_word_matching_filter import ExactWordMatchingFilter
+from information_retriever.filter.exact_word_matching_filter import ExactWordMatchingFilter
 import pytest
 import pandas as pd
 

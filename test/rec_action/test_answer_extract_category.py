@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
-from information_retrievers.item.item_loader import ItemLoader
+from information_retriever.item.item_loader import ItemLoader
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 load_dotenv()

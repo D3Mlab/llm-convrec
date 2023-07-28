@@ -1,6 +1,6 @@
 from intelligence.llm_wrapper import LLMWrapper
 from state.message import Message
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.item.recommended_item import RecommendedItem
 
 from string import punctuation
 from jinja2 import Environment, FileSystemLoader, Template

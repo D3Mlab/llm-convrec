@@ -1,8 +1,8 @@
 from state.state_manager import StateManager
 
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.filter.filter_applier import FilterApplier
-from information_retrievers.information_retrieval import InformationRetrieval
+from information_retriever.item.recommended_item import RecommendedItem
+from information_retriever.filter.filter_applier import FilterApplier
+from information_retriever.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_resp import RecommendResponse
 
 from intelligence.llm_wrapper import LLMWrapper

@@ -1,4 +1,4 @@
-from information_retrievers.filter.filter import Filter
+from information_retriever.filter.filter import Filter
 from state.state_manager import StateManager
 import pandas as pd
 import re

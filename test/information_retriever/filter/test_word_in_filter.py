@@ -1,4 +1,4 @@
-from information_retrievers.filter.word_in_filter import WordInFilter
+from information_retriever.filter.word_in_filter import WordInFilter
 from state.common_state_manager import CommonStateManager
 import pandas as pd
 import pytest

@@ -4,7 +4,7 @@ import torch
 import pandas as pd
 import faiss
 from tqdm import tqdm
-from information_retrievers.embedder.bert_embedder import BERT_model
+from information_retriever.embedder.bert_embedder import BERT_model
 
 
 class EmbeddingMatrixCreator:

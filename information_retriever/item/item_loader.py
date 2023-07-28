@@ -1,5 +1,5 @@
-from information_retrievers.item.item import Item
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.item.item import Item
+from information_retriever.item.recommended_item import RecommendedItem
 
 
 class ItemLoader:

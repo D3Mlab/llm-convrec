@@ -1,13 +1,14 @@
-from information_retrievers.filter.filter import Filter
+from information_retriever.filter.filter import Filter
 from state.state_manager import StateManager
 import pandas as pd
 
 
-class WordInFilter(Filter):
+class ExactWordMatchingFilter(Filter):
     """
-    Responsible to do filtering by checking whether singular / plural form of a word
-    in the constraint is in the specified metadata field or singular / plural form of
-    a word in the specified metadata field is in the constraint.
+    Responsible to do filtering by checking
+    whether a word in the constraint matches exactly with a word in the specified metadata field
+    or a word in the specified metadata field matches exactly with a word in the constraint
+    (case insensitive).
 
     :param constraint_keys: constraint key of interest
     :param metadata_field: metadata field of interest
@@ -66,37 +67,8 @@ class WordInFilter(Filter):
 
         for metadata_field_value in item_metadata_field_values:
             for constraint_value in constraint_values:
-                constraint_value_lower_stripped = constraint_value.lower().strip()
-                metadata_field_value_lower_stripped = metadata_field_value.lower().strip()
 
-                if constraint_value_lower_stripped in metadata_field_value_lower_stripped\
-                        or metadata_field_value_lower_stripped in constraint_value_lower_stripped\
-                        or self._convert_to_plural(
-                                constraint_value_lower_stripped) in metadata_field_value_lower_stripped\
-                        or self._convert_to_plural(
-                                metadata_field_value_lower_stripped) in constraint_value_lower_stripped:
+                if constraint_value.lower().strip() == metadata_field_value.lower().strip():
                     return True
 
         return False
-
-    @staticmethod
-    def _convert_to_plural(word: str) -> str:
-        """
-        Try to convert the word to plural.
-
-        :param word: word to be converted to plural
-        :return: word in plural form
-        """
-        plural_rules = [
-            (["s", "sh", "ch", "x", "z"], "es"),
-            (["ay", "ey", "iy", "oy", "uy"], "s"),
-            (["y"], "ies")
-        ]
-
-        for rule in plural_rules:
-            endings, plural_ending = rule
-            for end in endings:
-                if word.endswith(end):
-                    return word.rstrip(end) + plural_ending
-
-        return word + "s"

@@ -1,15 +1,15 @@
 from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
-from information_retrievers.filter.word_in_filter import WordInFilter
-from information_retrievers.filter.exact_word_matching_filter import ExactWordMatchingFilter
+from information_retriever.filter.word_in_filter import WordInFilter
+from information_retriever.filter.exact_word_matching_filter import ExactWordMatchingFilter
 from domain_specific.classes.restaurants.location_filter import LocationFilter
-from information_retrievers.filter.value_range_filter import ValueRangeFilter
-from information_retrievers.filter.item_filter import ItemFilter
-from information_retrievers.filter.filter import Filter
-from information_retrievers.filter.filter_applier import FilterApplier
-from information_retrievers.item.item import Item
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.filter.value_range_filter import ValueRangeFilter
+from information_retriever.filter.item_filter import ItemFilter
+from information_retriever.filter.filter import Filter
+from information_retriever.filter.filter_applier import FilterApplier
+from information_retriever.item.item import Item
+from information_retriever.item.recommended_item import RecommendedItem
 from state.common_state_manager import CommonStateManager
-from information_retrievers.metadata_wrapper import MetadataWrapper
+from information_retriever.metadata_wrapper import MetadataWrapper
 import pandas as pd
 import pytest
 import dotenv

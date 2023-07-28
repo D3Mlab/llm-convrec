@@ -1,7 +1,7 @@
-from information_retrievers.metadata_wrapper import MetadataWrapper
-from information_retrievers.filter.filter import Filter
+from information_retriever.metadata_wrapper import MetadataWrapper
+from information_retriever.filter.filter import Filter
 from state.state_manager import StateManager
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.item.recommended_item import RecommendedItem
 
 
 class FilterApplier:

@@ -1,8 +1,8 @@
 import torch
 import numpy as np
-from information_retrievers.embedder.bert_embedder import BERT_model
-from information_retrievers.vector_database import VectorDataBase
-from information_retrievers.search_engine.search_engine import SearchEngine
+from information_retriever.embedder.bert_embedder import BERT_model
+from information_retriever.vector_database import VectorDataBase
+from information_retriever.search_engine.search_engine import SearchEngine
 
 
 class VectorDatabaseSearchEngine(SearchEngine):

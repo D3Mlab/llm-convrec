@@ -1,4 +1,4 @@
-from information_retrievers.item.item import Item
+from information_retriever.item.item import Item
 
 
 class RecommendedItem(Item):

@@ -1,7 +1,7 @@
-from information_retrievers.filter.item_filter import ItemFilter
+from information_retriever.filter.item_filter import ItemFilter
 from state.common_state_manager import CommonStateManager
-from information_retrievers.item.item import Item
-from information_retrievers.item.recommended_item import RecommendedItem
+from information_retriever.item.item import Item
+from information_retriever.item.recommended_item import RecommendedItem
 import pandas as pd
 import pytest
 

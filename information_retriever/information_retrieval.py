@@ -1,7 +1,7 @@
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.search_engine.search_engine import SearchEngine
-from information_retrievers.metadata_wrapper import MetadataWrapper
-from information_retrievers.item.item_loader import ItemLoader
+from information_retriever.item.recommended_item import RecommendedItem
+from information_retriever.search_engine.search_engine import SearchEngine
+from information_retriever.metadata_wrapper import MetadataWrapper
+from information_retriever.item.item_loader import ItemLoader
 
 
 class InformationRetrieval:

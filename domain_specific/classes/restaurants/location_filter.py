@@ -1,7 +1,7 @@
 from state.state_manager import StateManager
 from geopy.distance import geodesic
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
-from information_retrievers.filter.filter import Filter
+from information_retriever.filter.filter import Filter
 import pandas as pd
 
 

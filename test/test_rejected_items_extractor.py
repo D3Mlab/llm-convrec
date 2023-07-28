@@ -6,7 +6,7 @@ import yaml
 import dotenv
 
 from domain_specific_config_loader import DomainSpecificConfigLoader
-from information_retrievers.item.item_loader import ItemLoader
+from information_retriever.item.item_loader import ItemLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from state.message import Message
 from user_intent.extractors.rejected_items_extractor import RejectedItemsExtractor

@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 import pandas as pd
-from information_retrievers.embedder.bert_embedder import BERT_model
-from information_retrievers.search_engine.search_engine import SearchEngine
+from information_retriever.embedder.bert_embedder import BERT_model
+from information_retriever.search_engine.search_engine import SearchEngine
 
 
 class PDSearchEngine(SearchEngine):

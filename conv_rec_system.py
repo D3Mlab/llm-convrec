@@ -1,6 +1,6 @@
 import openai.error
 
-from information_retrievers.item.item_loader import ItemLoader
+from information_retriever.item.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
@@ -25,16 +25,16 @@ from user_intent.provide_preference import ProvidePreference
 from user_intent.classifiers.multilabel_user_intents_classifier import MultilabelUserIntentsClassifier
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from rec_action.common_rec_actions_classifier import CommonRecActionsClassifier
-from information_retrievers.embedder.statics import *
-from information_retrievers.embedder.bert_embedder import BERT_model
+from information_retriever.embedder.statics import *
+from information_retriever.embedder.bert_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
 from domain_specific_config_loader import DomainSpecificConfigLoader
-from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
-from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
-from information_retrievers.metadata_wrapper import MetadataWrapper
-from information_retrievers.filter.filter_applier import FilterApplier
-from information_retrievers.filter.filter import Filter
-from information_retrievers.information_retrieval import InformationRetrieval
+from information_retriever.search_engine.pd_search_engine import PDSearchEngine
+from information_retriever.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
+from information_retriever.metadata_wrapper import MetadataWrapper
+from information_retriever.filter.filter_applier import FilterApplier
+from information_retriever.filter.filter import Filter
+from information_retriever.information_retrieval import InformationRetrieval
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse

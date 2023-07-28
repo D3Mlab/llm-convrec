@@ -3,7 +3,7 @@ from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import Goog
 from domain_specific.classes.restaurants.location_constraint_merger import LocationConstraintMerger
 from domain_specific.classes.restaurants.location_status import LocationStatus
 from domain_specific.classes.restaurants.location_filter import LocationFilter
-from information_retrievers.filter.word_in_filter import WordInFilter
+from information_retriever.filter.word_in_filter import WordInFilter
 
 from conv_rec_system import ConvRecSystem
 from dotenv import load_dotenv

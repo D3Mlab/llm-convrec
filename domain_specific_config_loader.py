@@ -6,15 +6,15 @@ import faiss
 import pandas as pd
 import yaml
 
-from information_retrievers.embedder.bert_embedder import BERT_model
-from information_retrievers.embedder.embedding_matrix_creator import EmbeddingMatrixCreator
-from information_retrievers.embedder.vector_database_creator import VectorDatabaseCreator
-from information_retrievers.filter.filter import Filter
-from information_retrievers.filter.exact_word_matching_filter import ExactWordMatchingFilter
-from information_retrievers.filter.item_filter import ItemFilter
-from information_retrievers.filter.value_range_filter import ValueRangeFilter
-from information_retrievers.filter.word_in_filter import WordInFilter
-from information_retrievers.vector_database import VectorDataBase
+from information_retriever.embedder.bert_embedder import BERT_model
+from information_retriever.embedder.embedding_matrix_creator import EmbeddingMatrixCreator
+from information_retriever.embedder.vector_database_creator import VectorDatabaseCreator
+from information_retriever.filter.filter import Filter
+from information_retriever.filter.exact_word_matching_filter import ExactWordMatchingFilter
+from information_retriever.filter.item_filter import ItemFilter
+from information_retriever.filter.value_range_filter import ValueRangeFilter
+from information_retriever.filter.word_in_filter import WordInFilter
+from information_retriever.vector_database import VectorDataBase
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
