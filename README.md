@@ -231,7 +231,7 @@ Remember, the quality of the few-shot examples can significantly impact the perf
 
 ### 2.1 Few-shots for Intent Classification Prompts
 
-For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: 'User Input' and 'Response'. 'User Input' should contain examples of user utterances, while 'Response' indicates whether the input corresponds to the respective intent (True) or not (False).
+For effective intent classification, few-shot examples must be provided for each intent. This should be done in the form of CSV files with two columns: `User Input` and `Response`. `User Input` should contain examples of user utterances, while `Response` indicates whether the input corresponds to the respective intent (True) or not (False).
 
 
 #### 2.1.1 `accept_classification_fewshots.csv`: 
@@ -286,7 +286,7 @@ The ability to track and update these evolving constraints allows the system to 
 This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
 
 #### 2.4.1 `answer_extract_category_fewshots.csv`
-This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (one of the metadata field or one of the key in optional field).
+This file helps in mapping user queries to metadata categories. It needs two columns: `input` (user's question) and `output` (one of the metadata field or one of the key in optional field).
 
 | input | output |
 |-------|--------|
@@ -296,7 +296,7 @@ This file helps in mapping user queries to metadata categories. It needs two col
 | What are the meals it's known for? | PopularMeals |
 
 #### 2.4.2 `answer_ir_fewshots.csv`
-This file instructs the model to extract answers from reviews based on the user's question. It requires 'question' (user's question), 'information' (reviews retrieved by the system), and 'answer' (the answer to the question derived from the provided information).
+This file instructs the model to extract answers from reviews based on the user's question. It requires `question` (user's question), `information` (reviews retrieved by the system), and `answer` (the answer to the question derived from the provided information).
 
 Note that the answer "I do not know." to the corresponding prompt is a special one that triggers a default response that is responsible for the situation where the question is not relevant to the information we have access to. Hence, one of the fewshot examples should always be an example question that should be answered with "I do not know.". This is illustrated in the below example too.
 
@@ -305,7 +305,7 @@ Note that the answer "I do not know." to the corresponding prompt is a special o
 | Do they have a slide in the restaurant? | I really like this place. They have great food. | I do not know. |
 
 #### 2.4.3 `answer_separate_questions_fewshots.csv`
-This file aids the system in breaking down complex user queries into simpler, individual questions. It requires 'question' (user's question) and 'individual_questions' (decomposed questions).
+This file aids the system in breaking down complex user queries into simpler, individual questions. It requires `question` (user's question) and `individual_questions` (decomposed questions).
 
 | question | individual_questions |
 |----------|----------------------|
@@ -313,7 +313,7 @@ This file aids the system in breaking down complex user queries into simpler, in
 | What are dishes, cocktails and types of wine do you recommend? | What dishes do you recommend?\nWhat cocktails do you recommend?\nWhat types of wine do you recommend? |
 
 #### 2.4.4 `answer_verify_metadata_resp_fewshots.csv`
-This file instructs the model to verify if a system-generated response accurately answers a user's query. It needs 'question' (user's question), 'answer' (the system's generated answer), and 'response' (indicates whether the generated answer meets the user's query).
+This file instructs the model to verify if a system-generated response accurately answers a user's query. It needs `question` (user's question), `answer` (the system's generated answer), and `response` (indicates whether the generated answer meets the user's query).
 
 | question | answer | response |
 |----------|--------|----------|
