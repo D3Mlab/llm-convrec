@@ -1,13 +1,4 @@
 # llm-convrec
-
-## Table of Content
-
-- [1. Introduction](#Introduction:)
-- [2. Installation and Running the System](#2-installation-and-running-the-system)
-- [3. Overall Conversation Flow](#3-overall-conversation-flow)
-- [4. Domain Initialization and Customization](#4-domain-initialization-and-customization)
-
-
 ## Introduction: A Semi-Structured Conversational Recommendation System
 LLM-ConvRec is a prompting-based, semi-structured conversational system that leverages the generative power of GPT to provide flexible and natural interaction. Unlike fully-structured conversational systems such as Siri, where utterances are often predefined and inflexible, LLM-ConvRec is designed for versatility and the production of more natural responses. Moreover, it incorporates past memory into the conversation, a feature often lacking in fully-structured systems.
 
@@ -15,8 +6,33 @@ While unstructured conversational systems like ChatGPT can produce fluid, engagi
 
 The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
 
+## Table of Content
 
-## Example Conversations:
+- [Introduction: A Semi-Structured Conversational Recommendation System](#introduction-a-semi-structured-conversational-recommendation-system)
+- [Example Conversation](#example-conversations)
+- [Installation and Running the System](#installation-and-running-the-system)
+    - [1. Clone the GitHub Repository](#1-clone-the-github-repository)
+    - [2. Navigate to the Project Directory](#2-navigate-to-the-project-directory)
+    - [3. Install the Required Packages](#3-install-the-required-packages)
+    - [4. Obtaining an OpenAI API Key and Configuring the .env file](#4-obtaining-an-openai-api-key-and-configuring-the-env-file)
+    - [5. Run the System](#5-run-the-system)
+- [Overall Conversation Flow](#overall-conversation-flow)
+    - [1. Intent Classification](#1-intent-classification)
+    - [2. State Update](#2-state-update)
+    - [3. Action Classification](#3-action-classification)
+    - [4. Response Generation](#4-response-generation)
+- [Domain Initialization and Customization](#domain-initialization-and-customization)
+    - [Quick Start](#quick-start)
+    - [1. Constraints Configuration](#1-constraints-configuration)
+    - [2. Few shots for prompts](#2-few-shots-for-prompts)
+    - [3. Hard-Coded Responses](#3-hard-coded-responses)
+    - [4. Filter Configs](#4-filter-configs)
+    - [5. Domain Specific Config](#5-domain-specific-config)
+    - [6. Data](#6-data)
+    - [7. User Defined Classes](#7-user-defined-classes)
+
+
+## Example Conversation:
 
 Demonstration using the restaurant domain:
 
@@ -107,6 +123,10 @@ If you want to run the clothing demo, execute following command in the terminal:
 python clothing_main.py
 ```
 
+Or, here is the link to the Google Colab for a quick start:
+
+https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+
 
 ## Overall Conversation Flow
 
@@ -136,10 +156,9 @@ With the updated state, the system then decides the action to take next. This co
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
 ### 4.Response Generation
-Once the action is chosen, the system generates a structured response that aligns with the decided action. The system ensures this response is in line with the ongoing conversation context and adheres to the system's semi-structured conversational style.
+Following the action classification, the system produces a response that corresponds with the determined action. This response creation leverages retrieval augmented information retrieval, which is particularly employed in 'recommend' and 'answer' actions.
 
-This process is repeated at each turn of the conversation, enabling LLM-ConvRec to provide a dynamic, interactive, and engaging conversational recommendation experience.
-
+The response is not only contextually in sync with the ongoing dialogue, but also respects the semi-structured conversation pattern that the system adheres to.
 
 ## Domain Initialization and Customization
 This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs. 
@@ -160,6 +179,13 @@ Here is the link to the Google Colab for a quick start:
 
 https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
 
+### Setting Up Customized Domain
+The domain specific files reside in the domain_specific folder, where there are two subfolders: classes and configs.
+1. The classes folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
+2. The config folder stores all of the domain specific configs necessary in order to make a recommendation.
+
+You must create a folder representing the new domain in both the config and classes folders. For example, we named the restaurant domain folder restaurant_configs in the config folder and restaurants in the classes folder.
+
 ## 1. Constraints Configuration
 
 To provide personalized recommendations, the LLM-ConvRec system takes into account user constraints that can be both explicit (provided directly by the user) or implicit (derived from the user's input). For efficient constraint management, it is crucial to set up a `constraints_config.csv` that defines the various constraints and their properties.
@@ -169,16 +195,17 @@ The `constraints_config.csv` file should include the following columns:
 - **key**: The constraint's key name.
 - **description**: Description of the constraint.
 - **is_cumulative**: A Boolean value (TRUE or FALSE) indicating if the constraint's value is cumulative. If `is_cumulative` is TRUE, the system appends the newly extracted values to the existing values of the constraint rather than overwriting them. If FALSE, any newly identified value replaces the previous value.
+- **in_explanation**: A Boolean value (TRUE or FALSE) indicating if the constraint's value should be considered when giving explanation about the item to the user, during recommendation stage.
 - **default_value**: The default value of the constraint when it is not specified by the user.
 
 Below is an example of how the `constraints_config.csv` file should look:
 
-| key | description | is_cumulative | default_value |
-|-----|-------------|---------------|---------------|
-| location | The desired location of the restaurants. | FALSE | None |
-| cuisine type | The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza"). | FALSE | None |
-| dish type | The desired menu item or dish in the restaurant that user shows interests. | TRUE | None |
-| type of meal | The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner"). | TRUE | None |
+| key | description | is_cumulative | in_explanation | default_value |
+|-----|-------------|---------------|----------------|---------------|
+| location | The desired location of the restaurants. | FALSE | FALSE          | None          |
+| cuisine type | The desired specific style of cooking or cuisine offered by the restaurants (e.g., "Italian", "Mexican", "Chinese"). This can be implicitly provided through dish type (e.g "italian" if dish type is "pizza"). | FALSE | TRUE           | None          |
+| dish type | The desired menu item or dish in the restaurant that user shows interests. | TRUE | TRUE|  None         |
+| type of meal | The desired category of food consumption associated with specific times of day (e.g., "breakfast", "lunch", "dinner"). | TRUE | TRUE           | None          |
 
 The configuration of these constraints will allow the system to capture user preferences more accurately, leading to more personalized and relevant recommendations.
 
@@ -246,7 +273,7 @@ The ability to track and update these evolving constraints allows the system to 
 This section provides details about the few-shot prompt CSV files required for the 'Answer' recommender action.
 
 #### 2.4.1 `answer_extract_category_fewshots.csv`
-This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (metadata category that corresponds to the user's question).
+This file helps in mapping user queries to metadata categories. It needs two columns: 'input' (user's question) and 'output' (one of the metadata field or one of the key in optional field).
 
 | input | output |
 |-------|--------|
@@ -299,6 +326,7 @@ Descriptions of each action:
 - **DefaultResponse**: Used when the system failed to classify an intent and cannot decide on any specific action until the user provides more information.
 - **NoRecommendation**: This response is given when the system cannot find a restaurant that meets the user's constraints.
 - **NoAnswer**: Used when the system cannot answer the user's question with the information it has retrieved.
+- **InitMessage**: This message is given to the user at the beginning. 
 
 Here are some examples:
 
@@ -312,6 +340,7 @@ Here are some examples:
 | DefaultResponse | Could you provide more information? |  |
 | NoRecommendation | Sorry, there is no restaurant that matches your constraints. |  |
 | NoAnswer | Please only ask questions about previously recommended restaurant. |  |
+| InitMessage | Hello there! I am a restaurant recommender. Please provide me with some preferences for what you are looking for. For example, location, cuisine type, or dish type. Thanks! |  |
 
 By providing these hard-coded responses, you can control the behavior of the system and ensure that the conversation flow remains on track.
 
@@ -381,6 +410,64 @@ This filter retains an item if it is not in the list of recommended items specif
 
 **metadata_field:** The field to use for checking whether an item is not in the value of `key_in_state`. Must be either `item_id` or `name`.
 
+
+## 5.domain specific config
+- domain name
+- file path to files, shouldnt change normally
+- EXPLANATION_METADATA_BLACKLIST: all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage
+
+## 6. Data
+
+The LLM-ConvRec system requires two main types of data: metadata and reviews.
+
+### 6.1 Metadata
+
+The metadata must include name and unique item identifiers (item_id) as keys(columns). Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. 
+
+In addition, the metadata must have an "optional" key where the value contains the key-value pairs of optional categories.
+
+An example of a metadata structure is as follows:
+
+
+{
+    {
+    "item_id": "001",
+    "name": "Brits Fish & Chips",
+    "address": "6940 77 Street NW",
+    "city": "Edmonton",
+    "categories": ["Fish & Chips", "Restaurants"],
+    "optional": {"GoodForKids": "True", "OutdoorSeating": "False"}
+    }...
+}
+
+### 6.2 Review data
+
+The review data must have two keys(columns): "item_id" and "review". 
+
+An example of a review file structure is as follows:
+
+{
+    {"item_id": "001", "review": "great!..."},
+    {"item_id": "001","review": "I like it..."},
+    {"item_id": "002","review": "this restaurant..."}..
+}
+    
+    
+
+## 7.User defined classes
+User defined classes are used to implement domain specific tasks, for example, filtering recommendations based off of specific constraints or metadata. You can create your own implementations of the following classes
+
+### Constraint Merger (state/constraints/constraint_merger.py):
+Defines special way to merge constraint 
+E.g. Location Merger merges two location using geocoding
+
+### Status (state/status.py): 
+Allows constraint to have custom status 
+E.g. location can be “invalid”, “valid”, or “specific”
+
+### Filter:
+Defines a way of filtering item based on the constraints and metadata 
+
 ### Location Filter
 
 This filter retains an item if it is close enough to one of the locations in `constraint_key`. "Close enough" means that the item falls within a circle whose radius is half the diagonal length of the location's boundary (or the `default_max_distance_in_km` if it is larger), with the location at the center.
@@ -392,36 +479,5 @@ This filter retains an item if it is close enough to one of the locations in `co
 **default_max_distance_in_km:** Default maximum distance in km. If half the diagonal length of the location boundary is smaller than this value, the filter will use the default distance as the circle radius.
 
 **geocoder_wrapper:** The geocoder wrapper to use.
-
-
-
-## 5.domain specific config
-- domain name
-- file path to files, shouldnt change normally
-
-## 6. Data
-
-The LLM-ConvRec system requires two main types of data: metadata and reviews.
-
-### 6.1 Metadata
-
-The metadata must include name and unique item identifiers (item_id) as keys. Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. The metadata fields could be populated based on the information available for each item.
-
-An example of a metadata structure is as follows:
-
-
-{
-    "item_id": "-3GD07waps96fB_okEwFqw",
-    "name": "Brits Fish & Chips",
-    "address": "6940 77 Street NW",
-    "city": "Edmonton",
-    "categories": ["Fish & Chips", "Restaurants"]
-}
-
-### 6.2 Review data
-
-
-## 7.User defined classes
-  
 
 
