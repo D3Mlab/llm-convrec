@@ -138,10 +138,9 @@ With the updated state, the system then decides the action to take next. This co
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
 ### 4.Response Generation
-Once the action is chosen, the system generates a structured response that aligns with the decided action. The system ensures this response is in line with the ongoing conversation context and adheres to the system's semi-structured conversational style.
+Following the action classification, the system produces a response that corresponds with the determined action. This response creation leverages retrieval augmented information retrieval, which is particularly employed in 'recommend' and 'answer' actions.
 
-This process is repeated at each turn of the conversation, enabling LLM-ConvRec to provide a dynamic, interactive, and engaging conversational recommendation experience.
-
+The response is not only contextually in sync with the ongoing dialogue, but also respects the semi-structured conversation pattern that the system adheres to.
 
 ## Domain Initialization and Customization
 This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs. 
