@@ -499,7 +499,7 @@ PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
 Then, create a domain_specific_config.yaml file and modify the file paths, similar to the below example:
 
 
-DOMAIN: <name of the domain as a noun> 
+DOMAIN: < domain_name_as_a_noun > 
 
 EXPLANATION_METADATA_BLACKLIST: < all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage >
 
