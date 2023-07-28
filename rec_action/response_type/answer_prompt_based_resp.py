@@ -1,38 +1,53 @@
-from rec_action.response_type.prompt_based_resp import PromptBasedResponse
-
-import logging
+from rec_action.response_type.response import Response
 from state.state_manager import StateManager
-from string import ascii_letters
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
 from intelligence.llm_wrapper import LLMWrapper
 from domain_specific_config_loader import DomainSpecificConfigLoader
-from jinja2 import Environment, FileSystemLoader
-from warning_observer import WarningObserver
-import threading
 from utility.thread_utility import start_thread
+from warning_observer import WarningObserver
+
+import logging
+import threading
+from jinja2 import Environment, FileSystemLoader
+from string import ascii_letters
+
 
 logger = logging.getLogger('answer')
 
 
-class AnswerPromptBasedResponse(PromptBasedResponse):
+class AnswerPromptBasedResponse(Response):
     """
     Class representing the prompt based response for answer
+
+    :param config: config for this system
+    :param llm_wrapper: wrapper of LLM used to generate response
+    :param filter_applier: object used to apply filter items
+    :param information_retriever: object used to retrieve item reviews based on the query
+    :param domain: domain of the recommendation (e.g. restaurants)
+    :param hard_coded_responses: list that defines every hard coded response
+    :param extract_category_few_shots: few shot examples used for extracting category from user's question
+    :param ir_prompt_few_shots: few shot examples used to answer question using IR
+    :param separate_qs_prompt_few_shots: few shot examples used to separate question in to multiple individual questions
+    :param verify_metadata_prompt_few_shots: few shot examples used to confirm whether metadata answering makes sense
+    :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
 
     _num_of_reviews_to_return: int
-    _filter_items: FilterApplier
+    _filter_applier: FilterApplier
     _information_retriever: InformationRetrieval
     _llm_wrapper: LLMWrapper
     _prompt: str
     _observers: list[WarningObserver]
 
-    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
+    def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
+                 extract_category_few_shots: list[dict], ir_prompt_few_shots: list[dict],
+                 separate_qs_prompt_few_shots: list[dict], verify_metadata_prompt_few_shots: list[dict],
                  observers=None) -> None:
         
-        self._filter_items = filter_items
+        self._filter_applier = filter_applier
         self._domain = domain
         self._observers = observers
 
@@ -73,19 +88,10 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         
         self.enable_threading = config['ENABLE_MULTITHREADING']
 
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-
-        self._extract_category_few_shots \
-            = domain_specific_config_loader.load_answer_extract_category_fewshots()
-
-        self._ir_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_ir_fewshots()
-
-        self._separate_qs_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_separate_questions_fewshots()
-
-        self._verify_metadata_prompt_few_shots \
-            = domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots()
+        self._extract_category_few_shots = extract_category_few_shots
+        self._ir_prompt_few_shots = ir_prompt_few_shots
+        self._separate_qs_prompt_few_shots = separate_qs_prompt_few_shots
+        self._verify_metadata_prompt_few_shots = verify_metadata_prompt_few_shots
 
     def get(self, state_manager: StateManager) -> str | None:
         """
@@ -102,8 +108,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         if curr_mentioned_items is not None:
 
-            user_questions = self._seperate_input_into_multiple_qs(
-                state_manager)
+            user_questions = self._separate_input_into_multiple_qs(state_manager)
             
             thread_list = []
 
@@ -187,10 +192,10 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         
         answers[question] = mult_item_resp
 
-    
-    def _seperate_input_into_multiple_qs(self, state_manager: StateManager) -> list[str]:
+    def _separate_input_into_multiple_qs(self, state_manager: StateManager) -> list[str]:
         """
         Takes the users input and splits it into a list of questions
+
         :param state_manager: the question extracted from the users input
         :returns: list of questions.
         """
@@ -211,16 +216,17 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
     def _create_resp_from_ir(self, question: str, curr_mentioned_item: RecommendedItem):
         """
         Returns the string to be returned to the user when using information retrieval
+
         :param question: the question extracted from the users input
         :param curr_mentioned_item: one of the recommended item user is currently referring to
-        :returns: resp to user.
+        :returns: response to user.
         """
         query = self.convert_state_to_query(
             question)
 
         logger.debug(f'Query: {query}')
 
-        item_index = self._filter_items.filter_by_current_item(curr_mentioned_item)
+        item_index = self._filter_applier.filter_by_current_item(curr_mentioned_item)
 
         try:
             reviews = self._information_retriever.get_best_matching_reviews_of_item(
@@ -230,7 +236,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
             return "I do not know."
 
         # flatten list because don't want to do preference elicitation
-        topk_reviews_flattened_list = [group[0] for group in reviews]
+        topk_reviews_flattened_list = [group[0] for group in reviews if len(group) != 0]
                     
         return self._format_review_resp(
             question, topk_reviews_flattened_list, curr_mentioned_item)
@@ -238,10 +244,11 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
     def _is_category_valid(self, classified_category: str, recommended_item: RecommendedItem) -> bool:
         """
         Returns a bool representing if the classified category is valid.
-        A cateogry is valid if it is classified into one of the categories the LLM is told to do.
-        :param classified_category: cateogry the LLM classified the user input into
-        :param recommended_item: object representing the reccommended item the user is referring to
-        :return: bool
+        A category is valid if it is classified into one of the categories the LLM is told to do.
+
+        :param classified_category: category the LLM classified the user input into
+        :param recommended_item: object representing the recommended item the user is referring to
+        :return: whether given category is valid
         """
         valid_categories = []
 
@@ -260,7 +267,7 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         :param resp: string representing the metadata response
         :param question: the question extracted from the users input
-        :returns: bool
+        :returns: whether metadata response makes sense
         """
 
         prompt = self.verify_metadata_template.render(
@@ -279,12 +286,10 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
 
         :param state_manager: current state representing the conversation
         :param all_answers: list of answers to the users question(s)
-        :return: str
+        :return: formatted response
         """
-        
-        resp = ""
 
-        if (len(all_answers) > 1):
+        if len(all_answers) > 1:
             user_input = state_manager.get("conv_history")[-1].get_content()
 
             prompt = self.format_mult_qs_template.render(
@@ -315,7 +320,8 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         
         return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
-    def _format_multiple_item_resp(self, question: str, current_mentioned_items: list[RecommendedItem], answers: dict) -> str:
+    def _format_multiple_item_resp(self, question: str, current_mentioned_items: list[RecommendedItem], answers: dict) \
+            -> str:
         """
         Returns the response for one question
 
@@ -323,10 +329,8 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         :param question: the question extracted from the users input
         :param current_mentioned_items: list of current items user is referring to
         :param answers: dict of answers to the users question where the key is the item and the value is the answer to the question
-        :return: str
+        :return: response for one question
         """
-        resp = ""
-
         curr_ment_item_names = [current_mentioned_item.get_name()
                                for current_mentioned_item in current_mentioned_items]
 
@@ -357,15 +361,17 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
         Removes the punctuation, spacing and capitalization from the input. Used to compare strings
 
         :param expr: string that you want make changes to
+        :return: cleaned text
         """
         return ''.join([letter.lower() for letter in expr if letter in ascii_letters])
 
-    def _extract_category_from_input(self, question: str, curr_item: RecommendedItem):
+    def _extract_category_from_input(self, question: str, curr_item: RecommendedItem) -> str:
         """
-        Returns the recommended item object from the users input.
+        Returns the category in the item that can answer the user's question.
+
         :param question: the question extracted from the users input
-        :param curr_item: object representing the reccommended item user is referring to 
-        :return: str.
+        :param curr_item: object representing the recommended item user is referring to
+        :return: category corresponding to the user's question
         """
 
         categories = ""
@@ -384,10 +390,11 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
     def _create_resp_from_metadata(self, question: str, category: str, recommended_item: RecommendedItem) -> str:
         """
         Returns the string to be returned to the user using metadata
+
         :param question: the question extracted from the users input
         :param category: category of metadata that information required to answer the question is stored
         :param recommended_item: object representing the reccommended item user is referring to 
-        :return: resp to user.
+        :return: response to user
         """
 
         resp = ""
@@ -405,18 +412,20 @@ class AnswerPromptBasedResponse(PromptBasedResponse):
     def convert_state_to_query(self, question: str) -> str:
         """
         Returns the string to be returned to be used as the query for information retrieval
-        :param question: the question extracted from the users input
-        :return: string.
-        """
 
+        :param question: the question extracted from the users input
+        :return: query
+        """
         return question
 
     def _format_review_resp(self, question: str, reviews: list[str], curr_item: RecommendedItem) -> str:
         """
         Returns the string to be returned to the user from the reviews
+
         :param question: the question extracted from the users input
         :param reviews: the list of reviews corresponding to user input
-        :return: string.
+        :param curr_item: item corresponding the user's question
+        :return: response to the user
         """
 
         try:

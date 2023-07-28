@@ -1,16 +1,18 @@
 import torch
+import faiss
 
 
 class VectorDataBase:
     """
-    This class functions as a vector database
+    This class wraps around FAISS vector database that stores embeddings corresponding to the reviews
 
     :param storage: Stores the vector database
     """
 
     _ntotal: int
+    _storage: faiss.Index
 
-    def __init__(self, storage):
+    def __init__(self, storage: faiss.Index):
         self._storage = storage
         self._ntotal = self._storage.ntotal
 
@@ -19,7 +21,6 @@ class VectorDataBase:
         This function finds the similarity between the query and the vectors in the database
 
         :param query: query embedding
-
         :return: The similarity score between the query and each vector in the database in respect to the index.
         """
         query = query.reshape(-1, self._storage.d)

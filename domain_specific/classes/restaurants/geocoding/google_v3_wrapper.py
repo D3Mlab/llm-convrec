@@ -2,6 +2,8 @@ from geopy import GoogleV3, Location
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 import os
+import dotenv
+dotenv.load_dotenv()
 
 
 class GoogleV3Wrapper(GeocoderWrapper):

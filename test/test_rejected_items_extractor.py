@@ -2,15 +2,20 @@ import os
 
 import pytest
 import pandas as pd
+import yaml
+import dotenv
 
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.item.item_loader import ItemLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from state.message import Message
 from user_intent.extractors.rejected_items_extractor import RejectedItemsExtractor
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
-test_file_path = 'test/rejected_clothing_extractor_test.csv'
-path_to_domain_configs = "domain_specific/configs/clothing_configs"
+dotenv.load_dotenv()
+
+test_file_path = 'test/rejected_restaurants_extractor_test.csv'
+path_to_domain_configs = "domain_specific/configs/restaurant_configs"
 test_df = pd.read_csv(test_file_path, encoding='latin1')
 test_data = [
     (
@@ -28,10 +33,12 @@ test_data = [
 
 class TestRejectedItemsExtractor:
 
-    @pytest.fixture(params=[GPTWrapper(os.environ['OPENAI_API_KEY'])])
+    @pytest.fixture(params=[GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
     def rejected_items_extractor(self, request):
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
+        with open('system_config.yaml') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
         yield RejectedItemsExtractor(request.param, domain_specific_config_loader.load_domain(),
                                      domain_specific_config_loader.load_rejected_items_fewshots(),
                                      domain_specific_config_loader.system_config)

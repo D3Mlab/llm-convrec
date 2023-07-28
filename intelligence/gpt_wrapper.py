@@ -1,20 +1,18 @@
-from typing import Optional
+from typing import Optional, Callable
 
 from warning_observer import WarningObserver
 from intelligence.llm_wrapper import LLMWrapper
-import os
 import logging
-from dotenv import load_dotenv
 import openai
 from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
     retry_if_exception_type,
+    Future,
+    RetryCallState,
 )
 
-
-load_dotenv()
 logger = logging.getLogger('gpt_wrapper')
 
 
@@ -22,6 +20,7 @@ class GPTWrapper(LLMWrapper):
     """
     Class for wrapping around the GPT LLM.
 
+    :param openai_api_key: api key for open ai used to access GPT
     :param model_name: name of the llm model
     :param temperature: temperature used for the model
     :param observers: list of observers that will get notified when gpt retry have occurred
@@ -84,7 +83,7 @@ class GPTWrapper(LLMWrapper):
         logger.debug(f"gpt_output=\"{response['choices'][0]['message']['content']}\"")
         return response['choices'][0]['message']['content']
 
-    def _notify_observers(self, attempt_number, outcome) -> None:
+    def _notify_observers(self, attempt_number: int, outcome: Future | None) -> None:
         """
         Notify the observer that re-request have occurred.
 
@@ -97,7 +96,7 @@ class GPTWrapper(LLMWrapper):
                 'outcome': outcome
             })
 
-    def _before_completion_sleep(self, retry_state) -> None:
+    def _before_completion_sleep(self, retry_state: RetryCallState) -> None:
         """
         Perform steps that should be done before re-requesting GPT.
         Log the retry details and notify the observers.
@@ -108,7 +107,7 @@ class GPTWrapper(LLMWrapper):
         self._notify_observers(retry_state.attempt_number, retry_state.outcome)
 
     @staticmethod
-    def _custom_retry(func):
+    def _custom_retry(func: Callable) -> Callable:
         """
         custom decorator for retry
 
@@ -140,7 +139,7 @@ class GPTWrapper(LLMWrapper):
         return wrapped
 
     @_custom_retry
-    def completion_with_backoff(self, *args, **kwargs):
+    def completion_with_backoff(self, *args, **kwargs) -> dict:
         """
         Wrapper for openai.ChatCompletion.create that retries when RateLimitError have occurred or if it takes
         too long to get the response.

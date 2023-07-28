@@ -12,6 +12,12 @@ import warnings
 import yaml
 import os
 
+
+"""
+Runs restaurant conversational recommendation system in terminal 
+"""
+
+
 warnings.simplefilter("default")
 logging.config.fileConfig('logging.conf')
 with open('system_config.yaml') as f:

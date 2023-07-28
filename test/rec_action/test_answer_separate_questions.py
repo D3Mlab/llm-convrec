@@ -3,10 +3,13 @@ import pytest
 import yaml
 import os
 from dotenv import load_dotenv
+
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 load_dotenv()
 
@@ -38,27 +41,42 @@ test_data2 = load_test_data(domain2)
 
 with open("system_config.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
-gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
 
+@pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
 class TestAnswerSeparateQuestions:
 
     @pytest.mark.parametrize('question, individual_questions', test_data1)
-    def test_separate_question_restaurant(self, question: str, individual_questions: str) -> None:
+    def test_separate_question_restaurant(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
-                                                None, "restaurants", None)
-        actual = answer_resp._seperate_input_into_multiple_qs(state_manager)
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
+                                                None, "restaurants", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
+        actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
                == str(individual_questions).lower().strip()
 
     @pytest.mark.parametrize('question, individual_questions', test_data2)
-    def test_separate_question_clothing(self, question: str, individual_questions: str) -> None:
+    def test_separate_question_clothing(self, llm_wrapper, question: str, individual_questions: str) -> None:
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', question))
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
-                                                None, "clothing", None)
-        actual = answer_resp._seperate_input_into_multiple_qs(state_manager)
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
+
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
+                                                None, "clothing", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
+        actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
                == str(individual_questions).lower().strip()

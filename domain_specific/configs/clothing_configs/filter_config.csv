@@ -1,4 +1,4 @@
 type_of_filter,key_in_state,metadata_field
-exact word matching,category,category
+word in,category,category
 value range,price range,price
 item,recommended_items,name

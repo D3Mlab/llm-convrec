@@ -3,7 +3,6 @@ import torch
 import pandas as pd
 from information_retrievers.embedder.bert_embedder import BERT_model
 from information_retrievers.search_engine.search_engine import SearchEngine
-from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class PDSearchEngine(SearchEngine):
@@ -18,11 +17,10 @@ class PDSearchEngine(SearchEngine):
     _reviews: np.ndarray
     _reviews_embedding_matrix: torch.Tensor
 
-    def __init__(self, embedder: BERT_model):
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        review_item_ids, reviews, self._reviews_embedding_matrix = \
-            domain_specific_config_loader.load_data_for_pd_search_engine()
+    def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
+                 reviews_embedding_matrix: torch.Tensor):
         super().__init__(embedder, review_item_ids, reviews)
+        self._reviews_embedding_matrix = reviews_embedding_matrix
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
                         item_indices_to_keep: list[int], unacceptable_similarity_range: float, max_number_similar_items: int) -> tuple[list, list]:

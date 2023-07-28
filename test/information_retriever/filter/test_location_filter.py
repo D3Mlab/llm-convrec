@@ -1,6 +1,7 @@
 import dotenv
 from domain_specific.classes.restaurants.location_filter import LocationFilter
 from state.common_state_manager import CommonStateManager
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 import pandas as pd
 import pytest
 
@@ -40,6 +41,6 @@ class TestLocationFilter:
         :param state_manager: state
         :param expected_indices: expected indices must be kept in the dataframe returned by the filter
         """
-        location_filter = LocationFilter("location", ["latitude", "longitude"], 2)
+        location_filter = LocationFilter("location", ["latitude", "longitude"], 2, GoogleV3Wrapper())
         filtered_metadata = location_filter.filter(state_manager, metadata)
         assert filtered_metadata.index.tolist() == expected_indices

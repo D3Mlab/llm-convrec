@@ -1,16 +1,18 @@
 from state.state_manager import StateManager
 from user_intent.user_intent import UserIntent
-from jinja2 import Environment, FileSystemLoader
-import yaml
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class AskForRecommendation(UserIntent):
     """
     Class representing Ask For Recommendation user intent.
+
+    :param config: config of the system
     """
 
-    def __init__(self, config):
+    template: Template
 
+    def __init__(self, config: dict):
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(
@@ -50,5 +52,4 @@ class AskForRecommendation(UserIntent):
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
         prompt = self.template.render(user_input=user_input)
-
         return prompt

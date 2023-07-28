@@ -1,4 +1,5 @@
 DOMAIN: clothing
+EXPLANATION_METADATA_BLACKLIST: [num_reviews]
 INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
 ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
 REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
@@ -13,7 +14,7 @@ ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: "answer_separate_questions_fewshots.csv
 ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: "answer_verify_metadata_resp_fewshots.csv"
 HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
 FILTER_CONFIG_FILE: "filter_config.csv"
-PATH_TO_ITEM_METADATA: "large_data/item_metadata.json"
-PATH_TO_REVIEWS: "large_data/items_reviews.csv"
-PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
-PATH_TO_DATABASE: "large_data/database.faiss"
+PATH_TO_ITEM_METADATA: "data/item_metadata.json"
+PATH_TO_REVIEWS: "data/items_reviews.csv"
+PATH_TO_EMBEDDING_MATRIX: "data/reviews_embedding_matrix.pt"
+PATH_TO_DATABASE: "data/database.faiss"

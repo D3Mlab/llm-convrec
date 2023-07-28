@@ -1,9 +1,9 @@
-key,description,is_cumulative,default_value
-category,Desired category of the clothing,TRUE,None
-brand,Desired brand or manufacturer of the clothing,TRUE,None
-design,Desired design or style of the clothing,TRUE,None
-occasion,Occasion or event associated with the clothing,TRUE,None
-material,Desired material of the clothing,FALSE,None
-price range,Desired price range of the clothing,TRUE,None
-size,Desired size of the clothing,TRUE,None
-others,Any additional constraints or preferred features.,TRUE,None
+key,description,is_cumulative,in_explanation,default_value
+category,Desired category of the clothing,TRUE,TRUE,None
+brand,Desired brand or manufacturer of the clothing,TRUE,TRUE,None
+design,Desired design or style of the clothing,TRUE,TRUE,None
+occasion,Occasion or event associated with the clothing,TRUE,TRUE,None
+material,Desired material of the clothing,FALSE,TRUE,None
+price range,Desired price range of the clothing,TRUE,TRUE,None
+size,Desired size of the clothing,TRUE,TRUE,None
+others,Any additional constraints or preferred features.,TRUE,TRUE,None

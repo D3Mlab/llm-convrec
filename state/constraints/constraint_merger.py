@@ -1,10 +1,20 @@
 
 class ConstraintMerger:
+    """
+    Class responsible for merging constraint during constraint update.
+
+    :param constraint: constraint key (e.g. "location") corresponding to this merger
+    """
     
-    def __init__(self, constraint):
+    def __init__(self, constraint: str):
         self._constraint = constraint
     
-    def get_constraint(self):
+    def get_constraint(self) -> str:
+        """
+        Return the constraint key corresponding to this merger.
+
+        :return: constraint key corresponding to this merger
+        """
         return self._constraint
 
     def merge_constraint(self, og_constraint_value, new_constraint_value) -> None:
@@ -13,6 +23,5 @@ class ConstraintMerger:
 
         :param og_constraint_value: old constraint value
         :param new_constraint_value: new constraint value
-        :return: 
         """
         raise NotImplementedError()

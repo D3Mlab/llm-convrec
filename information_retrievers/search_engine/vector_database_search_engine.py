@@ -3,7 +3,6 @@ import numpy as np
 from information_retrievers.embedder.bert_embedder import BERT_model
 from information_retrievers.vector_database import VectorDataBase
 from information_retrievers.search_engine.search_engine import SearchEngine
-from domain_specific_config_loader import DomainSpecificConfigLoader
 
 
 class VectorDatabaseSearchEngine(SearchEngine):
@@ -11,6 +10,9 @@ class VectorDatabaseSearchEngine(SearchEngine):
     Class that is responsible for searching for topk most relevant items using BERT_model.
 
     :param embedder: BERT_model to embed query
+    :param review_item_ids: item ids corresponding to reviews
+    :param reviews: reviews of the items
+    :param database: FAISS database containing embeddings of the reviews
     """
 
     _embedder: BERT_model
@@ -18,11 +20,10 @@ class VectorDatabaseSearchEngine(SearchEngine):
     _reviews: np.ndarray
     _database: VectorDataBase
 
-    def __init__(self, embedder: BERT_model):
-        domain_specific_config_loader = DomainSpecificConfigLoader()
-        review_item_ids, reviews, self._database =\
-            domain_specific_config_loader.load_data_for_vector_database_search_engine()
+    def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
+                 database: VectorDataBase):
         super().__init__(embedder, review_item_ids, reviews)
+        self._database = database
 
     def _similarity_score_each_review(self, query: torch.Tensor) -> torch.Tensor:
         """

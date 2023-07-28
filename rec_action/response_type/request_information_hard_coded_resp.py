@@ -1,15 +1,18 @@
-from rec_action.response_type.hard_coded_based_resp import HardCodedBasedResponse
+from rec_action.response_type.response import Response
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraints.constraint_status import ConstraintStatus
 
 
-class RequestInformationHardCodedBasedResponse(HardCodedBasedResponse):
+class RequestInformationHardCodedBasedResponse(Response):
     """
     Class representing the hard code based response for request information
+
+    :param hard_coded_responses: list that defines every hard coded response
+    :param constraint_statuses: objects that keep tracks the status of the constraints 
     """
     _hard_coded_responses: list[dict]
             
-    def __init__(self, hard_coded_responses: list[dict], constraint_statuses: list[Status]):
+    def __init__(self, hard_coded_responses: list[dict], constraint_statuses: list[ConstraintStatus]):
         self._hard_coded_responses = hard_coded_responses
         self._constraint_statuses = constraint_statuses
     

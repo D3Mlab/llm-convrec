@@ -1,46 +1,69 @@
 from state.state_manager import StateManager
-from typing import Dict, Any
 
 from information_retrievers.item.recommended_item import RecommendedItem
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.information_retrieval import InformationRetrieval
-from rec_action.response_type.prompt_based_resp import PromptBasedResponse
 from rec_action.response_type.recommend_resp import RecommendResponse
 
 from intelligence.llm_wrapper import LLMWrapper
 import logging
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from warning_observer import WarningObserver
 from utility.thread_utility import start_thread
 import threading
 
 logger = logging.getLogger('recommend')
 
-class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
+
+class RecommendPromptBasedResponse(RecommendResponse):
     """
     Class representing the prompt based response for recommend
+
+    :param llm_wrapper: wrapper of LLM used to generate response
+    :param filter_applier: object used to apply filter items
+    :param information_retriever: object used to retrieve item reviews based on the query
+    :param domain: domain of the recommendation (e.g. restaurants)
+    :param hard_coded_responses: list that defines every hard coded response
+    :param config: config for this system
+    :param constraint_categories: list of dictionaries that defines the constraint details
+    :param explanation_metadata_blacklist: list of metadata keys that should be ignored in recommendation explanation
+    :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
-    _observers: list[WarningObserver]
+
     _llm_wrapper: LLMWrapper
-    _filter_items: FilterApplier
+    _filter_applier: FilterApplier
     _information_retriever: InformationRetrieval
-    _topk_items: str
-    _topk_reviews: str
-    _convert_state_to_query_prompt: str
-    _explain_recommendation_prompt: str
-    _format_recommendation_prompt: str
-    _summarize_review_prompt: str
+    _hard_coded_responses: list[dict]
+    _constraint_categories: list[dict]
+    _explanation_metadata_blacklist: list[str]
+    _observers: list[WarningObserver]
+    _topk_items: int
+    _topk_reviews: int
+    _convert_state_to_query_prompt: Template
+    _explain_recommendation_prompt: Template
+    _format_recommendation_prompt: Template
+    _summarize_review_prompt: Template
+    query: str
+    explanation: dict
+    item_ids: list
+    enable_threading: str
 
-    def __init__(self, llm_wrapper: LLMWrapper, filter_items: FilterApplier,
-                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict], config: dict, observers = None):
-
+    def __init__(self, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
+                 information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
+                 config: dict, constraint_categories: list[dict], explanation_metadata_blacklist: list[str] = None,
+                 observers: list[WarningObserver] = None):
         super().__init__(domain)
-        
-        self._filter_items = filter_items
+
+        if explanation_metadata_blacklist is None:
+            explanation_metadata_blacklist = []
+
+        self._filter_applier = filter_applier
         self._information_retriever = information_retriever
         self._llm_wrapper = llm_wrapper
         self._observers = observers
         self._hard_coded_responses = hard_coded_responses
+        self._constraint_categories = constraint_categories
+        self._explanation_metadata_blacklist = explanation_metadata_blacklist
 
         self._topk_items = int(config["TOPK_ITEMS"])
         self._topk_reviews = int(config["TOPK_REVIEWS"])
@@ -70,8 +93,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         else:
             self._unacceptable_similarity_range = 0
             self._max_number_similar_items = 1
-            
-            
+
         self.enable_threading = config['ENABLE_MULTITHREADING']
        
     def get(self, state_manager: StateManager) -> str:
@@ -82,7 +104,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: response to be returned to user
         """
         
-        if (self.enable_threading):
+        if self.enable_threading:
             state_to_query_thread = threading.Thread(
                 target=self._get_query, args=(state_manager,))
 
@@ -110,7 +132,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
            prompt = self._get_prompt_to_ask_user_q(current_recommended_items, state_manager)
            resp = self._llm_wrapper.make_request(prompt)
         else:
-            self._current_recommended_items = [group[0] for group in current_recommended_items]
+            self._current_recommended_items = [group[0] for group in current_recommended_items if len(group) != 0]
                         
             self._get_explanation_for_each_item(state_manager)
             
@@ -137,9 +159,8 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         :return: None
         """
         self.item_ids = \
-            self._filter_items.apply_filter(state_manager)
-            
-    
+            self._filter_applier.apply_filter(state_manager)
+
     def _has_similar_items(self, current_recommended_items: list[list[RecommendedItem]]) -> bool:
         """
         See if the current recommended items are similar or if they are different enough to recommend
@@ -172,7 +193,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                     num_similar_items +=1
                 break
                         
-        if (state_manager.get('hard_constraints') is not None):
+        if state_manager.get('hard_constraints') is not None:
             constraints = state_manager.get('hard_constraints')
         
         if state_manager.get('soft_constraints') is not None:
@@ -212,12 +233,15 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         return query
     
     def get_current_recommended_items(self):
+        """
+        Get most recently recommended items
+        """
         return self._current_recommended_items 
 
     def _get_prompt_to_format_recommendation(self):
         """
         Get the prompt to get recommendation text with explanation.
-        :param explanation: explanation of why the items are recommended
+
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
@@ -227,9 +251,10 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         return self._format_recommendation_prompt.render(
             item_names=item_names, explanation=explanation_str, domain=self._domain)
 
-    def _get_explanation_for_each_item(self, state_manager: StateManager) -> dict[Any, str]:
+    def _get_explanation_for_each_item(self, state_manager: StateManager) -> None:
         """
         Returns the explanation on why recommending each item
+
         :param state_manager: current state representing the conversation
         :return: explanation for each item stored in dict where key is item name and value is explanation
         """
@@ -246,9 +271,13 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
             metadata = self._get_metadata_of_rec_item(rec_item)
             reviews = rec_item.get_most_relevant_review()
             try:
-                prompt = self._get_prompt_to_explain_recommendation(item_name, metadata, reviews,
-                                                                    hard_constraints, soft_constraints)
 
+                filtered_hard_constraints, filtered_soft_constraints = \
+                    self.get_constraints_for_explanation(hard_constraints, soft_constraints)
+
+                prompt = self._get_prompt_to_explain_recommendation(item_name, metadata, reviews,
+                                                                    filtered_hard_constraints,
+                                                                    filtered_soft_constraints)
                 explanation[item_name] = self._llm_wrapper.make_request(
                     prompt)
             except Exception as e:
@@ -270,9 +299,12 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                         summarize_review_prompt)
                     summarized_reviews.append(summarized_review)
 
-                prompt = self._get_prompt_to_explain_recommendation(item_name, metadata, summarized_reviews,
-                                                                    hard_constraints, soft_constraints)
+                filtered_hard_constraints, filtered_soft_constraints = \
+                    self.get_constraints_for_explanation(hard_constraints, soft_constraints)
 
+                prompt = self._get_prompt_to_explain_recommendation(item_name, metadata, summarized_reviews,
+                                                                    filtered_hard_constraints,
+                                                                    filtered_soft_constraints)
                 explanation[item_name] = self._llm_wrapper.make_request(
                     prompt)
 
@@ -282,6 +314,7 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
                                               hard_constraints: dict, soft_constraints: dict) -> str:
         """
         Get the prompt to get explanation.
+
         :param item_names: item name
         :param metadata: metadata of the item
         :param reviews: reviews of the item
@@ -296,21 +329,27 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
     def _get_prompt_to_summarize_review(self, constraints: dict, review: str) -> str:
         """
         Get prompt to summarize a review.
+
         :param constraints: both hard and soft constraints combined in current statemanager
         :param review: a review to be summarized
+        :return: prompt to summarize a review
         """
         constraints_str = ', '.join(
             [f'{key}: {val}' for key, val in constraints.items()])
         return self._summarize_review_prompt.render(constraints=constraints_str, review=review, domain=self._domain)
 
-    def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem):
+    def _get_metadata_of_rec_item(self, recommended_item: RecommendedItem) -> str:
         """
         Get metadata of an item used for recommend
+
         :param recommended_item: recommended item whose metadata to be returned
+        :return: string representation of metadata
         """
         attributes = ', '.join(
-            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items()] +
-            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items()])
+            [f'{key}: {val}' for key, val in recommended_item.get_mandatory_data().items() if key not in
+             self._explanation_metadata_blacklist] +
+            [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items() if key not in
+             self._explanation_metadata_blacklist])
         return attributes
     
     def _notify_observers(self) -> None:
@@ -319,3 +358,27 @@ class RecommendPromptBasedResponse(RecommendResponse, PromptBasedResponse):
         """
         for observer in self._observers:
             observer.notify_warning()
+
+    def get_constraints_for_explanation(self, hard_constraints: dict, soft_constraints: dict) -> tuple[dict, dict]:
+        """
+        Return hard and soft constraints that should be inputted to prompt for generating explanation for
+        recommendation.
+
+        :param hard_constraints: hard constraints in the current state
+        :param soft_constraints: soft constraints in the current state
+        :return: hard and soft constraints that should be inputted to prompt for generating
+                 explanation for recommendation.
+        """
+        filtered_hard_constraints = {}
+        for constraint in self._constraint_categories:
+            if constraint['in_explanation'] and constraint['key'] in hard_constraints:
+                filtered_hard_constraints[constraint['key']] = hard_constraints[constraint['key']]
+
+        if soft_constraints is not None:
+            filtered_soft_constraints = {}
+            for constraint in self._constraint_categories:
+                if constraint['in_explanation'] and constraint['key'] in soft_constraints:
+                    filtered_soft_constraints[constraint['key']] = soft_constraints[constraint['key']]
+        else:
+            filtered_soft_constraints = None
+        return filtered_hard_constraints, filtered_soft_constraints

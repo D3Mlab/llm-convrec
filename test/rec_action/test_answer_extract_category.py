@@ -3,12 +3,15 @@ import pytest
 import yaml
 import os
 from dotenv import load_dotenv
+
+from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from information_retrievers.item.item_loader import ItemLoader
-
+from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 
 load_dotenv()
+
 
 def load_test_data(domain: str) -> list[(str, str)]:
     """
@@ -43,10 +46,11 @@ gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 item_loader = ItemLoader()
 
 
+@pytest.mark.parametrize('llm_wrapper', [GPTWrapper(os.environ['OPENAI_API_KEY']), AlpacaLoraWrapper(os.environ['GRADIO_URL'])])
 class TestAnswerExtractCategory:
 
     @pytest.mark.parametrize('utterance, restaurant_attributes, expected_category', test_data1)
-    def test_extract_category_from_input_restaurant(self, utterance, restaurant_attributes,
+    def test_extract_category_from_input_restaurant(self, llm_wrapper, utterance, restaurant_attributes,
                                                     expected_category) -> None:
         dictionary_info = {"item_id": "id",
                            "name": "name",
@@ -63,14 +67,21 @@ class TestAnswerExtractCategory:
                            "categories": [],
                            "hours": {}}
         restaurant = item_loader.create_recommended_item("", dictionary_info, [""])
-        answer_resp = AnswerPromptBasedResponse(config,gpt_wrapper, None,
-                                                None, "restaurants", None)
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
+                                                None, "restaurants", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         actual = answer_resp._extract_category_from_input(utterance, restaurant)
         assert actual == expected_category
 
     @pytest.mark.parametrize('utterance, clothing_attributes, expected_category', test_data2)
-    def test_extract_category_from_input_clothing(self, utterance, clothing_attributes,
-                                                    expected_category) -> None:
+    def test_extract_category_from_input_clothing(self, llm_wrapper, utterance, clothing_attributes,
+                                                  expected_category) -> None:
         dictionary_info = {"item_id": "id",
                            "name": "name",
                            "category": "category",
@@ -81,7 +92,14 @@ class TestAnswerExtractCategory:
                            "rank": 0,
                            "optional": clothing_attributes}
         clothing = item_loader.create_recommended_item("", dictionary_info, [""])
-        answer_resp = AnswerPromptBasedResponse(config, gpt_wrapper, None,
-                                                None, "clothing", None)
+        config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/clothing_configs"
+        domain_specific_config_loader = DomainSpecificConfigLoader(config)
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, None,
+                                                None, "clothing", None,
+                                                domain_specific_config_loader.load_answer_extract_category_fewshots(),
+                                                domain_specific_config_loader.load_answer_ir_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
+                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                )
         actual = answer_resp._extract_category_from_input(utterance, clothing)
         assert actual == expected_category

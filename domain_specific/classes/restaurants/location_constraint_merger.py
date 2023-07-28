@@ -2,6 +2,7 @@ from state.constraints.constraint_merger import ConstraintMerger
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 
+
 class LocationConstraintMerger(ConstraintMerger):
     def __init__(self, geocoder_wrapper: GeocoderWrapper):
         super().__init__("location")

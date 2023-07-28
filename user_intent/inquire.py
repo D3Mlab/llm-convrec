@@ -1,9 +1,7 @@
 from state.state_manager import StateManager
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
-from jinja2 import Environment, FileSystemLoader
-import yaml
-
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class Inquire(UserIntent):
@@ -11,11 +9,18 @@ class Inquire(UserIntent):
     Class representing Inquire user intent.
 
     :param current_items_extractor: object used to extract the item that the user is referring to from the users input
+    :param few_shots: few shot examples used in the prompt
+    :param domain: domain of the recommendation (e.g. "restaurants")
+    :param config: config of the system
     """
 
     _current_items_extractor: CurrentItemsExtractor
+    _few_shots: list[dict]
+    _domain: str
+    template: Template
 
-    def __init__(self, current_items_extractor: CurrentItemsExtractor,few_shots: list[dict], domain: str, config: dict):
+    def __init__(self, current_items_extractor: CurrentItemsExtractor, few_shots: list[dict], domain: str,
+                 config: dict):
         self._current_items_extractor = current_items_extractor
         
         env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
@@ -47,23 +52,23 @@ class Inquire(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-
         # Update current item
-        reccommended_items = curr_state.get("recommended_items")
+        recommended_items = curr_state.get("recommended_items")
 
-        if reccommended_items is not None and reccommended_items != []:
+        if recommended_items is not None and recommended_items != []:
             curr_item = self._current_items_extractor.extract(
-                reccommended_items, curr_state.get("conv_history"))
+                recommended_items, curr_state.get("conv_history"))
 
             # If current item is [] then just keep it the same
-            if curr_item != []:
+            if curr_item:
                 curr_state.update("curr_items", curr_item)
 
         return curr_state
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
-        Returns prompt for generating True/False representing how likely the user input matches with the user intent of inquire
+        Returns prompt for generating True/False representing how likely the user input matches with the user intent of
+        inquire
 
         :param curr_state: current state representing the conversation
         :return: the prompt in string format

@@ -3,7 +3,7 @@ from state.message import Message
 from information_retrievers.item.recommended_item import RecommendedItem
 
 from string import punctuation
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class CurrentItemsExtractor:
@@ -12,9 +12,12 @@ class CurrentItemsExtractor:
 
     :param llm_wrapper: LLMWrapper used to extract items
     :param domain: domain of recommendation
+    :param curr_items_fewshots: few shot examples for the prompt
     """
     _llm_wrapper: LLMWrapper
     _domain: str
+    _few_shots: list
+    template: Template
 
     def __init__(self, llm_wrapper: LLMWrapper, domain: str, curr_items_fewshots: list, config: dict) -> None:
         self._llm_wrapper = llm_wrapper
@@ -25,16 +28,16 @@ class CurrentItemsExtractor:
                           trim_blocks=True, lstrip_blocks=True)
         self.template = env.get_template(config['CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME'])
 
-
-    def extract(self, recommended_items: list[list[RecommendedItem]], conv_history: list[Message]) -> RecommendedItem | None:
+    def extract(self, recommended_items: list[list[RecommendedItem]], conv_history: list[Message]) \
+            -> list[RecommendedItem] | None:
         """
         Extract the current item from the most recent user's input in the conv_history and
         return it.
 
-        :param recommended_items: current recommended items as a list of lists where each sublist are recommendations made in one turn.
+        :param recommended_items: current recommended items as a list of lists where each sublist are recommendations
+                                  made in one turn.
         :param conv_history: current conversation history
         :return current restaurant
-
         """
         prompt = self._generate_restaurants_update_prompt(
             conv_history, recommended_items)
@@ -46,17 +49,18 @@ class CurrentItemsExtractor:
 
         return curr_mentioned_items
 
-    def _generate_restaurants_update_prompt(self, conv_history: list[Message], recommended_restaurants: list[list[RecommendedItem]]) -> str:
+    def _generate_restaurants_update_prompt(self, conv_history: list[Message],
+                                            recommended_restaurants: list[list[RecommendedItem]]) -> str:
         """
-        Generate and return prompt for extracting current restaurants the user is referring to from the most recent user's input in the
-        conversation history.
+        Generate and return prompt for extracting current restaurants the user is referring to from the most
+        recent user's input in the conversation history.
 
         :param recommended_restaurants: recommended restaurants as a dictionary
         :param conv_history: current conversation history
         :return prompt for extracting current restaurant from the most recent user's input in the conversation history.
         """
-
-        recc_res_names = [current_mentioned_restaurant.get_name() for recommeded_restaurants_per_uttr in recommended_restaurants for current_mentioned_restaurant in recommeded_restaurants_per_uttr]
+        recc_res_names = [current_mentioned_restaurant.get_name() for recommended_restaurants_per_uttr in
+                          recommended_restaurants for current_mentioned_restaurant in recommended_restaurants_per_uttr]
 
         curr_ment_res_names_str = ", ".join(recc_res_names)
 
@@ -72,28 +76,27 @@ class CurrentItemsExtractor:
         :param llm_response: response from LLM
         :return string
         """
-
         return llm_response.strip(punctuation + " ")
 
-    def _get_objects_from_llm_response(self, recommended_restaurants: list[list[RecommendedItem]], llm_response: str) -> RecommendedItem:
+    def _get_objects_from_llm_response(self, recommended_items: list[list[RecommendedItem]], llm_response: str) \
+            -> list[RecommendedItem]:
         """
-        Verify that the response is one of the recommended restaurants and return the object
+        Verify that the response is one of the recommended items and return the object
 
-        :param recommended_restaurants: current recommended restaurants as a list of lists
+        :param recommended_items: current recommended items as a list of lists
         :param llm_response: response from LLM
-        :return RecommendedRestaurant
-
+        :return recommended items corresponding to the llm response
         """
-        restaurants = []
+        items = []
 
         if llm_response == 'None':
-            return restaurants
+            return items
 
-        llm_resp_restaurants = llm_response.split(',')
+        llm_resp_items = llm_response.split(',')
 
-        for recommended_restaurants_per_turn in recommended_restaurants:
-            for recommended_restaurant in recommended_restaurants_per_turn:
-                if recommended_restaurant.get_name() in llm_resp_restaurants:
-                    restaurants.append(recommended_restaurant)
+        for recommended_items_per_turn in recommended_items:
+            for recommended_item in recommended_items_per_turn:
+                if recommended_item.get_name() in llm_resp_items:
+                    items.append(recommended_item)
 
-        return restaurants
+        return items

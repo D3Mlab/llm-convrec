@@ -1,15 +1,13 @@
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraints.constraint_status import ConstraintStatus
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 
-class LocationStatus(Status):
+class LocationStatus(ConstraintStatus):
     """
     Class representing the status for location constraint
     """
-    _constraint: str
-    _status_types: list[str]
-    _state_key: str
+    _geocoder_wrapper: GeocoderWrapper
     
     def __init__(self, geocoder_wrapper: GeocoderWrapper):
         super().__init__("location")
@@ -18,9 +16,10 @@ class LocationStatus(Status):
 
     def update_status(self, curr_state: StateManager):
         """
-        update the location type in the state to None, 'invalid', 'valid'.
+        Update the status of the constraint
 
-        :param curr_state: current state of the conversation
+        :param curr_state: current representation of the state
+        :return: None
         """
         hard_constraints = curr_state.get('hard_constraints')
         if hard_constraints is None or hard_constraints.get('location') is None:
@@ -39,7 +38,13 @@ class LocationStatus(Status):
         else:
             self._curr_status = "valid"
 
-    def get_response_from_status(self):
+    def get_response_from_status(self) -> str | None:
+        """
+        Gets recommender response based off of constraints status
+        Returns none if constraint is satisfied.
+
+        :return: recommender response
+        """
         if self._curr_status == "specific" or self._curr_status is None:
             return None
         elif self._curr_status == "invalid":

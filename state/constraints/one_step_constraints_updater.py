@@ -1,7 +1,5 @@
 import re
 
-import yaml
-
 from intelligence.llm_wrapper import LLMWrapper
 from state.constraints.constraints_updater import ConstraintsUpdater
 from state.constraints.constraint_merger import ConstraintMerger
@@ -18,22 +16,23 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     :param constraints_categories: list of all possible constraint categories and its details
     :param few_shots: details including the input and ouput of the fewshot examples of the prompt
     :param domain: domain of the recommendation
+    :param user_defined_constraint_mergers:
+    :param config: config of the system
     """
 
-    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict],
-                 few_shots: list[dict], domain: str, user_defined_constraint_mergers: list[ConstraintMerger],
-                 config: dict):
+    def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict], few_shots: list[dict],
+                 domain: str, user_defined_constraint_mergers: list[ConstraintMerger], config: dict):
         self._llm_wrapper = llm_wrapper
         self._constraints_categories = constraints_categories
         self._constraint_keys = [
             constraint_category['key'] for constraint_category in constraints_categories]
         self._cumulative_constraints_keys = [constraint_category['key'] for constraint_category in
                                              constraints_categories if constraint_category['is_cumulative']]
-        self._key_to_default_value = {constraint_category["key"]: constraint_category["default_value"] for constraint_category in constraints_categories}
+        self._key_to_default_value = {constraint_category["key"]: constraint_category["default_value"] for
+                                      constraint_category in constraints_categories}
         
         self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
-
 
         env = Environment(loader=FileSystemLoader(
             config['CONSTRAINTS_PROMPT_PATH']))
@@ -99,12 +98,12 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                 if not state_manager.get("hard_constraints")[key]:
                     state_manager.get('hard_constraints').pop(key)
         
-        #Update constraint to default value if applicable
+        # Update constraint to default value if applicable
         for key, default_val in self._key_to_default_value.items():
             if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None:
                 # Update hard constraints 
                 state_manager.get('hard_constraints')[key] = [default_val]
-                #Update updated keys
+                # Update updated keys
                 state_manager.get("updated_keys")["hard_constraints"][key] = True
 
     def _generate_prompt(self, state_manager: StateManager) -> str:
@@ -115,19 +114,14 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :return: prompt for updating constraints
         """
         conv_history = state_manager.get('conv_history')
-        curr_user_input = conv_history[-1].get_content() if len(
-            conv_history) >= 1 else ""
-        prev_rec_response = conv_history[-2].get_content() if len(
-            conv_history) >= 2 else ""
-        prev_user_input = conv_history[-3].get_content() if len(
-            conv_history) >= 3 else ""
+        curr_user_input = conv_history[-1].get_content() if len(conv_history) >= 1 else ""
+        prev_rec_response = conv_history[-2].get_content() if len(conv_history) >= 2 else ""
+        prev_user_input = conv_history[-3].get_content() if len(conv_history) >= 3 else ""
 
         return self.template.render(user_input=curr_user_input, prev_rec_response=prev_rec_response,
                                     prev_user_input=prev_user_input,
-                                    hard_constraints=state_manager.get(
-                                        "hard_constraints"),
-                                    soft_constraints=state_manager.get(
-                                        "soft_constraints"),
+                                    hard_constraints=state_manager.get("hard_constraints"),
+                                    soft_constraints=state_manager.get("soft_constraints"),
                                     few_shots=self._few_shots,
                                     constraint_categories=self._constraints_categories,
                                     domain=self._domain)
