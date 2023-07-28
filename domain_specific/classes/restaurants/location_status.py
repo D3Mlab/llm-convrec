@@ -1,9 +1,9 @@
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraint_status import ConstraintStatus
 from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
 
 
-class LocationStatus(Status):
+class LocationStatus(ConstraintStatus):
     """
     Class representing the status for location constraint
     """

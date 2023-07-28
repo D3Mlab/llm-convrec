@@ -1,8 +1,5 @@
-from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import GeocoderWrapper
-from domain_specific.classes.restaurants.location_status import Status
-
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraint_status import ConstraintStatus
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
@@ -22,12 +19,13 @@ class ProvidePreference(UserIntent):
     """
     _constraints_updater: ConstraintsUpdater
     _current_items_extractor: CurrentItemsExtractor
-    _constraint_statuses: list[Status]
+    _constraint_statuses: list[ConstraintStatus]
     template: Template
     enable_threading: bool
 
     def __init__(self, constraints_updater: ConstraintsUpdater,
-                 current_items_extractor: CurrentItemsExtractor, constraint_statuses: list[Status], config: dict):
+                 current_items_extractor: CurrentItemsExtractor, constraint_statuses: list[ConstraintStatus],
+                 config: dict):
         self._constraints_updater = constraints_updater
         self._current_items_extractor = current_items_extractor
                 

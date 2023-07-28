@@ -10,30 +10,31 @@ transformers.logging.set_verbosity_error()
    Modified based on  https://github.com/D3Mlab/rir/blob/main/prefernce_matching/LM.py
 """
 
+
 class BERT_model:
     
-    _BERT_name: str
+    _bert_name: str
     _name1: str
     _name2: str
     _device: torch.device
     
-    def __init__(self, BERT_name, tokenizer_name, from_pt=False):
+    def __init__(self, bert_name, tokenizer_name, from_pt=False):
         """
-        :param BERT_name: name or address of language prefernce_matching
+        :param bert_name: name or address of language prefernce_matching
         :param tokenizer_name: name or address of the tokenizer
         """
-        self._BERT_name = BERT_name
+        self._bert_name = bert_name
         self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-        self._bert_model, self._name1, self._name2 = self._create_model(BERT_name, from_pt)
+        self._bert_model, self._name1, self._name2 = self._create_model(bert_name, from_pt)
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
            
     def embed(self, texts: list[str], strategy=None, bs=48, verbose=0):
         """_summary_
 
         :param texts: list of strings to be embedded
-        :param strategy (optional): Defaults to None.
-        :param bs (optional): Defaults to 48.
-        :param verbose (optional): Defaults to 0.
+        :param strategy: Defaults to None.
+        :param bs: Defaults to 48.
+        :param verbose: Defaults to 0.
         :return: embeddings of texts
         """
         tokenized_review = self._tokenizer.batch_encode_plus(
@@ -41,15 +42,14 @@ class BERT_model:
             max_length=512,
             add_special_tokens=True,
             truncation=True,
-            # truncation_strategy='longest_first',
             padding="max_length",
             return_token_type_ids=True,
         )
 
-        data = {self._name1: tokenized_review['input_ids'],
-                self._name2: tokenized_review['attention_mask'],
-                # 'input_3': tokenized_review['token_type_ids']
-                }
+        data = {
+            self._name1: tokenized_review['input_ids'],
+            self._name2: tokenized_review['attention_mask'],
+        }
         
         if strategy is not None:
             with strategy.scope():
@@ -76,24 +76,21 @@ class BERT_model:
 
         return query_embedding
     
-    def _create_model(self, BERT_name, from_pt=True):
-        ## BERT encoder
-        encoder = TFAutoModel.from_pretrained(BERT_name, from_pt=True)
+    def _create_model(self, bert_name, from_pt=True):
+        # BERT encoder
+        encoder = TFAutoModel.from_pretrained(bert_name, from_pt=True)
 
-        ## Model
+        # Model
         input_ids = layers.Input(shape=(None,), dtype=tf.int32)
         attention_mask = layers.Input(shape=(None,), dtype=tf.int32)
-        # token_type_ids = layers.Input(shape=(None,), dtype=tf.int32)
 
         embedding = encoder(
-            # input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids
             input_ids=input_ids, attention_mask=attention_mask
         )
 
         model = keras.Model(
-            # inputs=[input_ids, attention_mask, token_type_ids],
-            inputs = [input_ids, attention_mask],
-            outputs = embedding)
+            inputs=[input_ids, attention_mask],
+            outputs=embedding)
 
         model.compile()
         return model, input_ids.name, attention_mask.name

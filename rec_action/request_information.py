@@ -1,6 +1,6 @@
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraint_status import ConstraintStatus
 from user_intent.ask_for_recommendation import AskForRecommendation
 from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
 from state.message import Message
@@ -16,10 +16,10 @@ class RequestInformation(RecAction):
     :param priority_score_range: range of scores for classifying recaction
     """
     _mandatory_constraints: list[list[str]]
-    _constraint_statuses: list[Status]
+    _constraint_statuses: list[ConstraintStatus]
     _request_info_resp: RequestInformationHardCodedBasedResponse
 
-    def __init__(self, constraint_statuses: list[Status], hard_coded_responses: list[dict],
+    def __init__(self, constraint_statuses: list[ConstraintStatus], hard_coded_responses: list[dict],
                  request_info_resp: RequestInformationHardCodedBasedResponse,
                  priority_score_range: tuple[float, float] = (1, 10)) -> None:
         super().__init__(priority_score_range)

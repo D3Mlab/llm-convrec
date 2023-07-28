@@ -150,9 +150,8 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :return: None
         """
         self.item_ids = \
-            self._filter_items.apply_filter(state_manager)
-            
-    
+            self._filter_applier.apply_filter(state_manager)
+
     def _has_similar_items(self, current_recommended_items: list[list[RecommendedItem]]) -> bool:
         """
         See if the current recommended items are similar or if they are different enough to recommend

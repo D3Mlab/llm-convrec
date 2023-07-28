@@ -1,7 +1,7 @@
 from state.state_manager import StateManager
 
 
-class Status:
+class ConstraintStatus:
     """
     Abstract class representing the status for a constraint
     """
@@ -17,14 +17,13 @@ class Status:
         Update the status of the constraint
 
         :param curr_state: current representation of the state
-        :return: None
         """
         raise NotImplementedError()
 
     def get_response_from_status(self) -> str | None:
         """
         Gets recommender response based off of constraints status. 
-        Returns none if constraint is satisfied.
+        Returns None if there are no response corresponding to the current status.
 
         :return: recommender response
         """

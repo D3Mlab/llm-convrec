@@ -14,16 +14,12 @@ from rec_action.post_rejection_action import PostRejectionAction
 from dialogue_manager import DialogueManager
 from state.common_state_manager import CommonStateManager
 from state.constraints.one_step_constraints_updater import OneStepConstraintsUpdater
-from state.constraints.safe_constraints_remover import SafeConstraintsRemover
 from user.terminal import Terminal
 from user.gradio import GradioInterface
 from user.user_interface import UserInterface
 from user_intent.accept_recommendation import AcceptRecommendation
 from user_intent.ask_for_recommendation import AskForRecommendation
-from state.constraints.constraints_classifier import ConstraintsClassifier
-from state.constraints.constraints_remover import ConstraintsRemover
 from user_intent.extractors.accepted_items_extractor import AcceptedItemsExtractor
-from state.constraints.key_value_pair_constraints_extractor import KeyValuePairConstraintsExtractor
 from user_intent.extractors.rejected_items_extractor import RejectedItemsExtractor
 from user_intent.inquire import Inquire
 from user_intent.provide_preference import ProvidePreference
@@ -34,7 +30,6 @@ from rec_action.common_rec_actions_classifier import CommonRecActionsClassifier
 from information_retrievers.embedder.statics import *
 from information_retrievers.embedder.bert_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
-from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from information_retrievers.search_engine.pd_search_engine import PDSearchEngine
 from information_retrievers.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
@@ -42,7 +37,6 @@ from information_retrievers.metadata_wrapper import MetadataWrapper
 from information_retrievers.filter.filter_applier import FilterApplier
 from information_retrievers.filter.filter import Filter
 from information_retrievers.information_retrieval import InformationRetrieval
-from rec_action.response_type.recommend_hard_coded_based_resp import RecommendHardCodedBasedResponse
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
@@ -92,52 +86,19 @@ class ConvRecSystem(WarningObserver):
 
         hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
 
-        # Constraints
+        # Initialize Constraints related objects
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-
-        #TODO: generalize 3 step constraints updater
-        if config['CONSTRAINTS_UPDATER'] == "three_steps_constraints_updater":
-            constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints_categories, config)
-            constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints_categories, config)
-            if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = ConstraintsRemover(
-                    llm_wrapper, constraints_categories, config)
-            else:
-                constraints_remover = None
-            
-            constraints_updater = ThreeStepsConstraintsUpdater(
-                constraints_extractor, constraints_classifier, constraints_categories,
-                constraints_remover=constraints_remover)
-        
-        elif config['CONSTRAINTS_UPDATER'] == "safe_three_steps_constraints_updater":
-            constraints_extractor = KeyValuePairConstraintsExtractor(
-                llm_wrapper, constraints_categories, config)
-            constraints_classifier = ConstraintsClassifier(
-                llm_wrapper, constraints_categories, config)
-            if config['ENABLE_CONSTRAINTS_REMOVAL']:
-                constraints_remover = SafeConstraintsRemover(
-                    llm_wrapper, constraints_categories, config)
-            else:
-                constraints_remover = None
-            
-            constraints_updater = ThreeStepsConstraintsUpdater(
-                constraints_extractor, constraints_classifier, constraints_categories,
-                constraints_remover=constraints_remover)
-       
+        if config['LLM'] == "Alpaca Lora":
+            temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
         else:
-            if config['LLM'] == "Alpaca Lora":
-                temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
-            else:
-                temperature_zero_llm_wrapper = GPTWrapper(
-                    openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
+            temperature_zero_llm_wrapper = GPTWrapper(
+                openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
+        constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
+                                                        constraints_categories,
+                                                        constraints_fewshots, domain,
+                                                        user_defined_constraint_mergers, config)
 
-            constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
-                                                            constraints_categories,
-                                                            constraints_fewshots, domain,
-                                                            user_defined_constraint_mergers, config)
         # Initialize Extractors
         accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
         rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
@@ -192,10 +153,7 @@ class ConvRecSystem(WarningObserver):
         # Initialize Rec Action
         recc_resp = RecommendPromptBasedResponse(llm_wrapper, filter_item, information_retrieval, domain,
                                                  hard_coded_responses, config, observers=[self])
- 
-        if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
-            recc_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
-        
+
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
         requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses, user_constraint_status_objects)
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
@@ -203,7 +161,7 @@ class ConvRecSystem(WarningObserver):
 
         rec_actions = [Answer(answer_resp),
                        ExplainPreference(),
-                       Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp, config),
+                       Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp),
                        RequestInformation(user_constraint_status_objects, hard_coded_responses, requ_info_resp), 
                        PostRejectionAction(reject_resp),
                        PostAcceptanceAction(accept_resp)]

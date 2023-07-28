@@ -3,9 +3,8 @@ import faiss
 
 
 class VectorDataBase:
-    #TODO: maybe change the wording ehre? not very clear?
     """
-    This class functions as a vector database
+    This class wraps around FAISS vector database that stores embeddings corresponding to the reviews
 
     :param storage: Stores the vector database
     """
@@ -13,7 +12,7 @@ class VectorDataBase:
     _ntotal: int
     _storage: faiss.Index
 
-    def __init__(self, storage):
+    def __init__(self, storage: faiss.Index):
         self._storage = storage
         self._ntotal = self._storage.ntotal
 

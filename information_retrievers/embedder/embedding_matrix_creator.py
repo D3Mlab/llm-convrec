@@ -70,7 +70,7 @@ class EmbeddingMatrixCreator:
         """
         Create embedding matrix storing all the embeddings of the reviews from vector database.
 
-        :param database: vector database database storing all embeddings
+        :param database: vector database storing all embeddings
         :param output_filepath: file path to save the embedding matrix
         """
         num_embeddings = database.ntotal

@@ -3,7 +3,6 @@ TOPK_REVIEWS: 3
 IR_BERT_MODEL_NAME: "TASB"
 USER_INTENTS_CLASSIFIER: "MultilabelUserIntentsClassifier"
 NUM_REVIEWS_TO_RETURN: 3
-CONSTRAINTS_UPDATER: "one_step_constraints_updater"
 INTENT_PROMPTS_PATH: "prompt_files/gpt/user_intent_prompts"
 INQUIRE_PROMPT_FILENAME: "inquire_prompt.jinja"
 PROVIDE_PREFERENCE_PROMPT_FILENAME: "provide_preference_prompt.jinja"
@@ -22,10 +21,6 @@ ENABLE_CONSTRAINTS_REMOVAL: True
 
 CONSTRAINTS_PROMPT_PATH: "prompt_files/gpt/constraints_prompts"
 ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME: "one_step_constraints_updater_prompt.jinja"
-CONSTRAINTS_EXTRACTOR_PROMPT_FILENAME: "constraints_extractor_prompt.jinja"
-CONSTRAINTS_CLASSIFIER_PROMPT_FILENAME: "constraints_classifier_prompt.jinja"
-CONSTRAINTS_REMOVER_PROMPT_FILENAME: "constraints_remover_prompt.jinja"
-CONSTRAINTS_REMOVE_CHECK_PROMPT_FILENAME: "constraints_remove_check_prompt.jinja"
 ITEMS_EXTRACTOR_PROMPT_PATH: "prompt_files/gpt/items_extractor_prompts"
 ACCEPTED_ITEMS_EXTRACTOR_PROMPT_FILENAME: "accepted_items_extractor_prompt.jinja"
 REJECTED_ITEMS_EXTRACTOR_PROMPT_FILENAME: "rejected_items_extractor_prompt.jinja"
@@ -47,8 +42,7 @@ PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"
 SEARCH_ENGINE: "vector database"
 LLM: "GPT"
-RECOMMEND_RESPONSE_TYPE: "prompt"
 ENABLE_MULTITHREADING: True
 UNACCEPTABLE_SIMILARITY_SCORE_RANGE: 0.5
 MAX_NUMBER_SIMILAR_ITEMS: 5
-ENABLE_PREFERENCE_ELICITATION: True
+ENABLE_PREFERENCE_ELICITATION: False

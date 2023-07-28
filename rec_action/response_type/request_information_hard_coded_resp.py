@@ -1,6 +1,6 @@
 from rec_action.response_type.response import Response
 from state.state_manager import StateManager
-from state.status import Status
+from state.constraint_status import ConstraintStatus
 
 
 class RequestInformationHardCodedBasedResponse(Response):
@@ -11,7 +11,7 @@ class RequestInformationHardCodedBasedResponse(Response):
     """
     _hard_coded_responses: list[dict]
             
-    def __init__(self, hard_coded_responses: list[dict], constraint_statuses: list[Status]):
+    def __init__(self, hard_coded_responses: list[dict], constraint_statuses: list[ConstraintStatus]):
         self._hard_coded_responses = hard_coded_responses
         self._constraint_statuses = constraint_statuses
     

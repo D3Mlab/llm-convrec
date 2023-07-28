@@ -4,7 +4,7 @@ from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
 from state.message import Message
 import logging
-from state.status import Status
+from state.constraint_status import ConstraintStatus
 
 logger = logging.getLogger('recommend')
 
@@ -15,18 +15,17 @@ class Recommend(RecAction):
 
     :param constraint_statuses: objects that keep tracks the status of the constraints
     :param recommend_response: object used to generate the response corresponding to this rec action
-    :param config: config of this system
     :param priority_score_range: range of scores for classifying recaction
     """
 
     _mandatory_constraints: list[list[str]]
-    _constraint_statuses: list[Status]
+    _constraint_statuses: list[ConstraintStatus]
     _recommend_response: RecommendResponse
     _is_hard_coded_response: bool
 
     def __init__(self, constraint_statuses: list,
                  hard_coded_response_list: list[dict], recommend_response: RecommendResponse,
-                 config: dict, priority_score_range=(1, 10)):
+                 priority_score_range=(1, 10)):
         super().__init__(priority_score_range)
 
         self._mandatory_constraints = [response_dict['constraints'] for response_dict in hard_coded_response_list
@@ -34,11 +33,6 @@ class Recommend(RecAction):
                                        and response_dict['constraints'] != []]
         self._constraint_statuses = constraint_statuses
         self._recommend_response = recommend_response
-        
-        if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
-            self._is_hard_coded_response = True
-        else:
-            self._is_hard_coded_response = False
 
     def get_name(self) -> str:
         """
@@ -72,7 +66,7 @@ class Recommend(RecAction):
 
         :return: whether hard coded response exists or not.
         """
-        return self._is_hard_coded_response
+        return False
 
     def get_priority_score(self, state_manager: StateManager) -> float:
         """
