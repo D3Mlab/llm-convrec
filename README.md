@@ -4,6 +4,11 @@
 
 - [Introduction: A Semi-Structured Conversational Recommendation System](#introduction-a-semi-structured-conversational-recommendation-system)
 - [Installation and Running the System](#installation-and-running-the-system)
+    - [1. Clone the GitHub Repository](#1-clone-the-github-repository)
+    - [2. Navigate to the Project Directory](#2-navigate-to-the-project-directory)
+    - [3. Install the Required Packages](#3-install-the-required-packages)
+    - [4. Obtaining an OpenAI API Key and Configuring the .env file](#4-obtaining-an-openai-api-key-and-configuring-the-env-file)
+    - [5. Run the System](#5-run-the-system)
 - [Overall Conversation Flow](#overall-conversation-flow)
 - [Domain Initialization and Customization](#domain-initialization-and-customization)
     - [Quick Start](#quick-start)
