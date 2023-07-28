@@ -1,5 +1,5 @@
 DOMAIN: clothing
-EXPLANATION_METADATA_BLACKLIST: [num_reviews]
+EXPLANATION_METADATA_BLACKLIST: ["num_reviews", "rating"]
 INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
 ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
 REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
