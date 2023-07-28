@@ -500,24 +500,43 @@ Then, create a domain_specific_config.yaml file and modify the file paths, simil
 
 
 DOMAIN: <name of the domain as a noun> 
+
 EXPLANATION_METADATA_BLACKLIST: < all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage >
+
 INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
+
 ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
+
 REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
+
 CONSTRAINTS_CATEGORIES: "constraints_config.csv"
+
 CONSTRAINTS_UPDATER_FEWSHOTS: "constraints_updater_fewshots.csv"
+
 ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "accepted_items_extractor_fewshots.csv"
+
 REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "rejected_items_extractor_fewshots.csv"
+
 CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "current_items_extractor_fewshots.csv"
+
 ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: "answer_extract_category_fewshots.csv"
+
 ANSWER_IR_FEWSHOTS_FILE: "answer_ir_fewshots.csv"
+
 ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: "answer_separate_questions_fewshots.csv"
+
 ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: "answer_verify_metadata_resp_fewshots.csv"
+
 HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
+
 FILTER_CONFIG_FILE: "filter_config.csv"
+
 PATH_TO_ITEM_METADATA: "large_data/item_metadata.json"
+
 PATH_TO_REVIEWS: "large_data/items_reviews.csv"
+
 PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
+
 PATH_TO_DATABASE: "large_data/database.faiss"
 
 
