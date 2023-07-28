@@ -27,9 +27,9 @@ The system retains important information about the conversation, ensuring that c
     - [2. Few shots for prompts](#2-few-shots-for-prompts)
     - [3. Hard-Coded Responses](#3-hard-coded-responses)
     - [4. Filter Configs](#4-filter-configs)
-    - [5. Domain Specific Config](#5-domain-specific-config)
-    - [6. Data](#6-data)
-    - [7. User Defined Classes](#7-user-defined-classes)
+    - [5. Data](#5-data)
+    - [6. User Defined Classes](#6-user-defined-classes)
+    - [7. Domain Specific Config](#7-domain-specific-config)
 
 
 ## Example Conversation:
@@ -134,28 +134,28 @@ The LLM-ConvRec system follows a precise process during each conversation turn t
 
 Examples to demonstrate these categories are from the restaurant recommendation domain.
 
-### 1.Intent Classification
+### 1. Intent Classification
 The conversation begins with user input. This input is passed to an Intent Classifier, which determines the user's intent. The intent could be any or multiple of the following:
 
 - **Provide Preference:** The user expresses a preference or interest. (Example: "I'd like to eat some sushi.")
 - **Inquire:** The user asks a question about a specific item or detail. (Example: "What's on their menu? Does the restaurant have a patio?")
 - **Accept/Reject Recommendation:** The user responds to a previous recommendation made by the system.(Example: "Sure, that first one sounds good!")
 
-### 2.State Update
+### 2. State Update
 After identifying the user's intent, the system updates its internal state. This state stores critical information gathered during the conversation, including:
 
 - **User's Preferences and Constraints:** These include their location, budget, dietary restrictions, etc.
 - **Current Item of Interest:** The specific item (e.g., restaurant) the user is currently referring to or interested in.
 - **Accepted and Rejected Items:** The system keeps track of the items that the user has accepted or rejected.
 
-### 3.Action Classification
+### 3. Action Classification
 With the updated state, the system then decides the action to take next. This could be any of the following:
 
 - **Request Information:** The system may ask the user for additional details to refine its understanding or recommendations. (Example: "Can you provide your location?")
 - **Give Recommendation:** The system might suggest an item that matches the user's stated preferences.
 - **Answer a Question:** If the user asked a question in their last utterance, the system would provide an appropriate answer.
 
-### 4.Response Generation
+### 4. Response Generation
 Following the action classification, the system produces a response that corresponds with the determined action. This response creation leverages retrieval augmented information retrieval, which is particularly employed in 'recommend' and 'answer' actions.
 
 The response is not only contextually in sync with the ongoing dialogue, but also respects the semi-structured conversation pattern that the system adheres to.
@@ -418,18 +418,13 @@ This filter retains an item if it is not in the list of recommended items specif
 **metadata_field:** The field to use for checking whether an item is not in the value of `key_in_state`. Must be either `item_id` or `name`.
 
 
-## 5. Domain Specific Config
-- domain name
-- file path to files, shouldnt change normally
-- EXPLANATION_METADATA_BLACKLIST: all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage
-
-## 6. Data
+## 5. Data
 
 The LLM-ConvRec system requires two main types of data: metadata and reviews.
 
-### 6.1 Metadata
+### 5.1 Metadata
 
-The metadata must include name and unique item identifiers (item_id) as keys(columns). Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. 
+The metadata must include name (name) and unique item identifiers (item_id) as keys(columns). Each item can have various other keys representing different types of metadata, such as location, type of cuisine, cost, etc. It is not necessary for all items to have a value for every metadata field. 
 
 In addition, the metadata must have an "optional" key where the value contains the key-value pairs of optional categories.
 
@@ -447,21 +442,21 @@ An example of a metadata structure is as follows:
     }...
 }
 
-### 6.2 Review data
+### 5.2 Review data
 
-The review data must have two keys(columns): "item_id" and "review". 
+The review data must have two keys(columns): "item_id" and "Review". 
 
 An example of a review file structure is as follows:
 
-{
-    {"item_id": "001", "review": "great!..."},
-    {"item_id": "001","review": "I like it..."},
-    {"item_id": "002","review": "this restaurant..."}..
-}
-    
-    
+| item_id | Review            |
+|---------|-------------------|
+| 001     | great!            |
+| 001     | I like it         |
+| 002     | this restaurant...|
 
-## 7. User defined classes
+Note that the order of item_id in the review data must correspond to the order in the metadata.
+
+## 6. User defined classes
 User defined classes are used to implement domain specific tasks, for example, merging constraints in a specialized way. 
 You can create your own implementations of the following classes:
 
@@ -487,5 +482,39 @@ This filter retains an item if it is close enough to one of the locations in `co
 **default_max_distance_in_km:** Default maximum distance in km. If half the diagonal length of the location boundary is smaller than this value, the filter will use the default distance as the circle radius.
 
 **geocoder_wrapper:** The geocoder wrapper to use.
+
+## 7. Domain specific Config
+
+Once all the mentioned csv files and data files have been created, they can be put into one folder under the domain_specific/configs folder, and then modify the PATH_TO_DOMAIN_CONFIGS to be:
+
+PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
+
+Then, create a domain_specific_config.yaml file and modify the file paths, similar to the below example:
+
+DOMAIN: <name of the domain as a noun> 
+EXPLANATION_METADATA_BLACKLIST: < all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage >
+INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
+ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
+REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
+CONSTRAINTS_CATEGORIES: "constraints_config.csv"
+CONSTRAINTS_UPDATER_FEWSHOTS: "constraints_updater_fewshots.csv"
+ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "accepted_items_extractor_fewshots.csv"
+REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "rejected_items_extractor_fewshots.csv"
+CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "current_items_extractor_fewshots.csv"
+ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: "answer_extract_category_fewshots.csv"
+ANSWER_IR_FEWSHOTS_FILE: "answer_ir_fewshots.csv"
+ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: "answer_separate_questions_fewshots.csv"
+ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: "answer_verify_metadata_resp_fewshots.csv"
+HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
+FILTER_CONFIG_FILE: "filter_config.csv"
+PATH_TO_ITEM_METADATA: "large_data/item_metadata.json"
+PATH_TO_REVIEWS: "large_data/items_reviews.csv"
+PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
+PATH_TO_DATABASE: "large_data/database.faiss"
+
+
+
+
+
 
 
