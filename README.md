@@ -366,7 +366,7 @@ By providing these hard-coded responses, you can control the behavior of the sys
 
 The `filter_config.csv` is a configuration file that allows you to specify the filters you want to apply in the system. This CSV file consists of three columns: `type_of_filter`, and `item`.
 
-- `type_of_filter`: This column specifies the type of filter you want to use. Valid types include `"exact word matching"`, `"word in"`, `"value range"`, `"item"`, and `"location"`.
+- `type_of_filter`: This column specifies the type of filter you want to use. Valid types include `"exact word matching"`, `"word in"`, `"value range"`, and `"item"`.
 
 - `key_in_state`: This column lists the keys in the hard constraint that you want to check against `metadata_field`. Depending on the filter type, this could be a list of keys or a single key.
 
