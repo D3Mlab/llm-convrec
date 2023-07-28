@@ -457,8 +457,8 @@ An example of a review file structure is as follows:
 
 | item_id | Review            |
 |---------|-------------------|
-| 001     | great!            |
-| 001     | I like it         |
+| 001     | great! ...        |
+| 001     | I like it ...     |
 | 002     | this restaurant...|
 
 Note that the order of item_id in the review data must correspond to the order in the metadata.
