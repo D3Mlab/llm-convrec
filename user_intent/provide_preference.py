@@ -1,5 +1,5 @@
 from state.state_manager import StateManager
-from state.constraint_status import ConstraintStatus
+from state.constraints.constraint_status import ConstraintStatus
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor

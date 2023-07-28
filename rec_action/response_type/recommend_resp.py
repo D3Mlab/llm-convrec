@@ -5,7 +5,7 @@ class RecommendResponse(Response):
     """
     Class representing the recommend rec action response
 
-    domain: domain of the recommendation (e.g. restaurants)
+    :param domain: domain of the recommendation (e.g. restaurants)
     """
     def __init__(self, domain: str):
         self._current_recommended_items = []

@@ -1,6 +1,6 @@
 from rec_action.rec_action import RecAction
 from state.state_manager import StateManager
-from state.constraint_status import ConstraintStatus
+from state.constraints.constraint_status import ConstraintStatus
 from user_intent.ask_for_recommendation import AskForRecommendation
 from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
 from state.message import Message

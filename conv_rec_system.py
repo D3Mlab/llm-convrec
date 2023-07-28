@@ -23,7 +23,6 @@ from user_intent.extractors.accepted_items_extractor import AcceptedItemsExtract
 from user_intent.extractors.rejected_items_extractor import RejectedItemsExtractor
 from user_intent.inquire import Inquire
 from user_intent.provide_preference import ProvidePreference
-from user_intent.classifiers.prompt_based_user_intents_classifier import PromptBasedUserIntentsClassifier
 from user_intent.classifiers.multilabel_user_intents_classifier import MultilabelUserIntentsClassifier
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from rec_action.common_rec_actions_classifier import CommonRecActionsClassifier
@@ -137,12 +136,9 @@ class ConvRecSystem(WarningObserver):
                             accepted_items_extractor, curr_items_extractor, accept_classification_fewshots, domain, config),
                         RejectRecommendation(rejected_items_extractor, curr_items_extractor, reject_classification_fewshots, domain, config)]
 
-        if config["USER_INTENTS_CLASSIFIER"] == "MultilabelUserIntentsClassifier":
-            user_intents_classifier = MultilabelUserIntentsClassifier(
-                user_intents, llm_wrapper, config, True)
-        else:
-            user_intents_classifier = PromptBasedUserIntentsClassifier(
-                user_intents, llm_wrapper)
+        user_intents_classifier = MultilabelUserIntentsClassifier(
+            user_intents, llm_wrapper, config, True)
+
         
         # Initialize State
         state = CommonStateManager(

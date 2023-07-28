@@ -1,7 +1,6 @@
 TOPK_ITEMS: 2
 TOPK_REVIEWS: 3
 IR_BERT_MODEL_NAME: "TASB"
-USER_INTENTS_CLASSIFIER: "MultilabelUserIntentsClassifier"
 NUM_REVIEWS_TO_RETURN: 3
 INTENT_PROMPTS_PATH: "prompt_files/gpt/user_intent_prompts"
 INQUIRE_PROMPT_FILENAME: "inquire_prompt.jinja"
@@ -16,8 +15,6 @@ EXPLAIN_RECOMMENDATION_PROMPT_FILENAME: "explain_recommendation_prompt.jinja"
 FORMAT_RECOMMENDATION_PROMPT_FILENAME: "format_recommendation_prompt.jinja"
 NO_MATCHING_ITEM_PROMPT_FILENAME: "no_matching_item_prompt.jinja"
 SUMMARIZE_REVIEW_PROMPT_FILENAME: "summarize_review_prompt.jinja"
-ENABLE_LOCATION_MERGE: True
-ENABLE_CONSTRAINTS_REMOVAL: True
 
 CONSTRAINTS_PROMPT_PATH: "prompt_files/gpt/constraints_prompts"
 ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME: "one_step_constraints_updater_prompt.jinja"
@@ -40,7 +37,7 @@ PREFERENCE_ELICITATION_PROMPT: "preference_elicitation_prompt.jinja"
 
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"
-SEARCH_ENGINE: "vector database"
+SEARCH_ENGINE: "pandas"
 LLM: "GPT"
 ENABLE_MULTITHREADING: True
 UNACCEPTABLE_SIMILARITY_SCORE_RANGE: 0.5

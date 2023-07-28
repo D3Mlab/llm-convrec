@@ -4,7 +4,7 @@ from state.state_manager import StateManager
 from user_intent.ask_for_recommendation import AskForRecommendation
 from state.message import Message
 import logging
-from state.constraint_status import ConstraintStatus
+from state.constraints.constraint_status import ConstraintStatus
 
 logger = logging.getLogger('recommend')
 

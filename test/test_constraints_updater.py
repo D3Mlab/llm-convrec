@@ -6,12 +6,7 @@ import re
 
 from intelligence.gpt_wrapper import GPTWrapper
 from state.common_state_manager import CommonStateManager
-from state.constraints.constraints_classifier import ConstraintsClassifier
-from state.constraints.constraints_remover import ConstraintsRemover
-from state.constraints.key_value_pair_constraints_extractor import KeyValuePairConstraintsExtractor
 from state.constraints.one_step_constraints_updater import OneStepConstraintsUpdater
-from state.constraints.safe_constraints_remover import SafeConstraintsRemover
-from state.constraints.three_steps_constraints_updater import ThreeStepsConstraintsUpdater
 from state.message import Message
 from domain_specific_config_loader import DomainSpecificConfigLoader
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
@@ -74,32 +69,18 @@ class TestConstraintsUpdater:
         ]
 
     @pytest.fixture(params=[
-        ('one_step_constraints_updater', GPTWrapper(os.environ['OPENAI_API_KEY'], temperature=0)),
-        ('one_step_constraints_updater', AlpacaLoraWrapper(os.environ['GRADIO_URL'], temperature=0))
+        (GPTWrapper(os.environ['OPENAI_API_KEY'], temperature=0)),
+        (AlpacaLoraWrapper(os.environ['GRADIO_URL'], temperature=0))
     ])
     def updater(self, request, constraints, cumulative_constraints):
         domain_specific_config_loader = DomainSpecificConfigLoader()
         domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-        if request.param[0] == 'one_step_constraints_updater':
-            yield OneStepConstraintsUpdater(request.param[1], constraints_categories,
-                                            constraints_fewshots, domain_specific_config_loader.load_domain(), [],
-                                            domain_specific_config_loader.system_config)
-        else:
-            constraints_extractor = KeyValuePairConstraintsExtractor(
-                request.param[1], constraints)
-            constraints_classifier = ConstraintsClassifier(request.param[1], constraints)
+        yield OneStepConstraintsUpdater(request.param[0], constraints_categories,
+                                        constraints_fewshots, domain_specific_config_loader.load_domain(), [],
+                                        domain_specific_config_loader.system_config)
 
-            if request.param[0] == 'three_steps_constraints_updater':
-                constraints_remover = ConstraintsRemover(request.param[1], default_keys=constraints)
-            else:
-                constraints_remover = SafeConstraintsRemover(request.param[1], default_keys=constraints)
-            yield ThreeStepsConstraintsUpdater(
-                    constraints_extractor, constraints_classifier, request.param[2],
-                    constraints_remover=constraints_remover,
-                    cumulative_constraints=cumulative_constraints,
-                    enable_location_merge=True)
 
     @pytest.mark.parametrize('utterances,old_hard_constraints,old_soft_constraints,new_hard_constraints,new_soft_constraints', test_data)
     def test_single_turn_constraints_update_with_classification(self, updater, utterances, old_hard_constraints,
