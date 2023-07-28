@@ -11,8 +11,10 @@ class GoogleV3Wrapper(GeocoderWrapper):
     """
     Wrapper for GoogleV3 geocoder.
 
-    :param mandatory_address_keys: keys used to determine if location is specific enough
+    :param mandatory_address_keys: key used to determine if location is specific enough
     """
+
+    _geocoder_history: dict[str, Location]
 
     def __init__(self, mandatory_address_keys=None):
         super().__init__()
@@ -20,6 +22,7 @@ class GoogleV3Wrapper(GeocoderWrapper):
             mandatory_address_keys = {'route', 'intersection'}
         self._geocoder = GoogleV3(api_key=os.environ['GOOGLE_API_KEY'])
         self._mandatory_address_keys = mandatory_address_keys
+        self._geocoder_history = {}
 
     def geocode(self, query, **kwargs) -> Location:
         """
@@ -29,7 +32,9 @@ class GoogleV3Wrapper(GeocoderWrapper):
         :param kwargs: other arguments
         :return: location object corresponding to the given query
         """
-        return self._geocoder.geocode(query, **kwargs)
+        if query not in self._geocoder_history:
+            self._geocoder_history[query] = self._geocoder.geocode(query, **kwargs)
+        return self._geocoder_history[query]
 
     def is_location_specific(self, location: Location) -> bool:
         """

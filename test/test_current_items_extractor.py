@@ -1,68 +1,72 @@
 import pandas as pd
 import pytest
+import os
+import dotenv
 
-from information_retrievers.item.recommended_item import RecommendedItem
-from information_retrievers.item.item import Item
+from domain_specific_config_loader import DomainSpecificConfigLoader
+from information_retrievers.item.item_loader import ItemLoader
 from intelligence.gpt_wrapper import GPTWrapper
 from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from state.common_state_manager import CommonStateManager
 from state.message import Message
 
-domain = "clothings"
-test_file_path = 'test/current_clothing_extractor_test.csv'
+dotenv.load_dotenv()
+
+test_file_path = 'test/current_restaurants_extractor_test.csv'
+path_to_domain_configs = "domain_specific/configs/restaurant_configs"
 test_df = pd.read_csv(test_file_path)
 
-recommended_restaurants = []
+recommended_items = []
 test_data = []
 
+item_loader = ItemLoader()
 for col in test_df.to_dict("records"):
     row = [col["user_input"]]
     if col["current_item_names"] != "None.":
 
-        list_curr_restaurant_names = col["current_item_names"][:-1].split(
+        list_curr_item_names = col["current_item_names"][:-1].split(
             ',')
-        one_turn_reccommended_restaurants = []
+        one_turn_reccommended_items = []
 
-        for curr_restaurant_name in list_curr_restaurant_names:
-            dictionary_info = {"name": curr_restaurant_name,
-                               "address": "address",
-                               "city": "city",
-                               "state": "state",
-                               "postal_code": "postal_code",
-                               "latitude": 0,
-                               "longitude": 0,
-                               "stars": 0,
-                               "review_count": 0,
-                               "is_open": True,
-                               "optional": {},
-                               "categories": [],
-                               "hours": {}}
-            recommended_restaurant = RecommendedItem(Item("item_id", dictionary_info), "", [])
-            one_turn_reccommended_restaurants.append(recommended_restaurant)
+        for curr_item_name in list_curr_item_names:
+            dictionary_info = {
+                "item_id": "",
+                "name": curr_item_name,
+                "optional": {}
+            }
+            recommended_item = item_loader.create_recommended_item("", dictionary_info, [])
+            one_turn_reccommended_items.append(recommended_item)
 
-        row.append(one_turn_reccommended_restaurants)
-        recommended_restaurants.append(one_turn_reccommended_restaurants)
+        row.append(one_turn_reccommended_items)
+        recommended_items.append(one_turn_reccommended_items)
     else:
         row.append([])
 
     test_data.append(row)
 
 for row in test_data:
-    row.append(recommended_restaurants)
+    row.append(recommended_items)
 
 
-class TestCurrRestaurantsExtractor:
+class TestCurrItemsExtractor:
 
-    @pytest.mark.parametrize('user_input,list_curr_restaurant_objs,recommended_restaurants', tuple(test_data))
-    def test_extract_category_from_input(self, user_input, list_curr_restaurant_objs, recommended_restaurants) -> None:
-        gpt_wrapper = GPTWrapper()
+    @pytest.mark.parametrize('user_input,list_curr_item_objs,recommended_items', tuple(test_data))
+    def test_extract_category_from_input(self, user_input, list_curr_item_objs, recommended_items) -> None:
+        gpt_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+        domain_specific_config_loader = DomainSpecificConfigLoader()
+        domain_specific_config_loader.system_config['PATH_TO_DOMAIN_CONFIGS'] = path_to_domain_configs
 
         state_manager = CommonStateManager(set())
         state_manager.update_conv_history(Message('user', user_input))
 
         conv_history = state_manager.get("conv_history")
 
-        extractor = CurrentItemsExtractor(gpt_wrapper, domain)
+        extractor = CurrentItemsExtractor(
+            gpt_wrapper,
+            domain_specific_config_loader.load_domain(),
+            domain_specific_config_loader.load_current_items_fewshots(),
+            domain_specific_config_loader.system_config
+        )
 
-        answer = extractor.extract(recommended_restaurants, conv_history)
-        assert list_curr_restaurant_objs == answer
+        answer = extractor.extract(recommended_items, conv_history)
+        assert list_curr_item_objs == answer

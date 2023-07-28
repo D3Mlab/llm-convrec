@@ -1,6 +1,5 @@
 import openai.error
 
-from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from information_retrievers.item.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
@@ -197,9 +196,8 @@ class ConvRecSystem(WarningObserver):
         if config['RECOMMEND_RESPONSE_TYPE'] == 'hard coded':
             recc_resp = RecommendHardCodedBasedResponse(llm_wrapper, filter_item, information_retrieval, domain, config, hard_coded_responses)
         
-        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain,
-                                                hard_coded_responses, observers=[self])
-        requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retrieval, domain, hard_coded_responses,observers=[self])
+        requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses, user_constraint_status_objects)
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
 

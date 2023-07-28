@@ -17,7 +17,7 @@ dotenv.load_dotenv()
 
 metadata = pd.read_json("test/information_retriever/filter/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper()
-metadata_wrapper._items_metadata = metadata
+metadata_wrapper.items_metadata = metadata
 
 exact_word_matching_filter = ExactWordMatchingFilter(["cuisine type"], "categories")
 word_in_filter = WordInFilter(["cuisine type"], "categories")
