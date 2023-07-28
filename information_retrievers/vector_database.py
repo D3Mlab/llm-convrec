@@ -1,7 +1,9 @@
 import torch
+import faiss
 
 
 class VectorDataBase:
+    #TODO: maybe change the wording ehre? not very clear?
     """
     This class functions as a vector database
 
@@ -9,6 +11,7 @@ class VectorDataBase:
     """
 
     _ntotal: int
+    _storage: faiss.Index
 
     def __init__(self, storage):
         self._storage = storage
@@ -19,7 +22,6 @@ class VectorDataBase:
         This function finds the similarity between the query and the vectors in the database
 
         :param query: query embedding
-
         :return: The similarity score between the query and each vector in the database in respect to the index.
         """
         query = query.reshape(-1, self._storage.d)
