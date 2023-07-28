@@ -6,7 +6,6 @@ from intelligence.gpt_wrapper import GPTWrapper
 from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 from warning_observer import WarningObserver
 from rec_action.answer import Answer
-from rec_action.explain_preference import ExplainPreference
 from rec_action.recommend import Recommend
 from rec_action.request_information import RequestInformation
 from rec_action.post_acceptance_action import PostAcceptanceAction
@@ -171,7 +170,6 @@ class ConvRecSystem(WarningObserver):
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
 
         rec_actions = [Answer(answer_resp),
-                       ExplainPreference(),
                        Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp),
                        RequestInformation(user_constraint_status_objects, hard_coded_responses, requ_info_resp), 
                        PostRejectionAction(reject_resp),
