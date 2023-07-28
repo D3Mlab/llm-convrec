@@ -1,7 +1,9 @@
 from rec_action.request_information import RequestInformation
 from state.common_state_manager import CommonStateManager
 from state.state_manager import StateManager
+from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import GoogleV3Wrapper
 from rec_action.response_type.request_information_hard_coded_resp import RequestInformationHardCodedBasedResponse
+from domain_specific.classes.restaurants.location_status import LocationStatus
 import pytest
 
 hard_coded_responses = [{'action': 'RequestInformation',
@@ -10,7 +12,7 @@ hard_coded_responses = [{'action': 'RequestInformation',
                         {'action': 'RequestInformation',
                          'response': 'Do you have any other preferences?',
                          'constraints': []}]
-request_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses)
+request_info_resp = RequestInformationHardCodedBasedResponse([], [LocationStatus(GoogleV3Wrapper())])
 request_info = RequestInformation([], hard_coded_responses, request_info_resp)
 
 state_manager1 = CommonStateManager(set())

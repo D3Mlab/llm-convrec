@@ -15,6 +15,7 @@ from rec_action.response_type.request_information_hard_coded_resp import Request
 from rec_action.response_type.accept_hard_code_resp import AcceptHardCodedBasedResponse
 from rec_action.response_type.reject_hard_code_resp import RejectHardCodedBasedResponse
 from intelligence.gpt_wrapper import GPTWrapper
+from domain_specific_config_loader import DomainSpecificConfigLoader
 import yaml
 import os
 from dotenv import load_dotenv
@@ -25,6 +26,7 @@ with open("system_config.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
 llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
+domain_specific_config_loader = DomainSpecificConfigLoader(config)
 domain = "restaurants"
 
 
@@ -136,9 +138,9 @@ class TestCommonRecActionsClassifier:
         """
         recc_resp = RecommendPromptBasedResponse(None, None, None, domain,
                                                  [], config, [])
-
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
                                                 [], [], [], [], [])
+
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
@@ -167,6 +169,7 @@ class TestCommonRecActionsClassifier:
 
         answer_resp = AnswerPromptBasedResponse(config, None, None, None, domain,
                                                 [], [], [], [], [])
+
         requ_info_resp = RequestInformationHardCodedBasedResponse([], [])
         accept_resp = AcceptHardCodedBasedResponse([])
         reject_resp = RejectHardCodedBasedResponse([])
