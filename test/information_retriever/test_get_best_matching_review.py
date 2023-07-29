@@ -42,14 +42,14 @@ BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
 embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
+items_metadata = pd.read_json("test/information_retriever/data/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
-reviews_df = pd.read_csv("test/information_retriever/data/Edmonton_restaurants_review.csv")
+reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
 domain_specific_config_loader = DomainSpecificConfigLoader(config)
 
 filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
 search_engine = PDSearchEngine(embedder, reviews_df["item_id"].to_numpy(), reviews_df["Review"].to_numpy(),
-                               torch.load("test/information_retriever/data/matrix.pt"))
+                               torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"))
 information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
 llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
@@ -80,7 +80,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
         :param expected_review: review that the function is supposed to return 
         """
         recommended_item = item_loader.create_recommended_item(
-            "", metadata_wrapper.get_item_dict_from_index(index_of_restaurant), [""])
+            "", metadata_wrapper.items_metadata.loc[index_of_restaurant].to_dict(), [""])
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retriever,
                                                 "restaurant", hard_coded_responses,
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),

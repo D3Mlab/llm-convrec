@@ -24,23 +24,6 @@ class MetadataWrapper:
         item_metadata = self.items_metadata.loc[self.items_metadata['item_id'] == item_id].iloc[0]
         return item_metadata.to_dict()
 
-    def get_item_dict_from_index(self, index: int) -> dict[str, Any]:
-        """
-        Return item metadata as a dictionary from index.
-
-        :param index: index to the item in the metadata
-        :return: item metadata
-        """
-        return self.items_metadata.loc[index]
-
-    def get_num_item(self) -> int:
-        """
-        Return the number of items.
-
-        :return: number of items
-        """
-        return self.items_metadata.shape[0]
-
     def get_metadata(self) -> pd.DataFrame:
         """
         Return the metadata dataframe.

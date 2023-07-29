@@ -64,7 +64,7 @@ config = {
 
 word_in_filter = WordInFilter(["cuisine type", "dish type"], "categories")
 location_filter = LocationFilter("location", ["latitude", "longitude"], 2, GoogleV3Wrapper())
-items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
+items_metadata = pd.read_json("test/information_retriever/data/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
 filter_item = FilterApplier(metadata_wrapper, [word_in_filter, location_filter])
 BERT_name = config["BERT_MODEL_NAME"]
@@ -72,10 +72,10 @@ BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
 embedder = BERT_model(BERT_model_name, tokenizer_name, False)
 
-reviews_df = pd.read_csv("test/information_retriever/data/Edmonton_restaurants_review.csv")
+reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
 review_item_ids = reviews_df["item_id"].to_numpy()
 reviews = reviews_df["Review"].to_numpy()
-reviews_embedding_matrix = torch.load("test/information_retriever/data/matrix.pt")
+reviews_embedding_matrix = torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt")
 
 search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix)
 information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
