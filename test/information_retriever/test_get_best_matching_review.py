@@ -92,7 +92,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
         """
         information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         recommended_item = item_loader.create_recommended_item(
-            "", metadata_wrapper.items_metadata.loc[index_of_restaurant].to_dict(), [""])
+            "", metadata_wrapper.get_item_dict_from_index(index_of_restaurant), [""])
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retriever,
                                                 "restaurant", hard_coded_responses,
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),

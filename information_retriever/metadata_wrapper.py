@@ -31,7 +31,7 @@ class MetadataWrapper:
         :param index: index to the item in the metadata
         :return: item metadata
         """
-        return self.items_metadata.loc[index]
+        return self.items_metadata.loc[index].to_dict()
 
     def get_metadata(self) -> pd.DataFrame:
         """
