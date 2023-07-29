@@ -56,10 +56,11 @@ domain_specific_config_loader = DomainSpecificConfigLoader(config)
 
 filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
 pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews,
-                               torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"))
+                               torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"),
+                                  metadata_wrapper)
 
 vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
-                                                           VectorDataBase(database))
+                                                           VectorDataBase(database), metadata_wrapper)
 llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
 item_loader = ItemLoader()

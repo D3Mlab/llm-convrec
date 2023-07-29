@@ -2,6 +2,7 @@ import numpy as np
 import torch
 
 from information_retriever.embedder.bert_embedder import BERT_model
+from information_retriever.metadata_wrapper import MetadataWrapper
 
 
 class SearchEngine:
@@ -15,13 +16,16 @@ class SearchEngine:
     _review_item_ids: np.ndarray
     _reviews: np.ndarray
 
-    def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray):
+    def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
+                 metadata_wrapper: MetadataWrapper):
         self._embedder = embedder
         self._review_item_ids = review_item_ids
         self._reviews = reviews
+        self._metadata_wrapper = metadata_wrapper
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_indices_to_keep: list[int], unacceptable_similarity_range: float, max_number_similar_items: int) -> tuple[list, list]:
+                        item_indices_to_keep: list[int], unacceptable_similarity_range: float,
+                        max_number_similar_items: int) -> tuple[list, list]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
         reviews for that item
@@ -29,7 +33,7 @@ class SearchEngine:
         :param query: The input information retriever gets
         :param topk_items: Number of items to be returned
         :param topk_reviews: Number of reviews for each item
-        :param item_ids_to_keep: Stores the item id to keep in a numpy array
+        :param item_indices_to_keep: Stores the item id to keep in a numpy array
         :param unacceptable_similarity_range: range of similarity scores that would be considered too small to be able to recommend right away
         :param max_number_similar_items: max number of similar items
         :return: Return a tuple with element 0 being a list[list[str]] which is a list of similar items item_id (similar items are items where their similarity score is less than unacceptable similarity range)
@@ -42,7 +46,8 @@ class SearchEngine:
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
         similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)
-        most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items, unacceptable_similarity_range, max_number_similar_items)
+        most_similar_item_index = self._most_similar_item(similarity_score_item, topk_items,
+                                                          unacceptable_similarity_range, max_number_similar_items)
         list_of_item_id = self._get_topk_item_id(most_similar_item_index, index_most_similar_review)
         list_of_review = self._get_review(most_similar_item_index, index_most_similar_review)
 
@@ -92,28 +97,30 @@ class SearchEngine:
         item_index = torch.stack(item_index)
         return item_score, item_index
 
-    @staticmethod
-    def _most_similar_item(similarity_score_item: torch.Tensor, top_k_items: int, unacceptable_similarity_range: float, max_number_similar_items: int) -> torch.Tensor:
+    def _most_similar_item(self, similarity_score_item: torch.Tensor, top_k_items: int,
+                           unacceptable_similarity_range: float, max_number_similar_items: int) -> torch.Tensor:
         """
         This function returns the most similar item's index given the item similarity score
 
         :param similarity_score_item: The similarity score for each item
         :param top_k_items: Number of items to return
         :param unacceptable_similarity_range: range of similarity scores that would be considered too small to be able to recommend right away
-        :param max_number_similar_items: max number of similar items 
+        :param max_number_similar_items: max number of similar items
         :return: The indices of the most similar item, beginning from the most similar to the least similar.
         Indices are grouped by similarity scores, so if values are too close together they will be considered 1 group.
         It returns at most top_k_items *  max_number_similar_items indices.
         """
-        values, indices = torch.sort(similarity_score_item, descending = True)
-        
+        values, indices = torch.sort(similarity_score_item, descending=True)
+
         num_non_zero_value = torch.nonzero(values).size(0)
         if num_non_zero_value == 0:
             raise Exception("There are no items that match.")
         
         topk_indices = torch.full((top_k_items, max_number_similar_items), -1)
         topk_indices[0][0] = indices[0]
-        
+        item_name = self._metadata_wrapper.get_item_dict_from_index(int(indices[0]))['name']
+        item_names = {item_name}
+
         item_score = values[0]
         
         # A group: a group of indices that would be considred 1 "1 item" so where there similarity score is less than 0.5
@@ -122,25 +129,30 @@ class SearchEngine:
         num_groups = 0
         num_vals = 0
         
-        for iteration in range(1, len(values)):            
+        for iteration in range(1, len(values)):
             if values[iteration] != 0:
-                if item_score - values[iteration] <= unacceptable_similarity_range and num_vals <= max_number_similar_items -2:
-                    num_vals +=1
+                item_name = self._metadata_wrapper.get_item_dict_from_index(int(indices[iteration]))['name']
+                if item_name in item_names:
+                    continue
+
+                if item_score - values[iteration] <= unacceptable_similarity_range and \
+                        num_vals <= max_number_similar_items - 2:
+                    num_vals += 1
 
                 else:
                     item_score = values[iteration]
-                    num_groups +=1
+                    num_groups += 1
                     num_vals = 0
                     
                     # If it exceeds max number of items per group
                     if num_groups == top_k_items:
                         break
-                
+
+                item_names.add(item_name)
                 topk_indices[num_groups][num_vals] = indices[iteration]
 
         # sometimes indices are a float for whatever reason
         return topk_indices.to(torch.int64)
-
 
     @staticmethod
     def _filter_item_similarity_score(similarity_score_item, id_index):
@@ -150,7 +162,7 @@ class SearchEngine:
         return similarity_score_item
 
     def _get_topk_item_id(self, most_similar_item_index: torch.Tensor,
-                                   index_most_similar_review: torch.Tensor) -> list[list[str]]:
+                          index_most_similar_review: torch.Tensor) -> list[list[str]]:
         """
         Get the most similar item's business id
 
@@ -160,7 +172,6 @@ class SearchEngine:
         """
 
         list_of_id = []
-
         for i in range(len(most_similar_item_index)):
             id_group = []
             for j in range(len(most_similar_item_index[i])):

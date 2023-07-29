@@ -82,9 +82,9 @@ reviews = reviews_df["Review"].to_numpy()
 reviews_embedding_matrix = torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt")
 database = faiss.read_index("test/information_retriever/data/50_restaurants_database.faiss")
 
-pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix)
+pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
 vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
-                                                           VectorDataBase(database))
+                                                           VectorDataBase(database), metadata_wrapper)
 test_data = fill_in_list()
 
 
