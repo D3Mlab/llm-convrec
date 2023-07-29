@@ -12,11 +12,15 @@ from information_retriever.filter.filter_applier import FilterApplier
 from information_retriever.item.recommended_item import RecommendedItem
 from information_retriever.metadata_wrapper import MetadataWrapper
 from intelligence.gpt_wrapper import GPTWrapper
+from information_retriever.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
+from information_retriever.vector_database import VectorDataBase
+from information_retriever.search_engine.search_engine import SearchEngine
 import pytest
 import pandas as pd
 from dotenv import load_dotenv
 import os
 import torch
+import faiss
 
 load_dotenv()
 
@@ -76,24 +80,32 @@ reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews
 review_item_ids = reviews_df["item_id"].to_numpy()
 reviews = reviews_df["Review"].to_numpy()
 reviews_embedding_matrix = torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt")
+database = faiss.read_index("test/information_retriever/data/50_restaurants_database.faiss")
 
-search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix)
-information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
+pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix)
+vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
+                                                           VectorDataBase(database))
 test_data = fill_in_list()
 
 
 class TestGetBestMatchingItems:
 
     @pytest.mark.parametrize("state_manager, expected_item_name", test_data)
-    @pytest.mark.parametrize("should_filter", [False, True])
+    @pytest.mark.parametrize("should_filter, search_engine",
+                             [(False, pd_search_engine),
+                              (False, vector_database_search_engine),
+                              (True, pd_search_engine),
+                              (True, vector_database_search_engine)])
     def test_get_best_matching_items(self, state_manager: CommonStateManager,
-                                     expected_item_name: str, should_filter: bool) -> None:
+                                     expected_item_name: str, should_filter: bool,
+                                     search_engine: SearchEngine) -> None:
         """
         Test get_best_matching_reviews_of_restaurant() by checking whether it can retrieve the expected review.
 
         :param state_manager: state_manager to be converted to query
         :param expected_item_name: item name that the function is supposed to return
         """
+        information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
         recommend = RecommendPromptBasedResponse(
             llm_wrapper, filter_item, information_retriever, "restaurants", [], config, [])
