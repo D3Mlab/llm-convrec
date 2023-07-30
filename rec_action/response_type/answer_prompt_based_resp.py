@@ -162,7 +162,7 @@ class AnswerPromptBasedResponse(Response):
 
                 answers[question][curr_mentioned_item.get_name()] = metadata_resp
 
-            if not self._is_category_valid(category, curr_mentioned_item) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
+            if not self._is_category_valid(category, curr_mentioned_item) or "I do not know" in metadata_resp:
                 self.answer_type = "ir"
 
                 logger.debug("Non metadata question!")
@@ -397,8 +397,6 @@ class AnswerPromptBasedResponse(Response):
         :return: response to user
         """
 
-        resp = ""
-
         for key, val in recommended_item.get_data().items():
             if self._remove_punct_string(key) in self._remove_punct_string(category):
 
@@ -406,8 +404,6 @@ class AnswerPromptBasedResponse(Response):
                     question=question, key=key, val=val)
                 
                 return self._llm_wrapper.make_request(prompt)
-
-        return resp
 
     def convert_state_to_query(self, question: str) -> str:
         """
