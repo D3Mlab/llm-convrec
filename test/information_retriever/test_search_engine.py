@@ -10,7 +10,6 @@ from information_retriever.item.item_loader import ItemLoader
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
 from information_retriever.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
 from information_retriever.vector_database import VectorDataBase
-from information_retriever.search_engine.search_engine import SearchEngine
 import faiss
 import pytest
 import pandas as pd
@@ -58,11 +57,14 @@ filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load
 pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews,
                                torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"),
                                   metadata_wrapper)
-
 vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
                                                            VectorDataBase(database), metadata_wrapper)
-llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
+pd_information_retriever = InformationRetrieval(pd_search_engine, metadata_wrapper, ItemLoader())
+vector_database_information_retriever = InformationRetrieval(vector_database_search_engine, metadata_wrapper,
+                                                             ItemLoader())
+
+llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 item_loader = ItemLoader()
 
 dataset_for_testing = pd.read_csv(
@@ -73,27 +75,23 @@ test_data = []
 size = dataset_for_testing.shape[0]
 for row in range(size):
     datum = (dataset_for_testing['index_of_restaurant'][row],
-             dataset_for_testing['question'][row], dataset_for_testing['expected_review'][row])
+             dataset_for_testing['question'][row])
     test_data.append(datum)
 
 
 class TestGetBestMatchingReviewsOfRestaurant:
 
-    @pytest.mark.parametrize("index_of_restaurant, question, expected_review", test_data)
-    @pytest.mark.parametrize("search_engine", [pd_search_engine, vector_database_search_engine])
-    def test_get_best_matching_reviews_of_restaurant(self, index_of_restaurant: int, question: str,
-                                                     expected_review: str, search_engine: SearchEngine) -> None:
+    @pytest.mark.parametrize("index_of_restaurant, question", test_data)
+    def test_get_best_matching_reviews_of_restaurant(self, index_of_restaurant: int, question: str) -> None:
         """
         Test get_best_matching_reviews_of_restaurant() by checking whether it can retrieve the expected review.
 
         :param index_of_restaurant: index of restaurant in metadata
         :param question: question by user
-        :param expected_review: review that the function is supposed to return 
         """
-        information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         recommended_item = item_loader.create_recommended_item(
             "", metadata_wrapper.get_item_dict_from_index(index_of_restaurant), [""])
-        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retriever,
+        answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, None,
                                                 "restaurant", hard_coded_responses,
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
@@ -102,12 +100,9 @@ class TestGetBestMatchingReviewsOfRestaurant:
                                                 )
         query = answer_resp.convert_state_to_query(question)
         item_index = filter_item.filter_by_current_item(recommended_item)
-        reviews = information_retriever.get_best_matching_reviews_of_item(
+        pd_reviews = pd_information_retriever.get_best_matching_reviews_of_item(
             query, answer_resp._num_of_reviews_to_return, item_index)
-        retrieved_review = [group[0] for group in reviews if len(group) > 0]
+        vector_database_reviews = vector_database_information_retriever.get_best_matching_reviews_of_item(
+            query, answer_resp._num_of_reviews_to_return, item_index)
 
-        retrieved_review_stripped = []
-        for review in retrieved_review[0]:
-            retrieved_review_stripped.append(review.replace(" ", "").replace("\r", "").replace("\n", ""))
-        expected_review = expected_review.replace(" ", "").replace("\r", "").replace("\n", "")
-        assert expected_review in retrieved_review_stripped
+        assert pd_reviews == vector_database_reviews
