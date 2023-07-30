@@ -194,25 +194,6 @@ class DomainSpecificConfigLoader:
         ]
         return answer_separate_questions_fewshots
 
-    def load_answer_verify_metadata_resp_fewshots(self) -> list[dict]:
-        """
-        Load fewshot example for prompt used to verify whether metadata answering is correct.
-
-        :return: list of few shot examples
-        """
-        filename = self.load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
-        path_to_csv = f'{self._get_path_to_domain()}/{filename}'
-        answer_verify_metadata_resp_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
-        answer_verify_metadata_resp_fewshots = [
-            {
-                'question': row["question"],
-                'answer': row["answer"],
-                'response': row["response"],
-            }
-            for row in answer_verify_metadata_resp_fewshots_df.to_dict("records")
-        ]
-        return answer_verify_metadata_resp_fewshots
-
     def load_domain_specific_config(self) -> dict:
         """
         Load domain_specific_config.yaml.

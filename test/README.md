@@ -1,10 +1,5 @@
 ## Testing
 
-
-
-
-
-
 ## How to run unit tests
 
 inside terminal:
@@ -48,7 +43,9 @@ pytest .\test\filename.py
   - 2nd column (Output1): 1st expected classification of user intent
 
 # How to implement another domain
+
 Make a folder in domain_configs directory.In that folder, you need following files.
+
 - **domain_specific_config.yaml**
   - DOMAIN: domain name
   - followings should remain the same if you name files as in this documentation
@@ -59,8 +56,7 @@ Make a folder in domain_configs directory.In that folder, you need following fil
   - CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE: file name that has fewshots for current items etractor prompt
   - ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: file name that has fewshots for answer recaction's extract category prompt
   - ANSWER_IR_FEWSHOTS_FILE: file name that has fewshots for answer recaction's ir prompt
-  - ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: file name that has fewshots for answer recaction's separate questions prompt
-  - ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: file name that has fewshots for answer recaction's verify metadata response prompt
+  - ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: file name that has fewshots for answer recaction's separate metadata response prompt
 - **constraints_config.csv**
 - **constraints_updater_fewshots.csv**
 - **accepted_items_extractor_fewshots.csv**
@@ -82,8 +78,3 @@ Make a folder in domain_configs directory.In that folder, you need following fil
   - requires columns named question and individual_questions
   - question: question from user
   - individual_questions: individual questions in the user's question separated by a new line character (i.e. "\n")
-- **answer_verify_metadata_resp_fewshots.csv**
-  - requires columns named question, answer, and response
-  - question: question from user
-  - answer: answer created by the system
-  - response: "Yes." if the answer actually answer the question. "No." if the answer doesn't answer the question

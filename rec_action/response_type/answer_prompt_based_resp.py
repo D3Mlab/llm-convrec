@@ -30,7 +30,6 @@ class AnswerPromptBasedResponse(Response):
     :param extract_category_few_shots: few shot examples used for extracting category from user's question
     :param ir_prompt_few_shots: few shot examples used to answer question using IR
     :param separate_qs_prompt_few_shots: few shot examples used to separate question in to multiple individual questions
-    :param verify_metadata_prompt_few_shots: few shot examples used to confirm whether metadata answering makes sense
     :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
 
@@ -44,8 +43,7 @@ class AnswerPromptBasedResponse(Response):
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
                  extract_category_few_shots: list[dict], ir_prompt_few_shots: list[dict],
-                 separate_qs_prompt_few_shots: list[dict], verify_metadata_prompt_few_shots: list[dict],
-                 observers=None) -> None:
+                 separate_qs_prompt_few_shots: list[dict], observers=None) -> None:
         
         self._filter_applier = filter_applier
         self._domain = domain
@@ -68,9 +66,6 @@ class AnswerPromptBasedResponse(Response):
         self.mult_qs_template = env.get_template(
             config['ANSWER_MULT_QS_PROMPT'])
 
-        self.verify_metadata_template = env.get_template(
-            config['ANSWER_VERIFY_METADATA_RESP_PROMPT'])
-
         self.format_mult_qs_template = env.get_template(
             config['ANSWER_MULT_QS_FORMAT_RESP_PROMPT'])
 
@@ -91,7 +86,6 @@ class AnswerPromptBasedResponse(Response):
         self._extract_category_few_shots = extract_category_few_shots
         self._ir_prompt_few_shots = ir_prompt_few_shots
         self._separate_qs_prompt_few_shots = separate_qs_prompt_few_shots
-        self._verify_metadata_prompt_few_shots = verify_metadata_prompt_few_shots
 
     def get(self, state_manager: StateManager) -> str | None:
         """
@@ -260,25 +254,6 @@ class AnswerPromptBasedResponse(Response):
                 return True
 
         return False
-
-    def _verify_metadata_resp(self, question: str, resp: str) -> bool:
-        """
-        Sees if the metadata response makes sense given the users question.
-
-        :param resp: string representing the metadata response
-        :param question: the question extracted from the users input
-        :returns: whether metadata response makes sense
-        """
-
-        prompt = self.verify_metadata_template.render(
-            question=question, resp=resp, few_shots=self._verify_metadata_prompt_few_shots)
-
-        valid_resp = self._llm_wrapper.make_request(prompt)
-
-        if 'yes' in self._remove_punct_string(valid_resp):
-            return True
-        else:
-            return False
 
     def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: dict) -> str:
         """

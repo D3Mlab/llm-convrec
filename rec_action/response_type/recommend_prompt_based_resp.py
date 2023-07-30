@@ -78,8 +78,6 @@ class RecommendPromptBasedResponse(RecommendResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
-        self._preference_elicitation_prompt = env.get_template(
-            config['PREFERENCE_ELICITATION_PROMPT'])
         
         self.query = ""
         self.item_ids = []
@@ -128,8 +126,10 @@ class RecommendPromptBasedResponse(RecommendResponse):
        
         # If too many similar items
         if self._has_similar_items(current_recommended_items) and self._enable_preference_elicitation:
-           prompt = self._get_prompt_to_ask_user_q(current_recommended_items, state_manager)
-           resp = self._llm_wrapper.make_request(prompt)
+           resp = "We have a few recommendations that match what you're looking for. Do you have any other preferences that can help us narrow down the options?"
+           # Make it false so you are not querying to user again that there are too many recommendation
+           self._enable_preference_elicitation = False
+
         else:
             self._current_recommended_items = [group[0] for group in current_recommended_items if len(group) != 0]
                         
@@ -173,33 +173,6 @@ class RecommendPromptBasedResponse(RecommendResponse):
         
         return False
         
-    def _get_prompt_to_ask_user_q(self, current_recommended_items: list[list[RecommendedItem]], state_manager: StateManager) -> str:
-        """
-        Get prompt for preference elicitation
-
-        :param current_recommended_items: current recommended items from IR
-        :param state_manager: current state representing the conversation
-        :return: str
-        """
-        similar_items_metadata = {}
-        num_similar_items = 0
-                
-        # Get first group of items where there is more than 1 item per group
-        for group in current_recommended_items:
-            if len(group) > 1:
-                for item in group:
-                    similar_items_metadata[num_similar_items] = item.get_optional_data()
-                    num_similar_items +=1
-                break
-                        
-        if state_manager.get('hard_constraints') is not None:
-            constraints = state_manager.get('hard_constraints')
-        
-        if state_manager.get('soft_constraints') is not None:
-            constraints = constraints | state_manager.get('soft_constraints')
-            
-        return self._preference_elicitation_prompt.render(domain=self._domain, constraints=constraints, num_similar_items=num_similar_items, similar_items_metadata=similar_items_metadata)
-    
     @staticmethod
     def _clean_llm_response(resp: str) -> str:
         """" 
