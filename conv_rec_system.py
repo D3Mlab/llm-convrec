@@ -3,7 +3,6 @@ import openai.error
 from information_retriever.item.item_loader import ItemLoader
 
 from intelligence.gpt_wrapper import GPTWrapper
-from intelligence.alpaca_lora_wrapper import AlpacaLoraWrapper
 from warning_observer import WarningObserver
 from rec_action.answer import Answer
 from rec_action.recommend import Recommend
@@ -77,29 +76,24 @@ class ConvRecSystem(WarningObserver):
         if not isinstance(openai_api_key_or_gradio_url, str):
             raise TypeError("The variable type of OPENAI_API_KEY or GRADIO_URL is wrong.")
 
-        if config['LLM'] == "Alpaca Lora":
-            llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url)
-        else:
-            llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
+        llm_wrapper = GPTWrapper(openai_api_key_or_gradio_url, model_name=model, observers=[self])
 
         hard_coded_responses = domain_specific_config_loader.load_hard_coded_responses()
 
         # Initialize Constraints related objects
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
-        if config['LLM'] == "Alpaca Lora":
-            temperature_zero_llm_wrapper = AlpacaLoraWrapper(openai_api_key_or_gradio_url, temperature=0)
-        else:
-            temperature_zero_llm_wrapper = GPTWrapper(
-                openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
+
+        temperature_zero_llm_wrapper = GPTWrapper(
+            openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
         constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
                                                         constraints_categories,
                                                         constraints_fewshots, domain,
                                                         user_defined_constraint_mergers, config)
 
         # Initialize Extractors
-        accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
-        rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        accepted_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        rejected_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
         curr_items_fewshots = domain_specific_config_loader.load_current_items_fewshots()
         
         accepted_items_extractor = AcceptedItemsExtractor(
@@ -121,11 +115,11 @@ class ConvRecSystem(WarningObserver):
         if config['SEARCH_ENGINE'] == "pandas":
             reviews_item_ids, reviews, reviews_embedding_matrix = \
                 domain_specific_config_loader.load_data_for_pd_search_engine()
-            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix)
+            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
         else:
             reviews_item_ids, reviews, database = \
                 domain_specific_config_loader.load_data_for_vector_database_search_engine()
-            search_engine = VectorDatabaseSearchEngine(embedder, reviews_item_ids, reviews, database)
+            search_engine = VectorDatabaseSearchEngine(embedder, reviews_item_ids, reviews, database, metadata_wrapper)
         information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         
         # Initialize User Intent

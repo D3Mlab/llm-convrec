@@ -45,5 +45,5 @@ class FilterApplier:
         :return: item index that must be kept
         """
         metadata = self._metadata_wrapper.get_metadata()
-        index = metadata.index[metadata['name'] == current_item.get_name()].tolist()
+        index = metadata.index[metadata['item_id'] == current_item.get_id()].tolist()
         return index

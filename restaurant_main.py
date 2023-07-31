@@ -25,16 +25,13 @@ with open('system_config.yaml') as f:
 
 load_dotenv()
 
-if config['LLM'] == "Alpaca Lora":
-    openai_api_key_or_gradio_url = os.environ['GRADIO_URL']
-else:
-    openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
+openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 
 if 'GOOGLE_API_KEY' not in os.environ:
     geocoder = NominatimWrapper()
     
     if geocoder.geocode("toronto") is None:
-            geocoder = None
+        geocoder = None
 else:
     geocoder = GoogleV3Wrapper()
 
