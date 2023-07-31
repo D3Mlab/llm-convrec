@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from information_retriever.embedder.bert_embedder import BERT_model
+from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.vector_database import VectorDataBase
 from information_retriever.search_engine.search_engine import SearchEngine
 
@@ -18,8 +19,8 @@ class VectorDatabaseSearchEngine(SearchEngine):
     _database: VectorDataBase
 
     def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
-                 database: VectorDataBase):
-        super().__init__(embedder, review_item_ids, reviews)
+                 database: VectorDataBase, metadata_wrapper: MetadataWrapper):
+        super().__init__(embedder, review_item_ids, reviews, metadata_wrapper)
         self._database = database
 
     def _similarity_score_each_review(self, query: torch.Tensor) -> torch.Tensor:

@@ -1,6 +1,9 @@
 from information_retriever.filter.filter import Filter
 from state.state_manager import StateManager
 import pandas as pd
+import logging
+
+logger = logging.getLogger('filter')
 
 
 class ExactWordMatchingFilter(Filter):
@@ -40,16 +43,49 @@ class ExactWordMatchingFilter(Filter):
         if not constraint_values:
             return metadata
 
-        metadata['does_item_match_constraint'] = metadata.apply(
-            self._does_item_match_constraint, args=(constraint_values,), axis=1)
-        filtered_metadata = metadata.loc[metadata['does_item_match_constraint']]
-        filtered_metadata = filtered_metadata.drop('does_item_match_constraint', axis=1)
+        item_match = metadata.apply(
+            self._does_item_match_constraint_fully, args=(constraint_values,), axis=1)
+
+        filtered_metadata = metadata.loc[item_match]
+        if filtered_metadata.shape[0] == 0:
+            logger.debug("Partial filtering applied")
+            item_match = metadata.apply(
+                self._does_item_match_constraint_partially, args=(constraint_values,), axis=1)
+            filtered_metadata = metadata.loc[item_match]
 
         return filtered_metadata
 
-    def _does_item_match_constraint(self, row_of_df: pd.Series, constraint_values: list[str]) -> bool:
+    def _does_item_match_constraint_fully(self,  row_of_df: pd.Series, constraint_values: list[str]) -> bool:
         """
-        Return true if a word in the constraint matches exactly with a word
+        Return true if for all constraint values, a word in the constraint matches exactly with a word
+        in the specified metadata field or a word in the specified metadata field
+        matches exactly with a word in the constraint, false otherwise.
+        If the constraint of interest is empty, it will return true.
+        Might not work well if the value in the metadata filed is a dictionary.
+
+        :return: true if the item match the constraint, false otherwise
+        """
+        item_metadata_field_values = row_of_df[self._metadata_field]
+
+        if not isinstance(item_metadata_field_values, list):
+            if isinstance(item_metadata_field_values, str):
+                item_metadata_field_values = item_metadata_field_values.split(",")
+            else:
+                return True
+
+        for constraint_value in constraint_values:
+            is_constraint_in_metadata = False
+            for metadata_field_value in item_metadata_field_values:
+                if constraint_value.lower().strip() == metadata_field_value.lower().strip():
+                    is_constraint_in_metadata = True
+                    break
+            if not is_constraint_in_metadata:
+                return False
+        return True
+
+    def _does_item_match_constraint_partially(self, row_of_df: pd.Series, constraint_values: list[str]) -> bool:
+        """
+        Return true if there exists constraint value such that a word in the constraint matches exactly with a word
         in the specified metadata field or a word in the specified metadata field
         matches exactly with a word in the constraint, false otherwise.
         If the constraint of interest is empty, it will return true.

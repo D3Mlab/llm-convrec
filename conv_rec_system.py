@@ -122,11 +122,11 @@ class ConvRecSystem(WarningObserver):
         if config['SEARCH_ENGINE'] == "pandas":
             reviews_item_ids, reviews, reviews_embedding_matrix = \
                 domain_specific_config_loader.load_data_for_pd_search_engine()
-            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix)
+            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
         else:
             reviews_item_ids, reviews, database = \
                 domain_specific_config_loader.load_data_for_vector_database_search_engine()
-            search_engine = VectorDatabaseSearchEngine(embedder, reviews_item_ids, reviews, database)
+            search_engine = VectorDatabaseSearchEngine(embedder, reviews_item_ids, reviews, database, metadata_wrapper)
         information_retrieval = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         
         # Initialize User Intent
