@@ -4,6 +4,7 @@ User input,Response
 I will try (Restaurant name). It sounds good!,True
 Thanks,True
 "(Restaurant name) sounds good, what dishes do they have?",True
+i dont like (restaurant),False
 i like vegetarian food.,False
 Whats the price range?,False
 I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes,False
