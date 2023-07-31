@@ -16,10 +16,7 @@ with open('system_config.yaml') as f:
 
 load_dotenv()
 
-if config['LLM'] == "Alpaca Lora":
-    openai_api_key_or_gradio_url = os.environ['GRADIO_URL']
-else:
-    openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
+openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 
 conv_rec_system = ConvRecSystem(
     config, openai_api_key_or_gradio_url)
