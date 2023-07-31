@@ -71,8 +71,8 @@ for i in range(num_rows):
     state = CommonStateManager({}, data=large_dictionary)
     test_data.append((state, filters_list, expected_indices))
 
-rec_item1 = RecommendedItem(Item("", "Sonic Drive-In", {}), "", [""])
-rec_item2 = RecommendedItem(Item("", "Tuna Bar", {}), "", [""])
+rec_item1 = RecommendedItem(Item("CF33F8-E6oudUQ46HnavjQ", "Sonic Drive-In", {}), "", [""])
+rec_item2 = RecommendedItem(Item("MUTTqe8uqyMdBl186RmNeA", "Tuna Bar", {}), "", [""])
 
 
 class TestFilterApplier:
@@ -91,7 +91,7 @@ class TestFilterApplier:
         assert actual_indices == expected_indices
 
     @pytest.mark.parametrize("current_item, expected_index",
-                             [(rec_item1, [1, 3]), (rec_item2, [7])])
+                             [(rec_item1, [1]), (rec_item2, [7])])
     def test_filter_by_current_item(self, current_item: RecommendedItem,
                                     expected_index: list[int]):
         """

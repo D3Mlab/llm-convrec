@@ -8,6 +8,10 @@ from information_retriever.filter.filter_applier import FilterApplier
 from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.item.item_loader import ItemLoader
 from rec_action.response_type.answer_prompt_based_resp import AnswerPromptBasedResponse
+from information_retriever.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
+from information_retriever.vector_database import VectorDataBase
+from information_retriever.search_engine.search_engine import SearchEngine
+import faiss
 import pytest
 import pandas as pd
 import os
@@ -42,15 +46,21 @@ BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
 embedder = BERT_model(BERT_model_name, tokenizer_name, False)
-items_metadata = pd.read_json("test/information_retriever/data/Edmonton_restaurants.json", orient='records', lines=True)
+items_metadata = pd.read_json("test/information_retriever/data/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
-reviews_df = pd.read_csv("test/information_retriever/data/Edmonton_restaurants_review.csv")
+reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
+review_item_ids = reviews_df["item_id"].to_numpy()
+reviews = reviews_df["Review"].to_numpy()
+database = faiss.read_index("test/information_retriever/data/50_restaurants_database.faiss")
 domain_specific_config_loader = DomainSpecificConfigLoader(config)
 
 filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
-search_engine = PDSearchEngine(embedder, reviews_df["item_id"].to_numpy(), reviews_df["Review"].to_numpy(),
-                               torch.load("test/information_retriever/data/matrix.pt"))
-information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
+pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews,
+                               torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"),
+                                  metadata_wrapper)
+
+vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
+                                                           VectorDataBase(database), metadata_wrapper)
 llm_wrapper = GPTWrapper(os.environ['OPENAI_API_KEY'])
 
 item_loader = ItemLoader()
@@ -70,8 +80,9 @@ for row in range(size):
 class TestGetBestMatchingReviewsOfRestaurant:
 
     @pytest.mark.parametrize("index_of_restaurant, question, expected_review", test_data)
+    @pytest.mark.parametrize("search_engine", [pd_search_engine, vector_database_search_engine])
     def test_get_best_matching_reviews_of_restaurant(self, index_of_restaurant: int, question: str,
-                                                     expected_review: str) -> None:
+                                                     expected_review: str, search_engine: SearchEngine) -> None:
         """
         Test get_best_matching_reviews_of_restaurant() by checking whether it can retrieve the expected review.
 
@@ -79,6 +90,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
         :param question: question by user
         :param expected_review: review that the function is supposed to return 
         """
+        information_retriever = InformationRetrieval(search_engine, metadata_wrapper, ItemLoader())
         recommended_item = item_loader.create_recommended_item(
             "", metadata_wrapper.get_item_dict_from_index(index_of_restaurant), [""])
         answer_resp = AnswerPromptBasedResponse(config, llm_wrapper, filter_item, information_retriever,
@@ -92,7 +104,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
         item_index = filter_item.filter_by_current_item(recommended_item)
         reviews = information_retriever.get_best_matching_reviews_of_item(
             query, answer_resp._num_of_reviews_to_return, item_index)
-        retrieved_review = [group[0] for group in reviews]
+        retrieved_review = [group[0] for group in reviews if len(group) > 0]
 
         retrieved_review_stripped = []
         for review in retrieved_review[0]:
