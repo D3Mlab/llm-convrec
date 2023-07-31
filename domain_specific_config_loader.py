@@ -26,14 +26,14 @@ class DomainSpecificConfigLoader:
     Class responsible for loading domain specific data.
     """
 
-    def __init__(self, system_config):
+    def __init__(self, system_config: dict):
         self.system_config = system_config
 
     def load_domain(self) -> str:
         """
         Load domain name (e.g. restaurants)
         """
-        return self.load_domain_specific_config()['DOMAIN']
+        return self._load_domain_specific_config()['DOMAIN']
 
     def load_constraints_categories(self) -> list[dict]:
         """
@@ -41,7 +41,7 @@ class DomainSpecificConfigLoader:
 
         :return: constraints categories that defines the constraint details
         """
-        constraints_category_filename = self.load_domain_specific_config()['CONSTRAINTS_CATEGORIES']
+        constraints_category_filename = self._load_domain_specific_config()['CONSTRAINTS_CATEGORIES']
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_category_filename}'
         constraints_df = pd.read_csv(path_to_csv, encoding='latin1', keep_default_na=False)
         return constraints_df.to_dict("records")
@@ -52,7 +52,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ACCEPTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         accepted_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         accepted_items_fewshots = [
@@ -76,7 +76,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['REJECTED_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         rejected_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
 
@@ -100,7 +100,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         current_items_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         current_items_fewshots = [
@@ -118,7 +118,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        constraints_updater_fewshot_filename = self.load_domain_specific_config()[
+        constraints_updater_fewshot_filename = self._load_domain_specific_config()[
             'CONSTRAINTS_UPDATER_FEWSHOTS']
         path_to_csv = f'{self._get_path_to_domain()}/{constraints_updater_fewshot_filename}'
         constraints_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
@@ -144,7 +144,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_extract_category_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         answer_extract_category_fewshots = [
@@ -162,7 +162,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ANSWER_IR_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ANSWER_IR_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_ir_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         answer_ir_fewshots = [
@@ -182,7 +182,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_separate_questions_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         answer_separate_questions_fewshots = [
@@ -200,7 +200,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         answer_verify_metadata_resp_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         answer_verify_metadata_resp_fewshots = [
@@ -213,7 +213,7 @@ class DomainSpecificConfigLoader:
         ]
         return answer_verify_metadata_resp_fewshots
 
-    def load_domain_specific_config(self) -> dict:
+    def _load_domain_specific_config(self) -> dict:
         """
         Load domain_specific_config.yaml.
 
@@ -238,7 +238,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['INQUIRE_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         inquire_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         inquire_classification_fewshots = [
@@ -256,7 +256,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of few shot examples
         """
-        filename = self.load_domain_specific_config()['ACCEPT_CLASSIFICATION_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['ACCEPT_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         accept_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         accept_classification_fewshots = [
@@ -272,7 +272,7 @@ class DomainSpecificConfigLoader:
         """
         Load few shot example used for user intent classification corresponding to reject recommendation user intent
         """
-        filename = self.load_domain_specific_config()['REJECT_CLASSIFICATION_FEWSHOTS_FILE']
+        filename = self._load_domain_specific_config()['REJECT_CLASSIFICATION_FEWSHOTS_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         reject_classification_fewshots_df = pd.read_csv(path_to_csv, encoding='latin1')
         reject_classification_fewshots = [
@@ -290,7 +290,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of filters to apply
         """
-        filename = self.load_domain_specific_config()['FILTER_CONFIG_FILE']
+        filename = self._load_domain_specific_config()['FILTER_CONFIG_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         filter_config_df = pd.read_csv(path_to_csv, encoding='latin1')
         filters_list = []
@@ -319,7 +319,7 @@ class DomainSpecificConfigLoader:
 
         :return: metadata of all items
         """
-        filename = self.load_domain_specific_config()['PATH_TO_ITEM_METADATA']
+        filename = self._load_domain_specific_config()['PATH_TO_ITEM_METADATA']
         path_to_items_metadata = f'{self._get_path_to_domain()}/{filename}'
         return pd.read_json(path_to_items_metadata, orient='records', lines=True)
 
@@ -331,12 +331,12 @@ class DomainSpecificConfigLoader:
         :return: data used for initializing pd search engine
         """
         path_to_domain = self._get_path_to_domain()
-        filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
+        filename = self._load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
         reviews_df = pd.read_csv(filepath)
 
         # load embedding matrix
-        embedding_matrix_filename = self.load_domain_specific_config()['PATH_TO_EMBEDDING_MATRIX']
+        embedding_matrix_filename = self._load_domain_specific_config()['PATH_TO_EMBEDDING_MATRIX']
         path_to_embedding_matrix = f'{path_to_domain}/{embedding_matrix_filename}'
         embedding_matrix = self._create_embedding_matrix(reviews_df, path_to_embedding_matrix)
 
@@ -351,12 +351,12 @@ class DomainSpecificConfigLoader:
 
         :return: data used for initializing vector database search engine
         """
-        filename = self.load_domain_specific_config()['PATH_TO_REVIEWS']
+        filename = self._load_domain_specific_config()['PATH_TO_REVIEWS']
         filepath = f'{self._get_path_to_domain()}/{filename}'
         reviews_df = pd.read_csv(filepath)
 
         path_to_domain = self._get_path_to_domain()
-        database_filename = self.load_domain_specific_config()['PATH_TO_DATABASE']
+        database_filename = self._load_domain_specific_config()['PATH_TO_DATABASE']
         path_to_database = f'{path_to_domain}/{database_filename}'
 
         database = self._create_database(reviews_df, path_to_database)
@@ -381,7 +381,7 @@ class DomainSpecificConfigLoader:
 
         # load file path to embedding matrix
         path_to_domain = self._get_path_to_domain()
-        domain_specific_config = self.load_domain_specific_config()
+        domain_specific_config = self._load_domain_specific_config()
         reviews_embedding_matrix_filename = domain_specific_config['PATH_TO_EMBEDDING_MATRIX']
         path_to_embedding_matrix = f'{path_to_domain}/{reviews_embedding_matrix_filename}'
 
@@ -396,7 +396,7 @@ class DomainSpecificConfigLoader:
             database = vector_database_creator.create_vector_database_from_reviews(reviews_df, path_to_database)
         return database
 
-    def _create_embedding_matrix(self, reviews_df: pd.DataFrame, path_to_embedding_matrix: str) -> torch.tensor:
+    def _create_embedding_matrix(self, reviews_df: pd.DataFrame, path_to_embedding_matrix: str) -> torch.Tensor:
         """
         Create or load matrix containing embedding matrix. If embedding matrix already exists in
         path_to_embedding_matrix, load embedding matrix.
@@ -413,7 +413,7 @@ class DomainSpecificConfigLoader:
 
         # load file path to database
         path_to_domain = self._get_path_to_domain()
-        domain_specific_config = self.load_domain_specific_config()
+        domain_specific_config = self._load_domain_specific_config()
         database_filename = domain_specific_config['PATH_TO_DATABASE']
         path_to_database = f'{path_to_domain}/{database_filename}'
 
@@ -443,7 +443,7 @@ class DomainSpecificConfigLoader:
 
         :return: config that defines hard coded response.
         """
-        filename = self.load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
+        filename = self._load_domain_specific_config()['HARD_CODED_RESPONSES_FILE']
         path_to_csv = f'{self._get_path_to_domain()}/{filename}'
         responses_df = pd.read_csv(path_to_csv, encoding='latin1')
         responses = [
@@ -462,7 +462,7 @@ class DomainSpecificConfigLoader:
 
         :return: list of metadata keys that should be IGNORED when explanation recommended item
         """
-        return self.load_domain_specific_config()['EXPLANATION_METADATA_BLACKLIST']
+        return self._load_domain_specific_config()['EXPLANATION_METADATA_BLACKLIST']
 
     @staticmethod
     def _load_dict_in_cell(data_string: str) -> dict:
