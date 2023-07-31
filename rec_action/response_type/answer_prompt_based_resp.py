@@ -151,8 +151,8 @@ class AnswerPromptBasedResponse(Response):
                 logger.debug("Metadata question!")
                 self.answer_type = "metadata"
 
-                metadata_resp = (self._create_resp_from_metadata(
-                    question, category, curr_mentioned_item))
+                metadata_resp = self._create_resp_from_metadata(
+                    question, category, curr_mentioned_item)
 
                 answers[question][curr_mentioned_item.get_name()] = metadata_resp
 
@@ -230,7 +230,7 @@ class AnswerPromptBasedResponse(Response):
             return "I do not know."
 
         # flatten list because don't want to do preference elicitation
-        topk_reviews_flattened_list = [group[0] for group in reviews if len(group) != 0]
+        topk_reviews_flattened_list = reviews[0]
                     
         return self._format_review_resp(
             question, topk_reviews_flattened_list, curr_mentioned_item)
@@ -379,6 +379,8 @@ class AnswerPromptBasedResponse(Response):
                     question=question, key=key, val=val)
                 
                 return self._llm_wrapper.make_request(prompt)
+
+        return ""
 
     def convert_state_to_query(self, question: str) -> str:
         """

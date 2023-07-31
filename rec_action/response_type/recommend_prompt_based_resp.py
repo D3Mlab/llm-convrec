@@ -240,7 +240,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
         return self._format_recommendation_prompt.render(
             item_names=item_names, explanation=explanation_str, domain=self._domain, constraints_str = constraints_str)
 
-    def _get_explanation_for_each_item(self, state_manager: StateManager) -> None:
+    def _get_explanation_for_each_item(self, state_manager: StateManager) -> str:
         """
         Returns the explanation on why recommending each item
 
