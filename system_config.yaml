@@ -38,7 +38,6 @@ PREFERENCE_ELICITATION_PROMPT: "preference_elicitation_prompt.jinja"
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"
 SEARCH_ENGINE: "vector database"
-LLM: "GPT"
 ENABLE_MULTITHREADING: True
 UNACCEPTABLE_SIMILARITY_SCORE_RANGE: 0.5
 MAX_NUMBER_SIMILAR_ITEMS: 5
