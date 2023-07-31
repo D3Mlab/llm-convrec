@@ -60,9 +60,6 @@ class AnswerPromptBasedResponse(Response):
         env = Environment(loader=FileSystemLoader(
             config['ANSWER_PROMPTS_PATH']), trim_blocks=True, lstrip_blocks=True)
 
-        self.gpt_template = env.get_template(
-            config['ANSWER_GPT_PROMPT'])
-
         self.mult_qs_template = env.get_template(
             config['ANSWER_MULT_QS_PROMPT'])
 
@@ -165,21 +162,6 @@ class AnswerPromptBasedResponse(Response):
                     question, curr_mentioned_item)
 
                 answers[question][curr_mentioned_item.get_name()] = ir_resp
-
-                if "I do not know" in ir_resp:
-                    logger.debug(
-                        f'Answer with LLM')
-                    
-                    self.answer_type = "llm"
-
-                    prompt = self.gpt_template.render(
-                        curr_mentioned_item=curr_mentioned_item, question=question)
-
-                    llm_resp = self._llm_wrapper.make_request(
-                        prompt)
-
-                    answers[question][curr_mentioned_item.get_name()] = llm_resp
-            
 
         mult_item_resp = self._format_multiple_item_resp(
             question, curr_mentioned_items, answers[question])
