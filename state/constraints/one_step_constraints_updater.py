@@ -4,7 +4,7 @@ from intelligence.llm_wrapper import LLMWrapper
 from state.constraints.constraints_updater import ConstraintsUpdater
 from state.constraints.constraint_merger import ConstraintMerger
 from state.state_manager import StateManager
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from typing import Any
 
 
@@ -27,6 +27,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     _key_to_default_value: dict[str, str]
     _user_defined_constraint_mergers: list[ConstraintMerger]
     _domain: str
+    template: Template
     _few_shots: list
 
     def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict], few_shots: list[dict],

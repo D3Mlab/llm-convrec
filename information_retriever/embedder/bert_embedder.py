@@ -4,6 +4,10 @@ from tensorflow import keras
 from keras import layers
 import torch
 import transformers
+import numpy as np
+from keras.src.engine.functional import Functional
+from transformers.models.distilbert.tokenization_distilbert_fast import DistilBertTokenizerFast
+
 transformers.logging.set_verbosity_error()
 
 """
@@ -12,23 +16,24 @@ transformers.logging.set_verbosity_error()
 
 
 class BERT_model:
-    
     _bert_name: str
-    _name1: str
-    _name2: str
+    _tokenizer: DistilBertTokenizerFast
+    _bert_model: Functional
+    _first_input: str
+    _second_input: str
     _device: torch.device
-    
-    def __init__(self, bert_name, tokenizer_name, from_pt=False):
+
+    def __init__(self, bert_name: str, tokenizer_name: str, from_pt: bool = True):
         """
         :param bert_name: name or address of language prefernce_matching
         :param tokenizer_name: name or address of the tokenizer
         """
         self._bert_name = bert_name
         self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-        self._bert_model, self._name1, self._name2 = self._create_model(bert_name, from_pt)
+        self._bert_model, self._first_input, self._second_input = self._create_model(bert_name, from_pt)
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-           
-    def embed(self, texts: list[str], strategy=None, bs=48, verbose=0):
+
+    def embed(self, texts: list[str], strategy=None, bs=48, verbose=0) -> np.ndarray:
         """_summary_
 
         :param texts: list of strings to be embedded
@@ -47,10 +52,10 @@ class BERT_model:
         )
 
         data = {
-            self._name1: tokenized_review['input_ids'],
-            self._name2: tokenized_review['attention_mask'],
+            self._first_input: tokenized_review['input_ids'],
+            self._second_input: tokenized_review['attention_mask'],
         }
-        
+
         if strategy is not None:
             with strategy.scope():
                 dataset = tf.data.Dataset.from_tensor_slices(data).batch(bs, drop_remainder=False).prefetch(
@@ -63,7 +68,7 @@ class BERT_model:
             outputs = self._bert_model.predict(dataset, verbose=verbose)
             return outputs['last_hidden_state'][:, 0, :].reshape(-1, 768)
 
-    def get_tensor_embedding(self, query: str):
+    def get_tensor_embedding(self, query: str) -> torch.Tensor:
         """
         Get a tensor embedding of a string.
 
@@ -75,10 +80,10 @@ class BERT_model:
         query_embedding = query_embedding.squeeze(0)
 
         return query_embedding
-    
-    def _create_model(self, bert_name, from_pt=True):
+
+    def _create_model(self, bert_name: str, from_pt: bool = True) -> tuple[Functional, str, str]:
         # BERT encoder
-        encoder = TFAutoModel.from_pretrained(bert_name, from_pt=True)
+        encoder = TFAutoModel.from_pretrained(bert_name, from_pt=from_pt)
 
         # Model
         input_ids = layers.Input(shape=(None,), dtype=tf.int32)

@@ -114,10 +114,11 @@ class ConvRecSystem(WarningObserver):
         if user_defined_filter:
             filter_item.filters.extend(user_defined_filter)
 
+        # Information Retrieval
         BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
-        embedder = BERT_model(BERT_model_name, tokenizer_name, False)
+        embedder = BERT_model(BERT_model_name, tokenizer_name)
         if config['SEARCH_ENGINE'] == "pandas":
             reviews_item_ids, reviews, reviews_embedding_matrix = \
                 domain_specific_config_loader.load_data_for_pd_search_engine()

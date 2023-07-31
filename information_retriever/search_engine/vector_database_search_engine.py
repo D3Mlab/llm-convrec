@@ -15,9 +15,6 @@ class VectorDatabaseSearchEngine(SearchEngine):
     :param database: FAISS database containing embeddings of the reviews
     """
 
-    _embedder: BERT_model
-    _review_item_ids: np.ndarray
-    _reviews: np.ndarray
     _database: VectorDataBase
 
     def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
