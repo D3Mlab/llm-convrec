@@ -79,7 +79,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                 "soft_constraints"] = updated_soft_constraints_keys
 
         # Update hard constraints
-        # User self._merge_constraints to make sure keep cumulative constraints
+        # Use self._merge_constraints to make sure keep cumulative constraints
         if state_manager.get("hard_constraints") is not None and new_constraints.get("hard_constraints") is not None:
             self._merge_constraints(state_manager.get("hard_constraints"), new_constraints.get("hard_constraints"),
                                     state_manager.get('updated_keys').get('hard_constraints', {}))

@@ -11,7 +11,9 @@ class PDSearchEngine(SearchEngine):
 
     :param embedder: BERT_model to embed query
     """
-
+    _embedder: BERT_model
+    _review_item_ids: np.ndarray
+    _reviews: np.ndarray
     _reviews_embedding_matrix: torch.Tensor
 
     def __init__(self, embedder: BERT_model, review_item_ids: np.ndarray, reviews: np.ndarray,
