@@ -31,15 +31,7 @@ class MetadataWrapper:
         :param index: index to the item in the metadata
         :return: item metadata
         """
-        return self.items_metadata.loc[index]
-
-    def get_num_item(self) -> int:
-        """
-        Return the number of items.
-
-        :return: number of items
-        """
-        return self.items_metadata.shape[0]
+        return self.items_metadata.loc[index].to_dict()
 
     def get_metadata(self) -> pd.DataFrame:
         """
