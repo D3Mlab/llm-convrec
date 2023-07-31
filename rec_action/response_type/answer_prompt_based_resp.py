@@ -161,6 +161,9 @@ class AnswerPromptBasedResponse(Response):
                 ir_resp = self._create_resp_from_ir(
                     question, curr_mentioned_item)
 
+                if "I do not know" in ir_resp:
+                    ir_resp = "I don't have access to the informaiton to answer the question."
+
                 answers[question][curr_mentioned_item.get_name()] = ir_resp
 
         mult_item_resp = self._format_multiple_item_resp(

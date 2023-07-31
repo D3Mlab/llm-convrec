@@ -30,7 +30,6 @@ ANSWER_HOURS_PROMPT: "hours_prompt.jinja"
 ANSWER_METADATA_PROMPT: "metadata_prompt.jinja"
 ANSWER_IR_PROMPT: "ir_prompt.jinja"
 ANSWER_MULT_QS_PROMPT: "seperate_questions_prompt.jinja"
-ANSWER_GPT_PROMPT: "gpt_prompt.jinja"
 ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
 
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
@@ -39,4 +38,4 @@ SEARCH_ENGINE: "vector database"
 ENABLE_MULTITHREADING: True
 UNACCEPTABLE_SIMILARITY_SCORE_RANGE: 0.5
 MAX_NUMBER_SIMILAR_ITEMS: 5
-ENABLE_PREFERENCE_ELICITATION: True
+ENABLE_PREFERENCE_ELICITATION: False

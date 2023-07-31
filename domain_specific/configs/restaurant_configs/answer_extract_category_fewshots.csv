@@ -1,5 +1,5 @@
 input,output
+What kind of dishes are on their menu?,none
 What's their addresses?,address
 Can you recommend any dishes or specialties?,none
 Can I make a reservation?,HasReservations
-What are the meals it's known for?,PopularMeals
