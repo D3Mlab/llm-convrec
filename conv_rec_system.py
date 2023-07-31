@@ -98,8 +98,8 @@ class ConvRecSystem(WarningObserver):
                                                         user_defined_constraint_mergers, config)
 
         # Initialize Extractors
-        accepted_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
-        rejected_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        accepted_items_fewshots = domain_specific_config_loader.load_accepted_items_fewshots()
+        rejected_items_fewshots = domain_specific_config_loader.load_rejected_items_fewshots()
         curr_items_fewshots = domain_specific_config_loader.load_current_items_fewshots()
         
         accepted_items_extractor = AcceptedItemsExtractor(
