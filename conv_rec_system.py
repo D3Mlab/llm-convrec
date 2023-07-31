@@ -169,6 +169,7 @@ class ConvRecSystem(WarningObserver):
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
 
+        # Initialize recommender action classifier
         rec_actions = [Answer(answer_resp),
                        Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp),
                        RequestInformation(user_constraint_status_objects, hard_coded_responses, requ_info_resp), 
@@ -231,7 +232,7 @@ class ConvRecSystem(WarningObserver):
         self.is_warning_notified = False
         return self.dialogue_manager.get_response(user_input)
 
-    def notify_warning(self):
+    def notify_warning(self) -> None:
         """
         Notify this object about warnings.
         """
