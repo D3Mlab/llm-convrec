@@ -18,16 +18,14 @@ class AcceptRecommendation(UserIntent):
     :param config: config of the system
     """
 
-    _current_items_extractor: CurrentItemsExtractor
     _accepted_items_extractor: AcceptedItemsExtractor
     _few_shots: list[dict]
     _domain: str
     template: Template
 
-    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor, current_items_extractor: CurrentItemsExtractor,
+    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor,
                  few_shots: list[dict], domain: str, config: dict):
         self._accepted_items_extractor = accepted_items_extractor
-        self._current_items_extractor = current_items_extractor
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
@@ -53,23 +51,13 @@ class AcceptRecommendation(UserIntent):
         """
         return "User accepts recommended item"
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
         Mutate to update the curr_state and return them.
 
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        # Update current item
-        recommended_items = curr_state.get("recommended_items")
-
-        if recommended_items is not None and recommended_items != []:
-            curr_item = self._current_items_extractor.extract(
-                recommended_items, curr_state.get("conv_history"))
-
-            # If current items are not an empty array then user talking about new item
-            if curr_item:
-                curr_state.update("curr_items", curr_item)
 
         if curr_state.get("recommended_items") is not None:
             all_mentioned_items = list(chain.from_iterable(
@@ -87,7 +75,6 @@ class AcceptRecommendation(UserIntent):
             curr_state.update('accepted_items', [])
         curr_state.get('accepted_items').extend(items)
         curr_state.get("updated_keys")['accepted_items'] = True
-        return curr_state
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """

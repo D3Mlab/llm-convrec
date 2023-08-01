@@ -20,15 +20,13 @@ class RejectRecommendation(UserIntent):
     """
 
     _rejected_items_extractor: RejectedItemsExtractor
-    _current_items_extractor: CurrentItemsExtractor
     _few_shots: list[dict]
     _domain: str
     template: Template
 
-    def __init__(self, rejected_items_extractor: RejectedItemsExtractor, current_items_extractor: CurrentItemsExtractor,
+    def __init__(self, rejected_items_extractor: RejectedItemsExtractor,
                  few_shots: list[dict], domain: str, config: dict):
         self._rejected_items_extractor = rejected_items_extractor
-        self._current_items_extractor = current_items_extractor
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
@@ -53,23 +51,13 @@ class RejectRecommendation(UserIntent):
         """
         return "User rejects recommended item"
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
         Mutate to update the curr_state and return them.
 
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        # Update current items
-        recommended_items = curr_state.get("recommended_items")
-
-        if recommended_items is not None and recommended_items != []:
-            curr_items = self._current_items_extractor.extract(
-                recommended_items, curr_state.get("conv_history"))
-
-            # If current items are [] then just keep it the same
-            if curr_items:
-                curr_state.update("curr_items", curr_items)
 
         # Update rejected items
         if curr_state.get("recommended_items") is not None:
@@ -89,7 +77,6 @@ class RejectRecommendation(UserIntent):
             curr_state.update('rejected_items', [])
         curr_state.get('rejected_items').extend(items)
         curr_state.get("updated_keys")['rejected_items'] = True
-        return curr_state
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """

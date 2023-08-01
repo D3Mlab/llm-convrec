@@ -14,15 +14,12 @@ class Inquire(UserIntent):
     :param config: config of the system
     """
 
-    _current_items_extractor: CurrentItemsExtractor
     _few_shots: list[dict]
     _domain: str
     template: Template
 
-    def __init__(self, current_items_extractor: CurrentItemsExtractor, few_shots: list[dict], domain: str,
+    def __init__(self, few_shots: list[dict], domain: str,
                  config: dict):
-        self._current_items_extractor = current_items_extractor
-        
         env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
         self.template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
         
@@ -45,25 +42,14 @@ class Inquire(UserIntent):
         """
         return "User requires additional information regarding the recommendation"
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
-        Mutate to update the curr_state and return them.
+        Inquire does not need to update state
 
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        # Update current item
-        recommended_items = curr_state.get("recommended_items")
-
-        if recommended_items is not None and recommended_items != []:
-            curr_item = self._current_items_extractor.extract(
-                recommended_items, curr_state.get("conv_history"))
-
-            # If current item is [] then just keep it the same
-            if curr_item:
-                curr_state.update("curr_items", curr_item)
-
-        return curr_state
+        pass
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
