@@ -3,7 +3,7 @@ from information_retriever.embedder.bert_embedder import BERT_model
 from information_retriever.embedder.statics import *
 from information_retriever.information_retrieval import InformationRetrieval
 from intelligence.gpt_wrapper import GPTWrapper
-from information_retriever.search_engine.pd_search_engine import MatMulSearchEngine
+from information_retriever.search_engine.matmul_search_engine import MatMulSearchEngine
 from information_retriever.filter.filter_applier import FilterApplier
 from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.item.item_loader import ItemLoader

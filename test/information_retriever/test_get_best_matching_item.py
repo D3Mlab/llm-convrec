@@ -2,7 +2,7 @@ from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import Goog
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from state.common_state_manager import CommonStateManager
 from information_retriever.filter.word_in_filter import WordInFilter
-from information_retriever.search_engine.pd_search_engine import MatMulSearchEngine
+from information_retriever.search_engine.matmul_search_engine import MatMulSearchEngine
 from information_retriever.item.item_loader import ItemLoader
 from information_retriever.embedder.bert_embedder import BERT_model
 from information_retriever.embedder.statics import *
