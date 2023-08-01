@@ -2,7 +2,7 @@ from domain_specific.classes.restaurants.geocoding.google_v3_wrapper import Goog
 from rec_action.response_type.recommend_prompt_based_resp import RecommendPromptBasedResponse
 from state.common_state_manager import CommonStateManager
 from information_retriever.filter.word_in_filter import WordInFilter
-from information_retriever.search_engine.pd_search_engine import PDSearchEngine
+from information_retriever.search_engine.pd_search_engine import MatMulSearchEngine
 from information_retriever.item.item_loader import ItemLoader
 from information_retriever.embedder.bert_embedder import BERT_model
 from information_retriever.embedder.statics import *
@@ -82,7 +82,7 @@ reviews = reviews_df["Review"].to_numpy()
 reviews_embedding_matrix = torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt")
 database = faiss.read_index("test/information_retriever/data/50_restaurants_database.faiss")
 
-pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
+pd_search_engine = MatMulSearchEngine(embedder, review_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
 vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
                                                            VectorDataBase(database), metadata_wrapper)
 test_data = fill_in_list()

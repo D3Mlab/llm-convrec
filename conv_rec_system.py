@@ -28,7 +28,7 @@ from information_retriever.embedder.statics import *
 from information_retriever.embedder.bert_embedder import BERT_model
 from user_intent.reject_recommendation import RejectRecommendation
 from domain_specific_config_loader import DomainSpecificConfigLoader
-from information_retriever.search_engine.pd_search_engine import PDSearchEngine
+from information_retriever.search_engine.pd_search_engine import MatMulSearchEngine
 from information_retriever.search_engine.vector_database_search_engine import VectorDatabaseSearchEngine
 from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.filter.filter_applier import FilterApplier
@@ -116,7 +116,7 @@ class ConvRecSystem(WarningObserver):
         if config['SEARCH_ENGINE'] == "pandas":
             reviews_item_ids, reviews, reviews_embedding_matrix = \
                 domain_specific_config_loader.load_data_for_pd_search_engine()
-            search_engine = PDSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
+            search_engine = MatMulSearchEngine(embedder, reviews_item_ids, reviews, reviews_embedding_matrix, metadata_wrapper)
         else:
             reviews_item_ids, reviews, database = \
                 domain_specific_config_loader.load_data_for_vector_database_search_engine()

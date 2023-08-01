@@ -5,7 +5,7 @@ from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.search_engine.search_engine import SearchEngine
 
 
-class PDSearchEngine(SearchEngine):
+class MatMulSearchEngine(SearchEngine):
     """
     Class that is responsible for searching for topk most relevant items using BERT_model.
 

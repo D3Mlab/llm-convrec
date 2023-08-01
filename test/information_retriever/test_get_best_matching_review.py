@@ -3,7 +3,7 @@ from information_retriever.embedder.bert_embedder import BERT_model
 from information_retriever.embedder.statics import *
 from information_retriever.information_retrieval import InformationRetrieval
 from intelligence.gpt_wrapper import GPTWrapper
-from information_retriever.search_engine.pd_search_engine import PDSearchEngine
+from information_retriever.search_engine.pd_search_engine import MatMulSearchEngine
 from information_retriever.filter.filter_applier import FilterApplier
 from information_retriever.metadata_wrapper import MetadataWrapper
 from information_retriever.item.item_loader import ItemLoader
@@ -54,9 +54,9 @@ database = faiss.read_index("test/information_retriever/data/50_restaurants_data
 domain_specific_config_loader = DomainSpecificConfigLoader(config)
 
 filter_item = FilterApplier(metadata_wrapper, domain_specific_config_loader.load_filters())
-pd_search_engine = PDSearchEngine(embedder, review_item_ids, reviews,
-                               torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"),
-                                  metadata_wrapper)
+pd_search_engine = MatMulSearchEngine(embedder, review_item_ids, reviews,
+                                      torch.load("test/information_retriever/data/50_restaurants_review_embedding_matrix.pt"),
+                                      metadata_wrapper)
 
 vector_database_search_engine = VectorDatabaseSearchEngine(embedder, review_item_ids, reviews,
                                                            VectorDataBase(database), metadata_wrapper)
