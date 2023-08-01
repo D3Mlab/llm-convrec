@@ -41,8 +41,7 @@ class SearchEngine:
         reviews for the corresponding item
         """
         query_embedding = self._embedder.get_tensor_embedding(query)
-        similarity_score_review = self._similarity_score_each_review(
-            query_embedding)
+        similarity_score_review = self._similarity_score_each_review(query_embedding)
         similarity_score_item, index_most_similar_review = self._similarity_score_each_item(
             similarity_score_review, topk_reviews)
         similarity_score_item = self._filter_item_similarity_score(similarity_score_item, item_indices_to_keep)

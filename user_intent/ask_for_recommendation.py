@@ -34,14 +34,14 @@ class AskForRecommendation(UserIntent):
         """
         return "User asks for a recommendation"
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
-        Mutate to update the curr_state and return them.
+        This method does nothing to the state and returns nothing
 
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        return curr_state
+        pass
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """

@@ -128,11 +128,11 @@ class ConvRecSystem(WarningObserver):
         accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
         reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
-        user_intents = [Inquire(curr_items_extractor, inquire_classification_fewshots,domain, config),
-                        ProvidePreference(constraints_updater, curr_items_extractor, user_constraint_status_objects, config),
+        user_intents = [Inquire(inquire_classification_fewshots,domain, config),
+                        ProvidePreference(constraints_updater, user_constraint_status_objects, config),
                         AcceptRecommendation(
-                            accepted_items_extractor, curr_items_extractor, accept_classification_fewshots, domain, config),
-                        RejectRecommendation(rejected_items_extractor, curr_items_extractor, reject_classification_fewshots, domain, config)]
+                            accepted_items_extractor, accept_classification_fewshots, domain, config),
+                        RejectRecommendation(rejected_items_extractor, reject_classification_fewshots, domain, config)]
 
         user_intents_classifier = MultilabelUserIntentsClassifier(
             user_intents, llm_wrapper, config, True)
@@ -140,7 +140,7 @@ class ConvRecSystem(WarningObserver):
         
         # Initialize State
         state = CommonStateManager(
-            {AskForRecommendation(config), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation(config))
+            {AskForRecommendation(config), user_intents[0], user_intents[2], user_intents[3]}, AskForRecommendation(config), current_items_extractor = curr_items_extractor)
         state.update("unsatisfied_goals", [
             {"user_intent": AskForRecommendation(config), "utterance_index": 0}])
         

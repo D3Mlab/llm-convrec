@@ -33,7 +33,8 @@ class BERT_model:
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def embed(self, texts: list[str], strategy=None, bs=48, verbose=0) -> np.ndarray:
-        """_summary_
+        """
+        Embed the batch of texts.
 
         :param texts: list of strings to be embedded
         :param strategy: Defaults to None.

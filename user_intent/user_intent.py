@@ -22,7 +22,7 @@ class UserIntent:
         """
         raise NotImplementedError()
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
         Mutate to update the curr_state and return them.
 
