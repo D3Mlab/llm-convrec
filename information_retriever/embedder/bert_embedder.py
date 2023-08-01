@@ -5,7 +5,6 @@ from keras import layers
 import torch
 import transformers
 import numpy as np
-from keras.src.engine.functional import Functional
 from transformers.models.distilbert.tokenization_distilbert_fast import DistilBertTokenizerFast
 
 transformers.logging.set_verbosity_error()
@@ -18,7 +17,7 @@ transformers.logging.set_verbosity_error()
 class BERT_model:
     _bert_name: str
     _tokenizer: DistilBertTokenizerFast
-    _bert_model: Functional
+    _bert_model: keras.Model
     _first_input: str
     _second_input: str
     _device: torch.device
@@ -81,7 +80,7 @@ class BERT_model:
 
         return query_embedding
 
-    def _create_model(self, bert_name: str, from_pt: bool = True) -> tuple[Functional, str, str]:
+    def _create_model(self, bert_name: str, from_pt: bool = True) -> tuple[keras.Model, str, str]:
         # BERT encoder
         encoder = TFAutoModel.from_pretrained(bert_name, from_pt=from_pt)
 

@@ -1,5 +1,0 @@
-all_mentioned_items,recently_mentioned_items,user_input,accepted_items
-"Appliance A,Appliance B,Appliance C","Appliance B, Appliance C","I like Appliance B","Appliance B"
-"Appliance A,Appliance B,Appliance C","Appliance B, Appliance C","Appliance A looks good","Appliance A"
-"Appliance A, Appliance B, Appliance C, Appliance E, Appliance F, Appliance F","Appliance E, Appliance F, Appliance F","I like Appliance E and Appliance G, but I don't like Appliance F","Appliance E, Appliance G"
-"Appliance A, Appliance B, Appliance C, Appliance D","Appliance C, Appliance D","I like it","Appliance C, Appliance D"
