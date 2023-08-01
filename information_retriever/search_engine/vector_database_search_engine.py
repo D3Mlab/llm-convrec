@@ -15,7 +15,6 @@ class VectorDatabaseSearchEngine(SearchEngine):
     :param reviews: reviews of the items
     :param database: FAISS database containing embeddings of the reviews
     """
-
     _embedder: BERT_model
     _review_item_ids: np.ndarray
     _reviews: np.ndarray

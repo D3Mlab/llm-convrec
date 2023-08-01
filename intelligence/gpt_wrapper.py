@@ -33,7 +33,6 @@ class GPTWrapper(LLMWrapper):
 
     _model_name: str
     _temperature: Optional[float]
-    api_key: str
     _observers: list[WarningObserver]
     _max_attempt: int
     _min_sleep: int

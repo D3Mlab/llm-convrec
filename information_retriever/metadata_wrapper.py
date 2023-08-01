@@ -11,7 +11,7 @@ class MetadataWrapper:
 
     items_metadata: pd.DataFrame
 
-    def __init__(self, items_metadata: pd.DataFrame) -> None:
+    def __init__(self, items_metadata: pd.DataFrame):
         self.items_metadata = items_metadata
 
     def get_item_dict_from_id(self, item_id: str) -> dict[str, Any]:

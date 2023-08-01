@@ -17,8 +17,7 @@ class InformationRetrieval:
     _metadata_wrapper: MetadataWrapper
     _item_loader: ItemLoader
 
-    def __init__(self, search_engine: SearchEngine, metadata_wrapper: MetadataWrapper,
-                 item_loader: ItemLoader) -> None:
+    def __init__(self, search_engine: SearchEngine, metadata_wrapper: MetadataWrapper, item_loader: ItemLoader):
         self._search_engine = search_engine
         self._metadata_wrapper = metadata_wrapper
         self._item_loader = item_loader

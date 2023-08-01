@@ -24,8 +24,8 @@ class SearchEngine:
         self._metadata_wrapper = metadata_wrapper
 
     def search_for_topk(self, query: str, topk_items: int, topk_reviews: int,
-                        item_indices_to_keep: list[int], unacceptable_similarity_range: float,
-                        max_number_similar_items: int) -> tuple[list, list]:
+                        item_indices_to_keep: list[int], unacceptable_similarity_range: float, 
+                        max_number_similar_items: int) -> tuple[list[list[str]], list[list[list[str]]]]:
         """
         This function takes a query and returns a list of business id that is most similar to the query and the top k
         reviews for that item
@@ -33,7 +33,7 @@ class SearchEngine:
         :param query: The input information retriever gets
         :param topk_items: Number of items to be returned
         :param topk_reviews: Number of reviews for each item
-        :param item_indices_to_keep: Stores the item id to keep in a numpy array
+        :param item_indices_to_keep: Stores the item id to keep in a list of int
         :param unacceptable_similarity_range: range of similarity scores that would be considered too small to be able to recommend right away
         :param max_number_similar_items: max number of similar items
         :return: Return a tuple with element 0 being a list[list[str]] which is a list of similar items item_id (similar items are items where their similarity score is less than unacceptable similarity range)
@@ -155,7 +155,7 @@ class SearchEngine:
         return topk_indices.to(torch.int64)
 
     @staticmethod
-    def _filter_item_similarity_score(similarity_score_item, id_index):
+    def _filter_item_similarity_score(similarity_score_item: torch.Tensor, id_index: list[int]) -> torch.Tensor:
         mask = torch.full_like(similarity_score_item, False, dtype=torch.bool)
         mask[id_index] = True
         similarity_score_item[~mask] = 0

@@ -53,6 +53,7 @@ class DialogueManager:
             self.state_manager)
         logger.debug(f'user_intents={str(user_intents)}')
         if not user_intents:
+            # If not classified into any user intent, recommender give default response.
             rec_response = ""
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'DefaultResponse':
@@ -79,7 +80,7 @@ class DialogueManager:
         logger.debug(f"state_manager={str(self.state_manager)}")
         return rec_response
 
-    def _generate_response(self, rec_actions: list[RecAction]):
+    def _generate_response(self, rec_actions: list[RecAction]) -> str:
         """
         Helper function to generate recommender's response.
 

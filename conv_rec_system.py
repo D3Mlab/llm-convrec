@@ -108,10 +108,11 @@ class ConvRecSystem(WarningObserver):
         if user_defined_filter:
             filter_item.filters.extend(user_defined_filter)
 
+        # Information Retrieval
         BERT_name = config["IR_BERT_MODEL_NAME"]
         BERT_model_name = BERT_MODELS[BERT_name]
         tokenizer_name = TOEKNIZER_MODELS[BERT_name]
-        embedder = BERT_model(BERT_model_name, tokenizer_name, False)
+        embedder = BERT_model(BERT_model_name, tokenizer_name)
         if config['SEARCH_ENGINE'] == "pandas":
             reviews_item_ids, reviews, reviews_embedding_matrix = \
                 domain_specific_config_loader.load_data_for_pd_search_engine()
@@ -162,6 +163,7 @@ class ConvRecSystem(WarningObserver):
         accept_resp = AcceptHardCodedBasedResponse(hard_coded_responses)
         reject_resp = RejectHardCodedBasedResponse(hard_coded_responses)
 
+        # Initialize recommender action classifier
         rec_actions = [Answer(answer_resp),
                        Recommend(user_constraint_status_objects, hard_coded_responses, recc_resp),
                        RequestInformation(user_constraint_status_objects, hard_coded_responses, requ_info_resp), 
@@ -224,7 +226,7 @@ class ConvRecSystem(WarningObserver):
         self.is_warning_notified = False
         return self.dialogue_manager.get_response(user_input)
 
-    def notify_warning(self):
+    def notify_warning(self) -> None:
         """
         Notify this object about warnings.
         """

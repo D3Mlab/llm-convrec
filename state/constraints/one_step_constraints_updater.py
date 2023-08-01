@@ -4,11 +4,11 @@ from intelligence.llm_wrapper import LLMWrapper
 from state.constraints.constraints_updater import ConstraintsUpdater
 from state.constraints.constraint_merger import ConstraintMerger
 from state.state_manager import StateManager
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
+from typing import Any
 
 
 class OneStepConstraintsUpdater(ConstraintsUpdater):
-
     """
     Class that updates constraints based on user's input using single prompt.
 
@@ -20,6 +20,16 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
     :param config: config of the system
     """
 
+    _llm_wrapper: LLMWrapper
+    _constraints_categories: list[dict]
+    _constraint_keys: list[str]
+    _cumulative_constraints_keys: list[str]
+    _key_to_default_value: dict[str, str]
+    _user_defined_constraint_mergers: list[ConstraintMerger]
+    _domain: str
+    template: Template
+    _few_shots: list
+
     def __init__(self, llm_wrapper: LLMWrapper, constraints_categories: list[dict], few_shots: list[dict],
                  domain: str, user_defined_constraint_mergers: list[ConstraintMerger], config: dict):
         self._llm_wrapper = llm_wrapper
@@ -30,7 +40,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                                              constraints_categories if constraint_category['is_cumulative']]
         self._key_to_default_value = {constraint_category["key"]: constraint_category["default_value"] for
                                       constraint_category in constraints_categories}
-        
+
         self._user_defined_constraint_mergers = user_defined_constraint_mergers
         self._domain = domain
 
@@ -38,7 +48,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             config['CONSTRAINTS_PROMPT_PATH']))
         self.template = env.get_template(
             config['ONE_STEP_CONSTRAINTS_UPDATER_PROMPT_FILENAME'])
-        
+
         self._few_shots = few_shots
 
     def update_constraints(self, state_manager: StateManager) -> None:
@@ -51,6 +61,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         llm_response = self._llm_wrapper.make_request(prompt)
         new_constraints = self._format_llm_response(llm_response)
 
+        # Find and update the updated_keys in state
         updated_hard_constraints_keys = self._get_updated_keys_in_constraints(
             state_manager.get("hard_constraints"),
             new_constraints.get("hard_constraints")
@@ -67,6 +78,8 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             state_manager.get("updated_keys")[
                 "soft_constraints"] = updated_soft_constraints_keys
 
+        # Update hard constraints
+        # Use self._merge_constraints to make sure keep cumulative constraints
         if state_manager.get("hard_constraints") is not None and new_constraints.get("hard_constraints") is not None:
             self._merge_constraints(state_manager.get("hard_constraints"), new_constraints.get("hard_constraints"),
                                     state_manager.get('updated_keys').get('hard_constraints', {}))
@@ -76,6 +89,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             state_manager.update("hard_constraints",
                                  new_constraints.get("hard_constraints"))
 
+        # Update soft constraints
         if state_manager.get("soft_constraints") is not None and new_constraints.get("soft_constraints") is not None:
             self._merge_constraints(state_manager.get("soft_constraints"), new_constraints.get("soft_constraints"),
                                     state_manager.get('updated_keys').get('soft_constraints', {}))
@@ -85,6 +99,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             state_manager.update("soft_constraints",
                                  new_constraints.get("soft_constraints"))
 
+        # Remove keys in soft and hard constraints if their value is []
         if state_manager.get("soft_constraints") == {}:
             state_manager.update("soft_constraints", None)
         if state_manager.get("hard_constraints") == {}:
@@ -97,10 +112,12 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
             for key in set(state_manager.get("hard_constraints")):
                 if not state_manager.get("hard_constraints")[key]:
                     state_manager.get('hard_constraints').pop(key)
-        
-        # Update constraint to default value if applicable
+
+        # If the default value for a certain key in hard constraints is not None, and that key is not filled out.
+        # Change the value of that key into the default value provided in constraints_config.csv
         for key, default_val in self._key_to_default_value.items():
-            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get('hard_constraints').get(key) is None:
+            if default_val != 'None' and state_manager.get('hard_constraints') and state_manager.get(
+                    'hard_constraints').get(key) is None:
                 # Update hard constraints 
                 state_manager.get('hard_constraints')[key] = [default_val]
                 # Update updated keys
@@ -126,7 +143,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                                     constraint_categories=self._constraints_categories,
                                     domain=self._domain)
 
-    def _format_llm_response(self, llm_response: str) -> dict:
+    def _format_llm_response(self, llm_response: str) -> dict[str, Any]:
         """
         Format the response from the llm to dictionary.
 
@@ -174,7 +191,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
 
         return result
 
-    def _get_updated_keys_in_constraints(self, old_constraints, new_constraints):
+    def _get_updated_keys_in_constraints(self, old_constraints: dict[str, Any], new_constraints: dict[str, Any]) -> dict[str, bool]:
         """
         Compute updated keys based on the given old and new constraints.
 
@@ -195,7 +212,7 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
                         break
         return result
 
-    def _merge_constraints(self, old_constraints: dict, new_constraints: dict, updated_keys: dict) -> None:
+    def _merge_constraints(self, old_constraints: dict[str, Any], new_constraints: dict[str, Any], updated_keys: dict[str, bool]) -> None:
         """
         Merge the given old_constraint to new_constraints.
 
@@ -203,16 +220,18 @@ class OneStepConstraintsUpdater(ConstraintsUpdater):
         :param new_constraints: new hard or soft constraints
         :param updated_keys: updated keys in this constraints
         """
+        # Go through the list of constraints that can be merged and see if it is present in
+        # both new and old constraint dictionary
         for constraint_merger in self._user_defined_constraint_mergers:
             if constraint_merger.get_constraint() in updated_keys and constraint_merger.get_constraint() in new_constraints and constraint_merger.get_constraint() in old_constraints:
                 new_constraints[constraint_merger.get_constraint()] = constraint_merger.merge_constraint(
                     old_constraints.get(constraint_merger.get_constraint()),
                     new_constraints.get(constraint_merger.get_constraint())
                 )
-        
+
         for key in new_constraints:
             if key not in self._cumulative_constraints_keys and key in updated_keys and key in old_constraints:
-                # remove all constraints in old_constraints from new_constraints
+                # remove all constraints in old_constraints from new_constraints if is cumulative is false
                 for item in old_constraints[key]:
                     if item in new_constraints[key]:
                         new_constraints[key].remove(item)

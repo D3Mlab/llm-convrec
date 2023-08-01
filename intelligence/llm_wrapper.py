@@ -10,7 +10,7 @@ class LLMWrapper:
         self.total_tokens_used = 0
         self.total_cost = 0
 
-    def make_request(self, message) -> str:
+    def make_request(self, message: str) -> str:
         """
         Makes a request to the LLM and return the response.
 
