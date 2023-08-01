@@ -103,7 +103,9 @@ class CommonStateManager(StateManager):
             user_intent.update_state(self)
 
     def update_curr_item(self):
-        # Update current item
+        """
+        Update the current item mentioned in the state
+        """
         recommended_items = self.get("recommended_items")
 
         if recommended_items is not None and recommended_items != []:
