@@ -234,8 +234,24 @@ class RecommendPromptBasedResponse(RecommendResponse):
         
         filtered_hard_constraints, filtered_soft_constraints = \
                     self.get_constraints_for_explanation(hard_constraints, soft_constraints)
+                    
         
-        constraints_str = ", ".join(list(filtered_hard_constraints.keys())) + ", ".join(list(filtered_soft_constraints.keys()))
+        filtered_constraints = []
+        
+        for constraint in filtered_hard_constraints:
+            if constraint != 'others':
+                filtered_constraints.append(constraint)
+            else:
+                filtered_constraints.append(", ".join(filtered_hard_constraints["others"]))
+                
+        for constraint in filtered_soft_constraints:
+            if constraint != 'others':
+                filtered_constraints.append(constraint)
+            else:
+                filtered_constraints.append(", ".join(filtered_soft_constraints["others"]))
+                
+        
+        constraints_str = ", ".join(filtered_constraints)
                 
         return self._format_recommendation_prompt.render(
             item_names=item_names, explanation=explanation_str, domain=self._domain, constraints_str = constraints_str)
