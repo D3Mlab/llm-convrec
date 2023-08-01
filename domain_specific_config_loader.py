@@ -194,7 +194,7 @@ class DomainSpecificConfigLoader:
         ]
         return answer_separate_questions_fewshots
 
-    def load_domain_specific_config(self) -> dict:
+    def _load_domain_specific_config(self) -> dict:
         """
         Load domain_specific_config.yaml.
 
