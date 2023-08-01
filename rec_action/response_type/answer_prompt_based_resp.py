@@ -162,7 +162,7 @@ class AnswerPromptBasedResponse(Response):
                     question, curr_mentioned_item)
 
                 if "I do not know" in ir_resp:
-                    ir_resp = "I don't have access to the informaiton to answer the question."
+                    ir_resp = "I don't have access to the information to answer the question."
 
                 answers[question][curr_mentioned_item.get_name()] = ir_resp
 
@@ -259,9 +259,6 @@ class AnswerPromptBasedResponse(Response):
 
         else:
             resp = list(all_answers.values())[0]
-        
-        if self.answer_type == "llm":
-            resp = "I couldn't find any relevant information in the product database to help me respond. Based on my internal knowledge, which does not include any information after 2021..." + '\n' + resp
 
         return self._clean_llm_response(resp)
 
