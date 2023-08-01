@@ -74,7 +74,7 @@ filter_item = FilterApplier(metadata_wrapper, [word_in_filter, location_filter])
 BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
-embedder = BERT_model(BERT_model_name, tokenizer_name, False)
+embedder = BERT_model(BERT_model_name, tokenizer_name, True)
 
 reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
 review_item_ids = reviews_df["item_id"].to_numpy()

@@ -44,7 +44,7 @@ hard_coded_responses = [
 BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
-embedder = BERT_model(BERT_model_name, tokenizer_name, False)
+embedder = BERT_model(BERT_model_name, tokenizer_name, True)
 items_metadata = pd.read_json("test/information_retriever/data/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
 reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
@@ -79,7 +79,7 @@ for row in range(size):
     test_data.append(datum)
 
 
-class TestGetBestMatchingReviewsOfRestaurant:
+class TestSearchEngine:
 
     @pytest.mark.parametrize("index_of_restaurant, question", test_data)
     def test_get_best_matching_reviews_of_restaurant(self, index_of_restaurant: int, question: str) -> None:
@@ -95,8 +95,7 @@ class TestGetBestMatchingReviewsOfRestaurant:
                                                 "restaurant", hard_coded_responses,
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
-                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots()
                                                 )
         query = answer_resp.convert_state_to_query(question)
         item_index = filter_item.filter_by_current_item(recommended_item)

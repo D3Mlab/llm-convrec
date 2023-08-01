@@ -44,7 +44,7 @@ hard_coded_responses = [
 BERT_name = config["BERT_MODEL_NAME"]
 BERT_model_name = BERT_MODELS[BERT_name]
 tokenizer_name = TOEKNIZER_MODELS[BERT_name]
-embedder = BERT_model(BERT_model_name, tokenizer_name, False)
+embedder = BERT_model(BERT_model_name, tokenizer_name, True)
 items_metadata = pd.read_json("test/information_retriever/data/50_restaurants_metadata.json", orient='records', lines=True)
 metadata_wrapper = MetadataWrapper(items_metadata)
 reviews_df = pd.read_csv("test/information_retriever/data/50_restaurants_reviews.csv")
