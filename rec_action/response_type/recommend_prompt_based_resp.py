@@ -78,11 +78,8 @@ class RecommendPromptBasedResponse(RecommendResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
-        self._preference_elicitation_prompt = env.get_template(
-            config['PREFERENCE_ELICITATION_PROMPT'])
         
         self.query = ""
-        self.explanation = {}
         self.item_ids = []
         
         self._enable_preference_elicitation = config["ENABLE_PREFERENCE_ELICITATION"]
@@ -129,14 +126,16 @@ class RecommendPromptBasedResponse(RecommendResponse):
        
         # If too many similar items
         if self._has_similar_items(current_recommended_items) and self._enable_preference_elicitation:
-           prompt = self._get_prompt_to_ask_user_q(current_recommended_items, state_manager)
-           resp = self._llm_wrapper.make_request(prompt)
+           resp = "We have a few recommendations that match what you're looking for. Do you have any other preferences that can help us narrow down the options?"
+           # Make it false so you are not querying to user again that there are too many recommendation
+           self._enable_preference_elicitation = False
+
         else:
             self._current_recommended_items = [group[0] for group in current_recommended_items if len(group) != 0]
                         
-            self._get_explanation_for_each_item(state_manager)
+            explanation = self._get_explanation_for_each_item(state_manager)
             
-            prompt = self._get_prompt_to_format_recommendation()
+            prompt = self._get_prompt_to_format_recommendation(state_manager, explanation)
             resp = self._llm_wrapper.make_request(prompt)
         
         return self._clean_llm_response(resp)
@@ -149,7 +148,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :return: None
         """
         self.query = self.convert_state_to_query(state_manager)
-        logger.debug(f'Query: { self.query}')
+        logger.debug(f'Query for Information Retrieval: { self.query}')
     
     def _get_item_ids(self, state_manager: StateManager) -> None:
         """
@@ -174,33 +173,6 @@ class RecommendPromptBasedResponse(RecommendResponse):
         
         return False
         
-    def _get_prompt_to_ask_user_q(self, current_recommended_items: list[list[RecommendedItem]], state_manager: StateManager) -> str:
-        """
-        Get prompt for preference elicitation
-
-        :param current_recommended_items: current recommended items from IR
-        :param state_manager: current state representing the conversation
-        :return: str
-        """
-        similar_items_metadata = {}
-        num_similar_items = 0
-                
-        # Get first group of items where there is more than 1 item per group
-        for group in current_recommended_items:
-            if len(group) > 1:
-                for item in group:
-                    similar_items_metadata[num_similar_items] = item.get_optional_data()
-                    num_similar_items +=1
-                break
-                        
-        if state_manager.get('hard_constraints') is not None:
-            constraints = state_manager.get('hard_constraints')
-        
-        if state_manager.get('soft_constraints') is not None:
-            constraints = constraints | state_manager.get('soft_constraints')
-            
-        return self._preference_elicitation_prompt.render(domain=self._domain, constraints=constraints, num_similar_items=num_similar_items, similar_items_metadata=similar_items_metadata)
-    
     @staticmethod
     def _clean_llm_response(resp: str) -> str:
         """" 
@@ -238,20 +210,37 @@ class RecommendPromptBasedResponse(RecommendResponse):
         """
         return self._current_recommended_items 
 
-    def _get_prompt_to_format_recommendation(self):
+    def _get_prompt_to_format_recommendation(self, state_manager: StateManager, explanation: dict):
         """
         Get the prompt to get recommendation text with explanation.
 
+        :param state_manager: current state manager
+        :param explanation: explanation of why recommending each recommendation
         :return: prompt to get recommendation text with explanation
         """
         item_names = ' and '.join(
             [f'{rec_item.get_name()}' for rec_item in self._current_recommended_items])
         explanation_str = ', '.join(
-            [f'{key}: {val}' for key, val in self.explanation.items()])
+            [f'{key}: {val}' for key, val in explanation.items()])
+        
+        hard_constraints = {}
+        soft_constraints = {}
+        
+        if state_manager.get('hard_constraints'):
+            hard_constraints = state_manager.get('hard_constraints').copy()
+        
+        if state_manager.get('soft_constraints'):
+            soft_constraints = state_manager.get('soft_constraints').copy()
+        
+        filtered_hard_constraints, filtered_soft_constraints = \
+                    self.get_constraints_for_explanation(hard_constraints, soft_constraints)
+        
+        constraints_str = ", ".join(list(filtered_hard_constraints.keys())) + ", ".join(list(filtered_soft_constraints.keys()))
+                
         return self._format_recommendation_prompt.render(
-            item_names=item_names, explanation=explanation_str, domain=self._domain)
+            item_names=item_names, explanation=explanation_str, domain=self._domain, constraints_str = constraints_str)
 
-    def _get_explanation_for_each_item(self, state_manager: StateManager) -> None:
+    def _get_explanation_for_each_item(self, state_manager: StateManager) -> str:
         """
         Returns the explanation on why recommending each item
 
@@ -308,7 +297,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
                 explanation[item_name] = self._llm_wrapper.make_request(
                     prompt)
 
-        self.explanation = explanation
+        return explanation
         
     def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:

@@ -30,7 +30,6 @@ class AnswerPromptBasedResponse(Response):
     :param extract_category_few_shots: few shot examples used for extracting category from user's question
     :param ir_prompt_few_shots: few shot examples used to answer question using IR
     :param separate_qs_prompt_few_shots: few shot examples used to separate question in to multiple individual questions
-    :param verify_metadata_prompt_few_shots: few shot examples used to confirm whether metadata answering makes sense
     :param observers: observers that gets notified when reviews must be summarized, so it doesn't exceed
     """
 
@@ -44,8 +43,7 @@ class AnswerPromptBasedResponse(Response):
     def __init__(self, config: dict, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
                  extract_category_few_shots: list[dict], ir_prompt_few_shots: list[dict],
-                 separate_qs_prompt_few_shots: list[dict], verify_metadata_prompt_few_shots: list[dict],
-                 observers=None) -> None:
+                 separate_qs_prompt_few_shots: list[dict], observers=None) -> None:
         
         self._filter_applier = filter_applier
         self._domain = domain
@@ -62,14 +60,8 @@ class AnswerPromptBasedResponse(Response):
         env = Environment(loader=FileSystemLoader(
             config['ANSWER_PROMPTS_PATH']), trim_blocks=True, lstrip_blocks=True)
 
-        self.gpt_template = env.get_template(
-            config['ANSWER_GPT_PROMPT'])
-
         self.mult_qs_template = env.get_template(
             config['ANSWER_MULT_QS_PROMPT'])
-
-        self.verify_metadata_template = env.get_template(
-            config['ANSWER_VERIFY_METADATA_RESP_PROMPT'])
 
         self.format_mult_qs_template = env.get_template(
             config['ANSWER_MULT_QS_FORMAT_RESP_PROMPT'])
@@ -91,7 +83,6 @@ class AnswerPromptBasedResponse(Response):
         self._extract_category_few_shots = extract_category_few_shots
         self._ir_prompt_few_shots = ir_prompt_few_shots
         self._separate_qs_prompt_few_shots = separate_qs_prompt_few_shots
-        self._verify_metadata_prompt_few_shots = verify_metadata_prompt_few_shots
 
     def get(self, state_manager: StateManager) -> str | None:
         """
@@ -157,12 +148,12 @@ class AnswerPromptBasedResponse(Response):
                 logger.debug("Metadata question!")
                 self.answer_type = "metadata"
 
-                metadata_resp = (self._create_resp_from_metadata(
-                    question, category, curr_mentioned_item))
+                metadata_resp = self._create_resp_from_metadata(
+                    question, category, curr_mentioned_item)
 
                 answers[question][curr_mentioned_item.get_name()] = metadata_resp
 
-            if not self._is_category_valid(category, curr_mentioned_item) or metadata_resp == "" or not self._verify_metadata_resp(question, metadata_resp):
+            if not self._is_category_valid(category, curr_mentioned_item) or "I do not know" in metadata_resp:
                 self.answer_type = "ir"
 
                 logger.debug("Non metadata question!")
@@ -170,22 +161,10 @@ class AnswerPromptBasedResponse(Response):
                 ir_resp = self._create_resp_from_ir(
                     question, curr_mentioned_item)
 
-                answers[question][curr_mentioned_item.get_name()] = ir_resp
-
                 if "I do not know" in ir_resp:
-                    logger.debug(
-                        f'Answer with LLM')
-                    
-                    self.answer_type = "llm"
+                    ir_resp = "I don't have access to the informaiton to answer the question."
 
-                    prompt = self.gpt_template.render(
-                        curr_mentioned_item=curr_mentioned_item, question=question)
-
-                    llm_resp = self._llm_wrapper.make_request(
-                        prompt)
-
-                    answers[question][curr_mentioned_item.get_name()] = llm_resp
-            
+                answers[question][curr_mentioned_item.get_name()] = ir_resp
 
         mult_item_resp = self._format_multiple_item_resp(
             question, curr_mentioned_items, answers[question])
@@ -236,7 +215,7 @@ class AnswerPromptBasedResponse(Response):
             return "I do not know."
 
         # flatten list because don't want to do preference elicitation
-        topk_reviews_flattened_list = [group[0] for group in reviews if len(group) != 0]
+        topk_reviews_flattened_list = reviews[0]
                     
         return self._format_review_resp(
             question, topk_reviews_flattened_list, curr_mentioned_item)
@@ -260,25 +239,6 @@ class AnswerPromptBasedResponse(Response):
                 return True
 
         return False
-
-    def _verify_metadata_resp(self, question: str, resp: str) -> bool:
-        """
-        Sees if the metadata response makes sense given the users question.
-
-        :param resp: string representing the metadata response
-        :param question: the question extracted from the users input
-        :returns: whether metadata response makes sense
-        """
-
-        prompt = self.verify_metadata_template.render(
-            question=question, resp=resp, few_shots=self._verify_metadata_prompt_few_shots)
-
-        valid_resp = self._llm_wrapper.make_request(prompt)
-
-        if 'yes' in self._remove_punct_string(valid_resp):
-            return True
-        else:
-            return False
 
     def _format_multiple_qs_resp(self, state_manager: StateManager, all_answers: dict) -> str:
         """
@@ -397,8 +357,6 @@ class AnswerPromptBasedResponse(Response):
         :return: response to user
         """
 
-        resp = ""
-
         for key, val in recommended_item.get_data().items():
             if self._remove_punct_string(key) in self._remove_punct_string(category):
 
@@ -407,7 +365,7 @@ class AnswerPromptBasedResponse(Response):
                 
                 return self._llm_wrapper.make_request(prompt)
 
-        return resp
+        return ""
 
     def convert_state_to_query(self, question: str) -> str:
         """

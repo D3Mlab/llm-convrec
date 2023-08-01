@@ -74,7 +74,6 @@ class TestAnswerExtractCategory:
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
                                                 domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
                                                 )
         actual = answer_resp._extract_category_from_input(utterance, restaurant)
         assert actual == expected_category
@@ -98,8 +97,6 @@ class TestAnswerExtractCategory:
                                                 None, "clothing", None,
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
-                                                domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
-                                                )
+                                                domain_specific_config_loader.load_answer_separate_questions_fewshots()                                                )
         actual = answer_resp._extract_category_from_input(utterance, clothing)
         assert actual == expected_category

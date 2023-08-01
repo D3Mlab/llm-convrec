@@ -24,7 +24,6 @@ config = {
     "NUM_REVIEWS_TO_RETURN": 3,
     "BERT_MODEL_NAME": "TASB",
     "ANSWER_PROMPTS_PATH": "prompt_files/recaction_prompts/answer_prompts",
-    "ANSWER_VERIFY_METADATA_RESP_PROMPT": "verify_metadata_resp_prompt.jinja",
     "ANSWER_FORMAT_MULTIPLE_RESP_PROMPT": "format_multiple_resp_prompt.jinja",
     "ANSWER_EXTRACT_CATEGORY_PROMPT": "extract_category_prompt.jinja",
     "ANSWER_HOURS_PROMPT": "hours_prompt.jinja",
@@ -98,7 +97,6 @@ class TestGetBestMatchingReviewsOfRestaurant:
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
                                                 domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
                                                 )
         query = answer_resp.convert_state_to_query(question)
         item_index = filter_item.filter_by_current_item(recommended_item)

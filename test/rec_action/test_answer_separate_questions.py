@@ -57,7 +57,6 @@ class TestAnswerSeparateQuestions:
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
                                                 domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
                                                 )
         actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \
@@ -75,7 +74,6 @@ class TestAnswerSeparateQuestions:
                                                 domain_specific_config_loader.load_answer_extract_category_fewshots(),
                                                 domain_specific_config_loader.load_answer_ir_fewshots(),
                                                 domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-                                                domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
                                                 )
         actual = answer_resp._separate_input_into_multiple_qs(state_manager)
         assert str(actual).lower().strip() \

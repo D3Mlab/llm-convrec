@@ -24,16 +24,13 @@ REJECTED_ITEMS_EXTRACTOR_PROMPT_FILENAME: "rejected_items_extractor_prompt.jinja
 CURRENT_ITEMS_EXTRACTOR_PROMPT_FILENAME: "current_items_extractor_prompt.jinja"
 
 ANSWER_PROMPTS_PATH: "prompt_files/recaction_prompts/answer_prompts"
-ANSWER_VERIFY_METADATA_RESP_PROMPT: "verify_metadata_resp_prompt.jinja"
 ANSWER_FORMAT_MULTIPLE_RESP_PROMPT: "format_multiple_resp_prompt.jinja"
 ANSWER_EXTRACT_CATEGORY_PROMPT: "extract_category_prompt.jinja"
 ANSWER_HOURS_PROMPT: "hours_prompt.jinja"
 ANSWER_METADATA_PROMPT: "metadata_prompt.jinja"
 ANSWER_IR_PROMPT: "ir_prompt.jinja"
 ANSWER_MULT_QS_PROMPT: "seperate_questions_prompt.jinja"
-ANSWER_GPT_PROMPT: "gpt_prompt.jinja"
 ANSWER_MULT_QS_FORMAT_RESP_PROMPT: "format_mult_qs_prompt.jinja"
-PREFERENCE_ELICITATION_PROMPT: "preference_elicitation_prompt.jinja"
 
 PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/restaurant_configs"
 MODEL: "gpt-3.5-turbo"

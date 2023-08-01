@@ -157,7 +157,6 @@ class ConvRecSystem(WarningObserver):
             domain_specific_config_loader.load_answer_extract_category_fewshots(),
             domain_specific_config_loader.load_answer_ir_fewshots(),
             domain_specific_config_loader.load_answer_separate_questions_fewshots(),
-            domain_specific_config_loader.load_answer_verify_metadata_resp_fewshots(),
             observers=[self]
         )
         requ_info_resp = RequestInformationHardCodedBasedResponse(hard_coded_responses, user_constraint_status_objects)

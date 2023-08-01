@@ -1,6 +1,18 @@
 DOMAIN: restaurants
-EXPLANATION_METADATA_BLACKLIST: ["address", "city", "state", "postal_code", "latitude", "longitude", "review_count",
-                                 "is_open", "categories", "hours", "stars"]
+EXPLANATION_METADATA_BLACKLIST:
+  [
+    "address",
+    "city",
+    "state",
+    "postal_code",
+    "latitude",
+    "longitude",
+    "review_count",
+    "is_open",
+    "categories",
+    "hours",
+    "stars",
+  ]
 INQUIRE_CLASSIFICATION_FEWSHOTS_FILE: "inquire_classification_fewshots.csv"
 ACCEPT_CLASSIFICATION_FEWSHOTS_FILE: "accept_classification_fewshots.csv"
 REJECT_CLASSIFICATION_FEWSHOTS_FILE: "reject_classification_fewshots.csv"
@@ -12,7 +24,6 @@ CURRENT_ITEMS_EXTRACTOR_FEWSHOTS_FILE: "current_items_extractor_fewshots.csv"
 ANSWER_EXTRACT_CATEGORY_FEWSHOTS_FILE: "answer_extract_category_fewshots.csv"
 ANSWER_IR_FEWSHOTS_FILE: "answer_ir_fewshots.csv"
 ANSWER_SEPARATE_QUESTIONS_FEWSHOTS_FILE: "answer_separate_questions_fewshots.csv"
-ANSWER_VERIFY_METADATA_RESP_FEWSHOTS_FILE: "answer_verify_metadata_resp_fewshots.csv"
 HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
 FILTER_CONFIG_FILE: "filter_config.csv"
 PATH_TO_ITEM_METADATA: "data/item_metadata.json"
