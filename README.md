@@ -123,7 +123,7 @@ If you want to run the restaurant demo execute following command in the terminal
 ```
 python restaurant_main.py
 ```
-The restaurant demo uses geocoding in order to verify location. It currently uses `Nominatim`, but can be configured to use Google Maps API. To do this, you must create a Google API Key. API keys are managed through the Google APIs console (https://code.google.com/apis/console). Make sure to have both Geocoding API and Time Zone API services enabled for this API key. 
+The restaurant demo uses geocoding in order to verify location. It currently uses `Nominatim`, but can be configured to use Google Maps API. To do this, you must create a Google API Key. To get the API Key, go to https://console.developers.google.com/ and navigate to 'Credentials' tab after logging in to your google cloud account and then click on 'CREATE CREDENTIALS'. Make sure to have both Geocoding API and Time Zone API services enabled for this API key. 
 
 Inside the `.env ` file, create a new line and write `GOOGLE_API_KEY=` and then paste the API key in after the equals sign. For example:
 GOOGLE_API_KEY = hghrjkdkxhgyrujjedksdk
