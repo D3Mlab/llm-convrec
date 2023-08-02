@@ -188,7 +188,8 @@ If you're looking to get started quickly, we've already set up two pre-configure
 
 Here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
+
 
 ## Setting Up Customized Domain
 
