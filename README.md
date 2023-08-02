@@ -66,7 +66,7 @@ Recommender: Great! Enjoy your meal! If you need any more assistance, feel free 
 
 Here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Installation and Running the System
 
@@ -137,7 +137,7 @@ python clothing_main.py
 
 Or, here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Overall Conversation Flow
 
