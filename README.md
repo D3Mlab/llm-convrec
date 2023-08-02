@@ -524,12 +524,12 @@ HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
 
 FILTER_CONFIG_FILE: "filter_config.csv"
 
-PATH_TO_ITEM_METADATA: "large_data/item_metadata.json"
+PATH_TO_ITEM_METADATA: "data/item_metadata.json"
 
-PATH_TO_REVIEWS: "large_data/items_reviews.csv"
+PATH_TO_REVIEWS: "data/items_reviews.csv"
 
-PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
+PATH_TO_EMBEDDING_MATRIX: "data/reviews_embedding_matrix.pt"
 
-PATH_TO_DATABASE: "large_data/database.faiss"
+PATH_TO_DATABASE: "data/database.faiss"
 ```
 If you do not want to follow our structure, then modify the paths above to where you stored the corresponding files.
