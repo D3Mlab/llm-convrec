@@ -25,12 +25,15 @@ with open('system_config.yaml') as f:
 
 config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
 
+with open(f"{config['PATH_TO_DOMAIN_CONFIGS']}/domain_specific_config.yaml") as f:
+    domain_specific_config = yaml.load(f, Loader=yaml.FullLoader)
+
 load_dotenv()
 
 openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 
 if 'GOOGLE_API_KEY' not in os.environ:
-    geocoder = NominatimWrapper(location_bias="Edmonton")
+    geocoder = NominatimWrapper(location_bias=domain_specific_config.get("LOCATION_BIAS"))
     
     if geocoder.geocode("toronto") is None:
         geocoder = None
