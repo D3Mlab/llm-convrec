@@ -13,7 +13,7 @@ warnings.simplefilter("default")
 logging.config.fileConfig('logging.conf')
 with open('system_config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
-
+config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/clothing_configs"
 load_dotenv()
 
 openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']

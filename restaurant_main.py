@@ -23,12 +23,14 @@ logging.config.fileConfig('logging.conf')
 with open('system_config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
+config['PATH_TO_DOMAIN_CONFIGS'] = "domain_specific/configs/restaurant_configs"
+
 load_dotenv()
 
 openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 
 if 'GOOGLE_API_KEY' not in os.environ:
-    geocoder = NominatimWrapper()
+    geocoder = NominatimWrapper(location_bias="Edmonton")
     
     if geocoder.geocode("toronto") is None:
         geocoder = None
