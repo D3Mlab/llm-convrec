@@ -11,12 +11,13 @@ class NominatimWrapper(GeocoderWrapper):
     _geocoder_history: dict[str, Location]
     _max_attempts: int
 
-    def __init__(self, max_attempts: int = 5, mandatory_address_key='road'):
+    def __init__(self, max_attempts: int = 5, mandatory_address_key='road', location_bias=None):
         super().__init__()
         self._geocoder = Nominatim(user_agent='d3m-2023-convrec-demo')
         self._mandatory_address_key = mandatory_address_key
         self._geocoder_history = {}
         self._max_attempts = max_attempts
+        self._location_bias = location_bias
 
     def geocode(self, query, **kwargs) -> Location:
         """
@@ -26,6 +27,10 @@ class NominatimWrapper(GeocoderWrapper):
         :param kwargs: other arguments
         :return: location object corresponding to the given query
         """
+
+        if self._location_bias is not None and self._location_bias.lower() not in query.lower():
+            query = f'{query}, {self._location_bias}'
+
         if query not in self._geocoder_history:
             attempts = 0
             while attempts < self._max_attempts:
