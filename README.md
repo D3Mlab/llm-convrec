@@ -198,7 +198,7 @@ The domain specific files reside in the domain_specific folder, where there are 
 1. The `classes` folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
 2. The `config` folder stores all of the domain specific configs necessary in order to make a recommendation.
 
-You must create a folder representing the new domain in both the `config` and `classes` folders. For example, we named the restaurant domain folders `restaurant_configs` (`domain_specific/configs/restaurant_configs`) and restaurants (`domain_specific/classes/restaurants`).
+If you want to follow our structure, create a folder representing the new domain in both the `config` and `classes` folders. For example, we named the restaurant domain folders `restaurant_configs` (`domain_specific/configs/restaurant_configs`) and restaurants (`domain_specific/classes/restaurants`).
 
 Note that key files should be stored in domain_specific folder, with all CSV and yaml files being stored in `domain_specific/configs/<YOUR_DOMAIN_CONFIG_FOLDER>`.
 
@@ -456,32 +456,45 @@ Note that the order of item_id in the review data must correspond to the order i
 User defined classes are used to implement domain specific tasks, for example, merging constraints in a specialized way.
 You can create your own implementations of the following classes:
 
-### Constraint Merger (state/constraints/constraint_merger.py):
+### Constraint Merger:
 
 Defines special way to merge constraint
-E.g. Location Merger merges two location using geocoding
 
-### Constraint Status (state/constraints/constraint_status.py):
+Example implementation:  `Location Merger` (merges two location using geocoding)
+
+Path to abstract class: `state/constraints/constraint_merger.py`
+
+
+### Status:
 
 Allows constraint to have custom status and corresponding to response from the recommender
-E.g. location can be “invalid”, “valid”, or “specific”
 
-### Filter (information_retriever/filter/filter.py):
+Example implementation: `Location Status` (location can be “invalid”, “valid”, or “specific”)
+
+Path to abstract class: `state/status.py`
+
+
+### Filter:
 
 Defines a way of filtering item based on the constraints and metadata
+
+Path to abstract class: `information_retriever/filter/filter.py`
+
+Example implementation: `Location Filter` (filters based off of location)
+
 
 ## 7. Domain Specific Config
 
 Once all the mentioned csv files and data files have been created, they can be put into one folder under the `domain_specific/configs` folder, and then modify the `PATH_TO_DOMAIN_CONFIGS` to be:
 
 ```
-PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
+PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/<YOUR_DOMAIN_CONFIG_FOLDER>"
 ```
 
 Then, create a `domain_specific_config.yaml` file and modify the file paths, similar to the below example:
 
 ```
-DOMAIN: < domain_name_as_a_noun >
+DOMAIN: < DOMAIN_NAME_AS_A_NOUN >
 
 EXPLANATION_METADATA_BLACKLIST: < all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage >
 
@@ -519,3 +532,4 @@ PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
 
 PATH_TO_DATABASE: "large_data/database.faiss"
 ```
+If you do not want to follow our structure, then modify the paths above to where you stored the corresponding files.
