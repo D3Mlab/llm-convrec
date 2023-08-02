@@ -28,7 +28,7 @@ class NominatimWrapper(GeocoderWrapper):
         :return: location object corresponding to the given query
         """
 
-        if self._location_bias is not None and self._location_bias not in query.lower():
+        if self._location_bias is not None and self._location_bias.lower() not in query.lower():
             query = f'{query}, {self._location_bias}'
 
         if query not in self._geocoder_history:
