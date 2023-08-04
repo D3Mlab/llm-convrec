@@ -104,7 +104,7 @@ Here are the steps to obtain an API key:
 
 4. Name your key and click on 'Create secret key' to generate your new API key.
 
-**Note that you need to input your credit card information into your OpenAI account to avoid rate limits.**
+**Note that the system cannot be used without entering your credit card information to your OpenAI account since the system interactions exceed the free API limitations. A typical conversation costs < $0.02.**
 
 After you have the API key, you need to configure your `.env` file:
 
