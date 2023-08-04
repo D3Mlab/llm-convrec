@@ -35,7 +35,7 @@ openai_api_key_or_gradio_url = os.environ['OPENAI_API_KEY']
 if 'GOOGLE_API_KEY' not in os.environ:
     geocoder = NominatimWrapper(location_bias=domain_specific_config.get("LOCATION_BIAS"))
     
-    if geocoder.geocode("toronto") is None:
+    if geocoder.geocode("edmonton") is None:
         geocoder = None
 else:
     geocoder = GoogleV3Wrapper()
