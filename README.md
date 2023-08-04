@@ -104,6 +104,8 @@ Here are the steps to obtain an API key:
 
 4. Name your key and click on 'Create secret key' to generate your new API key.
 
+**Note that you need to input your credit card information into your OpenAI account to avoid rate limits.**
+
 After you have the API key, you need to configure your `.env` file:
 
 1. Create a new file in your project root directory and name it `.env`.
