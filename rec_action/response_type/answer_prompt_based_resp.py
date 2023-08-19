@@ -183,7 +183,7 @@ class AnswerPromptBasedResponse(Response):
             "conv_history")[-1].get_content()
 
         prompt = self.mult_qs_template.render(
-            current_user_input=current_user_input, few_shots=self._separate_qs_prompt_few_shots)
+            domain=self._domain, current_user_input=current_user_input, few_shots=self._separate_qs_prompt_few_shots)
 
         resp = self._llm_wrapper.make_request(prompt)
 
