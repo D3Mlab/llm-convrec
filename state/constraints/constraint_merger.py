@@ -5,6 +5,8 @@ class ConstraintMerger:
 
     :param constraint: constraint key (e.g. "location") corresponding to this merger
     """
+
+    _constraint: str
     
     def __init__(self, constraint: str):
         self._constraint = constraint
@@ -17,7 +19,7 @@ class ConstraintMerger:
         """
         return self._constraint
 
-    def merge_constraint(self, og_constraint_value, new_constraint_value) -> None:
+    def merge_constraint(self, og_constraint_value: list[str], new_constraint_value: list[str]) -> None:
         """
         Update the constraint based on the original and new constraint value
 

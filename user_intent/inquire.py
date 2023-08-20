@@ -1,6 +1,5 @@
 from state.state_manager import StateManager
 from user_intent.user_intent import UserIntent
-from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from jinja2 import Environment, FileSystemLoader, Template
 
 
@@ -8,7 +7,6 @@ class Inquire(UserIntent):
     """
     Class representing Inquire user intent.
 
-    :param current_items_extractor: object used to extract the item that the user is referring to from the users input
     :param few_shots: few shot examples used in the prompt
     :param domain: domain of the recommendation (e.g. "restaurants")
     :param config: config of the system

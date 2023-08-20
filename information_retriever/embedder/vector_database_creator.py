@@ -16,8 +16,10 @@ class VectorDatabaseCreator:
     :param model: model used to embed reviews
     """
 
+    _embedding_model: BERT_model
+
     def __init__(self, model: BERT_model):
-        self.embedding_model = model
+        self._embedding_model = model
 
     def create_vector_database_from_reviews(self, reviews_df: pd.DataFrame, output_filepath=None, batch_size=128,
                                             k=10) -> faiss.Index:
@@ -43,7 +45,7 @@ class VectorDatabaseCreator:
         if start_index < len(reviews):
             save_number = k * batch_size
             for i in tqdm(range(start_index, len(reviews), batch_size)):
-                embedding = self.embedding_model.embed(reviews[i:i + batch_size].to_list())
+                embedding = self._embedding_model.embed(reviews[i:i + batch_size].to_list())
                 index.add(embedding)
                 if output_filepath is not None and (i - start_index) % save_number == 0:
                     faiss.write_index(index, output_filepath)

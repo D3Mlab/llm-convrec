@@ -28,7 +28,7 @@ class Item:
         self._optional = optional
         self._images = images
 
-    def get_id(self):
+    def get_id(self) -> str:
         """
         Get the item id.
 
@@ -36,7 +36,7 @@ class Item:
         """
         return self._id
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         Get name of the item
 
@@ -44,7 +44,7 @@ class Item:
         """
         return self._name
 
-    def get_mandatory_data(self) -> dict:
+    def get_mandatory_data(self) -> dict[str, Any]:
         """
         Get mandatory data of the item
 
@@ -52,7 +52,7 @@ class Item:
         """
         return self._mandatory
 
-    def get_optional_data(self) -> dict:
+    def get_optional_data(self) -> dict[str, Any]:
         """
         Get optional data of the item
 
@@ -60,7 +60,7 @@ class Item:
         """
         return self._optional
     
-    def get_data(self) -> dict:
+    def get_data(self) -> dict[str, Any]:
         """
         Get union of optional and mandatory data of the item
 
@@ -68,7 +68,7 @@ class Item:
         """
         return self._mandatory | self._optional
 
-    def get(self, key):
+    def get(self, key: str):
         """
         Get value from mandatory data based on the given key
 

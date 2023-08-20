@@ -12,6 +12,8 @@ from warning_observer import WarningObserver
 from utility.thread_utility import start_thread
 import threading
 
+from typing import Any
+
 logger = logging.getLogger('recommend')
 
 
@@ -43,10 +45,10 @@ class RecommendPromptBasedResponse(RecommendResponse):
     _explain_recommendation_prompt: Template
     _format_recommendation_prompt: Template
     _summarize_review_prompt: Template
-    query: str
-    explanation: dict
-    item_ids: list
-    enable_threading: str
+    _query: str
+    _item_ids: list[int]
+    _enable_threading: str
+    _current_recommended_items: list[RecommendedItem]
 
     def __init__(self, llm_wrapper: LLMWrapper, filter_applier: FilterApplier,
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
@@ -67,7 +69,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
 
         self._topk_items = int(config["TOPK_ITEMS"])
         self._topk_reviews = int(config["TOPK_REVIEWS"])
-        
+
         env = Environment(loader=FileSystemLoader(
             config['RECOMMEND_PROMPTS_PATH']))
         self._convert_state_to_query_prompt = env.get_template(
@@ -78,12 +80,12 @@ class RecommendPromptBasedResponse(RecommendResponse):
             config['FORMAT_RECOMMENDATION_PROMPT_FILENAME'])
         self._summarize_review_prompt = env.get_template(
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
-        
-        self.query = ""
-        self.item_ids = []
-        
+
+        self._query = ""
+        self._item_ids = []
+
         self._enable_preference_elicitation = config["ENABLE_PREFERENCE_ELICITATION"]
-        
+
         if self._enable_preference_elicitation:
             self._unacceptable_similarity_range = config['UNACCEPTABLE_SIMILARITY_SCORE_RANGE']
             self._max_number_similar_items = config["MAX_NUMBER_SIMILAR_ITEMS"]
@@ -91,8 +93,8 @@ class RecommendPromptBasedResponse(RecommendResponse):
             self._unacceptable_similarity_range = 0
             self._max_number_similar_items = 1
 
-        self.enable_threading = config['ENABLE_MULTITHREADING']
-       
+        self._enable_threading = config['ENABLE_MULTITHREADING']
+
     def get(self, state_manager: StateManager) -> str:
         """
         Get the response to be returned to user
@@ -100,44 +102,49 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :param state_manager: current representation of the state
         :return: response to be returned to user
         """
-        
-        if self.enable_threading:
+
+        if self._enable_threading:
             state_to_query_thread = threading.Thread(
                 target=self._get_query, args=(state_manager,))
 
             embedding_matrix_thread = threading.Thread(
                 target=self._get_item_ids, args=(state_manager,))
-            
+
             start_thread(
                 [state_to_query_thread, embedding_matrix_thread])
         else:
             self._get_query(state_manager)
             self._get_item_ids(state_manager)
         try:
-            current_recommended_items = self._information_retriever.get_best_matching_items(self.query, self._topk_items,
-                                                                    self._topk_reviews, self.item_ids,  self._unacceptable_similarity_range, self._max_number_similar_items)
-                
+            current_recommended_items = self._information_retriever.get_best_matching_items(self._query,
+                                                                                            self._topk_items,
+                                                                                            self._topk_reviews,
+                                                                                            self._item_ids,
+                                                                                            self._unacceptable_similarity_range,
+                                                                                            self._max_number_similar_items)
+
         except Exception as e:
             logger.debug(f'There is an error: {e}')
-            
+
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'NoRecommendation':
                     return response_dict['response']
-       
+
         # If too many similar items
         if self._has_similar_items(current_recommended_items) and self._enable_preference_elicitation:
-           resp = "We have a few recommendations that match what you're looking for. Do you have any other preferences that can help us narrow down the options?"
-           # Make it false so you are not querying to user again that there are too many recommendation
-           self._enable_preference_elicitation = False
+            resp = "We have a few recommendations that match what you're looking for. Do you have any other " \
+                   "preferences that can help us narrow down the options? "
+            # Make it false so you are not querying to user again that there are too many recommendation
+            self._enable_preference_elicitation = False
 
         else:
             self._current_recommended_items = [group[0] for group in current_recommended_items if len(group) != 0]
-                        
+
             explanation = self._get_explanation_for_each_item(state_manager)
-            
+
             prompt = self._get_prompt_to_format_recommendation(state_manager, explanation)
             resp = self._llm_wrapper.make_request(prompt)
-        
+
         return self._clean_llm_response(resp)
 
     def _get_query(self, state_manager: StateManager) -> None:
@@ -147,9 +154,9 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :param state_manager: current state representing the conversation
         :return: None
         """
-        self.query = self.convert_state_to_query(state_manager)
-        logger.debug(f'Query for Information Retrieval: { self.query}')
-    
+        self._query = self.convert_state_to_query(state_manager)
+        logger.debug(f'Query for Information Retrieval: {self._query}')
+
     def _get_item_ids(self, state_manager: StateManager) -> None:
         """
         Get filtered embedding matrix
@@ -157,10 +164,11 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :param state_manager: current state representing the conversation
         :return: None
         """
-        self.item_ids = \
+        self._item_ids = \
             self._filter_applier.apply_filter(state_manager)
 
-    def _has_similar_items(self, current_recommended_items: list[list[RecommendedItem]]) -> bool:
+    @staticmethod
+    def _has_similar_items(current_recommended_items: list[list[RecommendedItem]]) -> bool:
         """
         See if the current recommended items are similar or if they are different enough to recommend
 
@@ -170,9 +178,9 @@ class RecommendPromptBasedResponse(RecommendResponse):
         for group in current_recommended_items:
             if len(group) > 1:
                 return True
-        
+
         return False
-        
+
     @staticmethod
     def _clean_llm_response(resp: str) -> str:
         """" 
@@ -181,11 +189,11 @@ class RecommendPromptBasedResponse(RecommendResponse):
         :param resp: response from LLM
         :return: cleaned str
         """
-        
+
         if '"' in resp:
             # get rid of double quotes (llm sometimes outputs it)
             resp = resp.replace('"', "")
-        
+
         return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
     def convert_state_to_query(self, state_manager: StateManager) -> str:
@@ -203,14 +211,14 @@ class RecommendPromptBasedResponse(RecommendResponse):
         query = self._llm_wrapper.make_request(prompt)
 
         return query
-    
-    def get_current_recommended_items(self):
+
+    def get_current_recommended_items(self) -> list[RecommendedItem]:
         """
         Get most recently recommended items
         """
-        return self._current_recommended_items 
+        return self._current_recommended_items
 
-    def _get_prompt_to_format_recommendation(self, state_manager: StateManager, explanation: dict):
+    def _get_prompt_to_format_recommendation(self, state_manager: StateManager, explanation: dict[str, str]) -> str:
         """
         Get the prompt to get recommendation text with explanation.
 
@@ -222,25 +230,26 @@ class RecommendPromptBasedResponse(RecommendResponse):
             [f'{rec_item.get_name()}' for rec_item in self._current_recommended_items])
         explanation_str = ', '.join(
             [f'{key}: {val}' for key, val in explanation.items()])
-        
+
         hard_constraints = {}
         soft_constraints = {}
-        
+
         if state_manager.get('hard_constraints'):
             hard_constraints = state_manager.get('hard_constraints').copy()
-        
+
         if state_manager.get('soft_constraints'):
             soft_constraints = state_manager.get('soft_constraints').copy()
-        
-        filtered_hard_constraints, filtered_soft_constraints = \
-                    self.get_constraints_for_explanation(hard_constraints, soft_constraints)
-        
-        constraints_str = ", ".join(list(filtered_hard_constraints.keys())) + ", ".join(list(filtered_soft_constraints.keys()))
-                
-        return self._format_recommendation_prompt.render(
-            item_names=item_names, explanation=explanation_str, domain=self._domain, constraints_str = constraints_str)
 
-    def _get_explanation_for_each_item(self, state_manager: StateManager) -> str:
+        filtered_hard_constraints, filtered_soft_constraints = \
+            self.get_constraints_for_explanation(hard_constraints, soft_constraints)
+
+        constraints_str = ", ".join(list(filtered_hard_constraints.keys())) + ", ".join(
+            list(filtered_soft_constraints.keys()))
+
+        return self._format_recommendation_prompt.render(
+            item_names=item_names, explanation=explanation_str, domain=self._domain, constraints_str=constraints_str)
+
+    def _get_explanation_for_each_item(self, state_manager: StateManager) -> dict[str, str]:
         """
         Returns the explanation on why recommending each item
 
@@ -251,7 +260,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
         for rec_item in self._current_recommended_items:
             item_name = rec_item.get_name()
             hard_constraints = state_manager.get('hard_constraints').copy()
-            
+
             data = state_manager.to_dict()
             soft_constraints = {}
             for key, value in data.items():
@@ -274,7 +283,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
                 # this is very slow
 
                 self._notify_observers()
-                
+
                 logger.debug("Reviews are too long, summarizing...")
 
                 constraints = hard_constraints.copy()
@@ -298,7 +307,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
                     prompt)
 
         return explanation
-        
+
     def _get_prompt_to_explain_recommendation(self, item_names: str, metadata: str, reviews: list[str],
                                               hard_constraints: dict, soft_constraints: dict) -> str:
         """
@@ -340,7 +349,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
             [f'{key}: {val}' for key, val in recommended_item.get_optional_data().items() if key not in
              self._explanation_metadata_blacklist])
         return attributes
-    
+
     def _notify_observers(self) -> None:
         """
         Notify observers that there are some difficulties.
@@ -348,7 +357,8 @@ class RecommendPromptBasedResponse(RecommendResponse):
         for observer in self._observers:
             observer.notify_warning()
 
-    def get_constraints_for_explanation(self, hard_constraints: dict, soft_constraints: dict) -> tuple[dict, dict]:
+    def get_constraints_for_explanation(self, hard_constraints: dict[str, Any], soft_constraints: dict[str, Any]) -> \
+            tuple[dict[str, Any], dict[str, Any]]:
         """
         Return hard and soft constraints that should be inputted to prompt for generating explanation for
         recommendation.
