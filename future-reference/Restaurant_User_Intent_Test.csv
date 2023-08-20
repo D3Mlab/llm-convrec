@@ -1,0 +1,115 @@
+Input,Output1,Output2,leng
+i want restaurants with delicious pizza in jasper avenue that has great patio.,,,0
+how do you define good service,Inquire,,1
+does a bar usually have soju,Inquire,,1
+can you tell me which one is better,Inquire,,1
+compare the two of them,Inquire,,1
+list the pros and cons of both,Inquire,,1
+tell me the pros and cons of them,Inquire,,1
+which one is cheaper,Inquire,,1
+which is cheaper,Inquire,,1
+tell me which is cheaper,Inquire,,1
+list their pros and cons,Inquire,,1
+sure,AcceptRecommendation,,1
+Can you suggest some menu items,Inquire,,1
+can you recommend some menu items,Inquire,,1
+please recommend some menu items,Inquire,,1
+please suggest some menu items,Inquire,,1
+do they serve sushi,Inquire,,1
+are the sushi fresh,Inquire,,1
+do they have pizza,Inquire,,1
+what are their best dishes,Inquire,,1
+Hi I would like to know what they have on their menu,Inquire,,1
+tell me their menu,Inquire,,1
+tell me what kind of food they serve,Inquire,,1
+list their top 3 dishes ,Inquire,,1
+tell me the average cost,Inquire,,1
+average cost?,Inquire,,1
+kid-friendly?,Inquire,,1
+alcohol?,Inquire,,1
+I want a chinese restaurant in shnaghai,,,0
+hi can you give me a good restaurant in Edmonton,,,0
+Can you suggest a good place to eat in Toronto,,,0
+Hi I want sushi please,,,0
+can you tell me somewhere to eat in Edmonton,,,0
+I want to have some korean food,,,0
+some hotpot or grill,,,0
+I love hotpot,,,0
+I just want some pizza,,,0
+some pizza,,,0
+pizza,,,0
+I want an Italian restaurant near Jasper Avenue,,,0
+I like Canadian food,,,0
+Do they serve canadian food?,Inquire,,1
+"Sure, Let me try that out",AcceptRecommendation,,1
+"ok, thanks",AcceptRecommendation,,1
+do they have ice cream too,Inquire,,1
+is the service there good?,Inquire,,1
+I'd rather not go there,RejectRecommendation,,1
+I want some pancake,,,0
+"pancake,icecream",,,0
+"Little Italy, Toronto",,,0
+Shanghai,,,0
+Is it in Toronto?,Inquire,,1
+Is it on Bay Streey,Inquire,,1
+Is it far away,Inquire,,1
+I like chinese food,,,0
+I want a restaurant in Exton,,,0
+I want a vegetarian restaurant ,,,0
+No I don't want to go there. I like chinese food more.,RejectRecommendation,,1
+I have a special occasion coming up and would love a restaurant recommendation that offers a memorable dining experience,,,0
+Could you recommend a trendy restaurant in the area,,,0
+I'm a seafood lover and I'm looking for a restaurant that serves fresh seafood dishes. Do you have any recommendations,,,0
+Chinese,,,0
+Korean,,,0
+hotpot,,,0
+seafood,,,0
+vegan,,,0
+spicy,,,0
+formal,,,0
+kid-friendly,,,0
+Do they have patio,Inquire,,1
+Is there free parking nearby,Inquire,,1
+Does the restaurant offer a vegetarian or vegan menu?,Inquire,,1
+Is the restaurant kid-friendly,Inquire,,1
+Is there a dress code,Inquire,,1
+Do they offer takeaway or delivery services,Inquire,,1
+Do they have a private dining room for events,Inquire,,1
+Do they offer a gluten-free menu,Inquire,,1
+"I don't like macdonalds, I prefer eating hotpot",RejectRecommendation,,1
+no. I want chinese food,RejectRecommendation,,1
+"Sure, I will try that. ",AcceptRecommendation,,1
+I don’t like that place. Give me another recommendation,RejectRecommendation,,1
+No I don’t like that restaurant,RejectRecommendation,,1
+Toronto,,,0
+New York,,,0
+"I love Italian food. And also, I'm trying to find a place with a good selection of vegetarian options.",,,0
+ I'm located in New York City. Somewhere around Manhattan would be ideal.,,,0
+What's the best way to get a table? Do they take reservations?,Inquire,,1
+"I'm also a fan of desserts, what would you suggest there?",Inquire,,1
+"I'm open to trying anything tonight, but I do prefer Italian or Mexican cuisine",,,0
+I'm looking for a restaurant in the downtown Toronto area,,,0
+"Boulevard, Edmonton",,,0
+"Yorkville, Toronto",,,0
+"Chinatown, Toronto",,,0
+Toronto,,,0
+Calgary,,,0
+No I don’t like that,RejectRecommendation,,1
+when do they open,Inquire,,1
+whats on their menu,Inquire,,1
+what type of food do they have,Inquire,,1
+whats their best dish,Inquire,,1
+Bay Street,,,0
+Younge Street,,,0
+"Bay Street, Toronto",,,0
+I want korean food,,,0
+I want Canadian food,,,0
+Jasper Avenue,,,0
+Give me recommendattion that is within $30.,,,0
+Thank You,AcceptRecommendation,,1
+Thanks,AcceptRecommendation,,1
+what are the specialties of All Happy Family restaurant,Inquire,,1
+How long do we need to wait?,Inquire,,1
+I wanna try Izakaya Tomo.,AcceptRecommendation,,1
+Should I order red wine or white wine?,Inquire,,1
+Sure I will go there. What dishes do they have?,AcceptRecommendation,Inquire,2

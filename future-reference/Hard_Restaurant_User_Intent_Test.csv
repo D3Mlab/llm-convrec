@@ -1,0 +1,16 @@
+Input,Output1,Output2,leng,Current User Intent Classifier,New User Intent Classifier
+Sounds like a plan.,AcceptRecommendation,,1,Accept,Accept
+I'm up for that.,AcceptRecommendation,,1,Accept,Accept
+Sounds appealing.,AcceptRecommendation,,1,Accept,Accept
+That's not quite what I had in mind.,RejectRecommendation,,1,Reject,Reject
+That place is too expensive for tonight.,RejectRecommendation,,1,"Reject, Inquire",None
+Is there a discount for seniors?,Inquire,,1,Inquire,Inquire
+Do they offer any vegetarian or vegan options,Inquire,,1,Inquire,Inquire
+Is it near public transportation,Inquire,,1,Inquire,Inquire
+I've got a craving for something else.,RejectRecommendation,,1,None,Reject
+I was thinking of something more casual.,RejectRecommendation,,,Inquire,None
+Can you book a reservation online?,Inquire,,1,Inquire,Inquire
+Good call.,AcceptRecommendation,,1,Accept,Accept
+Do they take international credit cards?,Inquire,,1,Inquire,Inquire
+That place has poor ratings online.,RejectRecommendation,,1,Reject,Reject
+That restaurant is too crowded for my liking.,RejectRecommendation,,1,Reject,Reject
