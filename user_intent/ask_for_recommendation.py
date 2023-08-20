@@ -10,12 +10,12 @@ class AskForRecommendation(UserIntent):
     :param config: config of the system
     """
 
-    template: Template
+    _template: Template
 
     def __init__(self, config: dict):
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(
+        self._template = env.get_template(
             config['ACCEPT_RECOMMENDATION_PROMPT_FILENAME'])
 
     def get_name(self) -> str:
@@ -51,5 +51,5 @@ class AskForRecommendation(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input)
+        prompt = self._template.render(user_input=user_input)
         return prompt

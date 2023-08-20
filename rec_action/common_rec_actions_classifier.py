@@ -10,6 +10,8 @@ class CommonRecActionsClassifier(RecActionsClassifier):
     :param rec_actions: all possible recommender actions
     """
 
+    _rec_actions: list[RecAction]
+
     def __init__(self, rec_actions: list[RecAction]):
         super().__init__(rec_actions)
 

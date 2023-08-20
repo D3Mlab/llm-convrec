@@ -68,7 +68,7 @@ class Item:
         """
         return self._mandatory | self._optional
 
-    def get(self, key: str):
+    def get(self, key: str) -> Any:
         """
         Get value from mandatory data based on the given key
 

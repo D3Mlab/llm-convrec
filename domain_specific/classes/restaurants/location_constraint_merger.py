@@ -7,8 +7,9 @@ class LocationConstraintMerger(ConstraintMerger):
     """
     Merge the new and old location constraints
 
-    :param _geocoder_wrapper: Wrapper for geocoding
+    :param geocoder_wrapper: Wrapper for geocoding
     """
+    _constraint: str
     _geocoder_wrapper: GeocoderWrapper
 
     def __init__(self, geocoder_wrapper: GeocoderWrapper):

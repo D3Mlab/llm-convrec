@@ -17,7 +17,7 @@ class ProvidePreference(UserIntent):
     """
     _constraints_updater: ConstraintsUpdater
     _constraint_statuses: list[ConstraintStatus]
-    template: Template
+    _template: Template
     _enable_threading: bool
 
     def __init__(self, constraints_updater: ConstraintsUpdater,
@@ -29,7 +29,7 @@ class ProvidePreference(UserIntent):
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(
+        self._template = env.get_template(
             config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
         
         self._enable_threading = config['ENABLE_MULTITHREADING']
@@ -80,5 +80,5 @@ class ProvidePreference(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input)
+        prompt = self._template.render(user_input=user_input)
         return prompt

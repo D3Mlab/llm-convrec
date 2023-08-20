@@ -1,5 +1,5 @@
 from rec_action.response_type.response import Response
-
+from information_retriever.item.recommended_item import RecommendedItem
 
 class RecommendResponse(Response):
     """
@@ -8,7 +8,7 @@ class RecommendResponse(Response):
     :param domain: domain of the recommendation (e.g. restaurants)
     """
 
-    _current_recommended_items: list
+    _current_recommended_items: list[RecommendedItem]
     _domain: str
 
     def __init__(self, domain: str):

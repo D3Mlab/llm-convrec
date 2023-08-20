@@ -14,12 +14,12 @@ class Inquire(UserIntent):
 
     _few_shots: list[dict]
     _domain: str
-    template: Template
+    _template: Template
 
     def __init__(self, few_shots: list[dict], domain: str,
                  config: dict):
         env = Environment(loader=FileSystemLoader(config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
+        self._template = env.get_template(config['INQUIRE_PROMPT_FILENAME'])
         
         self._few_shots = few_shots
         self._domain = domain
@@ -58,5 +58,5 @@ class Inquire(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input, few_shots=self._few_shots,domain=self._domain)
+        prompt = self._template.render(user_input=user_input, few_shots=self._few_shots, domain=self._domain)
         return prompt

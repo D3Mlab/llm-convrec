@@ -9,7 +9,7 @@ class NominatimWrapper(GeocoderWrapper):
     """
 
     _geocoder: Nominatim
-    _mandatory_address_key: dict[str]
+    _mandatory_address_key: str
     _geocoder_history: dict[str, Location]
     _max_attempts: int
     _location_bias: str

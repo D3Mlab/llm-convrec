@@ -7,7 +7,7 @@ class LocationStatus(ConstraintStatus):
     """
     Class representing the status for location constraint
 
-    :param _geocoder_wrapper: Wrapper for geocoding
+    :param geocoder_wrapper: Wrapper for geocoding
     """
     _geocoder_wrapper: GeocoderWrapper
     

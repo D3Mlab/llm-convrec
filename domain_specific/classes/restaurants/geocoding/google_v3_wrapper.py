@@ -15,7 +15,7 @@ class GoogleV3Wrapper(GeocoderWrapper):
     """
 
     _geocoder: GoogleV3
-    _mandatory_address_keys: dict[str]
+    _mandatory_address_keys: set[str]
     _geocoder_history: dict[str, Location]
 
     def __init__(self, mandatory_address_keys=None):
