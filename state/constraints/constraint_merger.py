@@ -19,7 +19,7 @@ class ConstraintMerger:
         """
         return self._constraint
 
-    def merge_constraint(self, og_constraint_value: list[str], new_constraint_value: list[str]) -> None:
+    def merge_constraint(self, og_constraint_value: list[str], new_constraint_value: list[str]) -> list[str]:
         """
         Update the constraint based on the original and new constraint value
 

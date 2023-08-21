@@ -46,7 +46,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
     _format_recommendation_prompt: Template
     _summarize_review_prompt: Template
     _query: str
-    _item_ids: list[int]
+    _item_indices: list[int]
     _enable_threading: str
     _current_recommended_items: list[RecommendedItem]
 
@@ -82,7 +82,7 @@ class RecommendPromptBasedResponse(RecommendResponse):
             config['SUMMARIZE_REVIEW_PROMPT_FILENAME'])
 
         self._query = ""
-        self._item_ids = []
+        self._item_indices = []
 
         self._enable_preference_elicitation = config["ENABLE_PREFERENCE_ELICITATION"]
 
@@ -108,18 +108,18 @@ class RecommendPromptBasedResponse(RecommendResponse):
                 target=self._get_query, args=(state_manager,))
 
             embedding_matrix_thread = threading.Thread(
-                target=self._get_item_ids, args=(state_manager,))
+                target=self._get_item_indices, args=(state_manager,))
 
             start_thread(
                 [state_to_query_thread, embedding_matrix_thread])
         else:
             self._get_query(state_manager)
-            self._get_item_ids(state_manager)
+            self._get_item_indices(state_manager)
         try:
             current_recommended_items = self._information_retriever.get_best_matching_items(self._query,
                                                                                             self._topk_items,
                                                                                             self._topk_reviews,
-                                                                                            self._item_ids,
+                                                                                            self._item_indices,
                                                                                             self._unacceptable_similarity_range,
                                                                                             self._max_number_similar_items)
 
@@ -157,14 +157,14 @@ class RecommendPromptBasedResponse(RecommendResponse):
         self._query = self.convert_state_to_query(state_manager)
         logger.debug(f'Query for Information Retrieval: {self._query}')
 
-    def _get_item_ids(self, state_manager: StateManager) -> None:
+    def _get_item_indices(self, state_manager: StateManager) -> None:
         """
         Get filtered embedding matrix
 
         :param state_manager: current state representing the conversation
         :return: None
         """
-        self._item_ids = \
+        self._item_indices = \
             self._filter_applier.apply_filter(state_manager)
 
     @staticmethod
