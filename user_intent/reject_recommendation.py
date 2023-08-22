@@ -3,7 +3,6 @@ from itertools import chain
 from state.state_manager import StateManager
 from user_intent.extractors.rejected_items_extractor import RejectedItemsExtractor
 from user_intent.user_intent import UserIntent
-from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from jinja2 import Environment, FileSystemLoader, Template
 
 
@@ -12,8 +11,6 @@ class RejectRecommendation(UserIntent):
     Class representing the Reject Recommendation user intent.
 
     :param rejected_items_extractor: object used to extract rejected restaurants
-    :param current_items_extractor: object used to extract the restaurant that the user is referring to from the users
-                                    input
     :param few_shots: few shot examples used in the prompt
     :param domain: domain of the recommendation (e.g. "restaurants")
     :param config: config of the system
@@ -22,7 +19,7 @@ class RejectRecommendation(UserIntent):
     _rejected_items_extractor: RejectedItemsExtractor
     _few_shots: list[dict]
     _domain: str
-    template: Template
+    _template: Template
 
     def __init__(self, rejected_items_extractor: RejectedItemsExtractor,
                  few_shots: list[dict], domain: str, config: dict):
@@ -30,7 +27,7 @@ class RejectRecommendation(UserIntent):
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(
+        self._template = env.get_template(
             config['REJECT_RECOMMENDATION_PROMPT_FILENAME'])
         self._few_shots = few_shots
         self._domain = domain
@@ -86,7 +83,7 @@ class RejectRecommendation(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input, few_shots=self._few_shots,domain=self._domain)
+        prompt = self._template.render(user_input=user_input, few_shots=self._few_shots, domain=self._domain)
         return prompt
 
         

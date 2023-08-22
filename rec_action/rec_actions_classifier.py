@@ -10,7 +10,7 @@ class RecActionsClassifier:
     :param rec_actions: all possible recommender actions
     """
 
-    rec_actions: list[RecAction]
+    _rec_actions: list[RecAction]
 
     def __init__(self, rec_actions: list[RecAction]):
         self._rec_actions = rec_actions

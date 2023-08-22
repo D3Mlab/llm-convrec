@@ -6,6 +6,8 @@ from domain_specific.classes.restaurants.geocoding.geocoder_wrapper import Geoco
 class LocationStatus(ConstraintStatus):
     """
     Class representing the status for location constraint
+
+    :param geocoder_wrapper: Wrapper for geocoding
     """
     _geocoder_wrapper: GeocoderWrapper
     
@@ -14,7 +16,7 @@ class LocationStatus(ConstraintStatus):
         
         self._geocoder_wrapper = geocoder_wrapper
 
-    def update_status(self, curr_state: StateManager):
+    def update_status(self, curr_state: StateManager) -> None:
         """
         Update the status of the constraint
 

@@ -4,7 +4,8 @@ from information_retriever.item.recommended_item import RecommendedItem
 
 class ItemLoader:
 
-    def create_item(self, item_dict: dict) -> Item:
+    @staticmethod
+    def _create_item(item_dict: dict) -> Item:
         """
         Create item object from dict representation of item
 
@@ -27,6 +28,6 @@ class ItemLoader:
         :param relevant_reviews: reviews of the item relevant to query
         :return: recommended item generated
         """
-        item = self.create_item(item_dict)
+        item = self._create_item(item_dict)
         recommended_item = RecommendedItem(item, query, relevant_reviews)
         return recommended_item
