@@ -14,6 +14,8 @@ class GoogleV3Wrapper(GeocoderWrapper):
     :param mandatory_address_keys: key used to determine if location is specific enough
     """
 
+    _geocoder: GoogleV3
+    _mandatory_address_keys: set[str]
     _geocoder_history: dict[str, Location]
 
     def __init__(self, mandatory_address_keys=None):

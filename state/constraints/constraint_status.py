@@ -37,7 +37,7 @@ class ConstraintStatus:
         """
         return self._curr_status
     
-    def get_constraint_name(self):
+    def get_constraint_name(self) -> str:
         """
         Gets constraint name
 

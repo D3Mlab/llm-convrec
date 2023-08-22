@@ -11,6 +11,7 @@ class RequestInformationHardCodedBasedResponse(Response):
     :param constraint_statuses: objects that keep tracks the status of the constraints 
     """
     _hard_coded_responses: list[dict]
+    _constraint_statuses: list[ConstraintStatus]
             
     def __init__(self, hard_coded_responses: list[dict], constraint_statuses: list[ConstraintStatus]):
         self._hard_coded_responses = hard_coded_responses
