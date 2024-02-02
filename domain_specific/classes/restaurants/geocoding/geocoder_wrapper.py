@@ -7,7 +7,7 @@ class GeocoderWrapper:
     Wrapper for geocoder.
     """
 
-    def geocode(self, query, **kwargs) -> Location:
+    def geocode(self, query: str, **kwargs) -> Location:
         """
         Convert the given query to location object from geopy.
 

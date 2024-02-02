@@ -3,3 +3,5 @@ all_mentioned_items,recently_mentioned_items,user_input,accepted_items
 "Restaurant A,Restaurant B,Restaurant C","Restaurant B, Restaurant C","Restaurant A looks good","Restaurant A"
 "Restaurant A, Restaurant B, Restaurant C, Restaurant E, Restaurant F, Restaurant F","Restaurant E, Restaurant F, Restaurant F","I like Restaurant E and Restaurant G, but I don't like Restaurant F","Restaurant E, Restaurant G"
 "Restaurant A, Restaurant B, Restaurant C, Restaurant D","Restaurant C, Restaurant D","I like it","Restaurant C, Restaurant D"
+"Restaurant A,Restaurant B,Restaurant C","Restaurant A, Restaurant B, Restaurant C","I like the first one.","Restaurant A"
+"Restaurant A,Restaurant B,Restaurant C","Restaurant A, Restaurant B, Restaurant C","I like the last one.","Restaurant C"

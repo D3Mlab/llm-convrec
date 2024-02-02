@@ -1,7 +1,6 @@
 from state.state_manager import StateManager
 from user_intent.extractors.accepted_items_extractor import AcceptedItemsExtractor
 from user_intent.user_intent import UserIntent
-from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 
 from itertools import chain
 from jinja2 import Environment, FileSystemLoader, Template
@@ -12,26 +11,23 @@ class AcceptRecommendation(UserIntent):
     Class representing the Accept Recommendation user intent.
 
     :param accepted_items_extractor: object used to extract accepted items
-    :param current_items_extractor: object used to extract the item that the user is referring to from the users input
     :param few_shots: few shot examples used in the prompt
     :param domain: domain of the recommendation (e.g. "restaurants")
     :param config: config of the system
     """
 
-    _current_items_extractor: CurrentItemsExtractor
     _accepted_items_extractor: AcceptedItemsExtractor
     _few_shots: list[dict]
     _domain: str
-    template: Template
+    _template: Template
 
-    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor, current_items_extractor: CurrentItemsExtractor,
+    def __init__(self, accepted_items_extractor: AcceptedItemsExtractor,
                  few_shots: list[dict], domain: str, config: dict):
         self._accepted_items_extractor = accepted_items_extractor
-        self._current_items_extractor = current_items_extractor
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(
+        self._template = env.get_template(
             config['ACCEPT_RECOMMENDATION_PROMPT_FILENAME'])
         
         self._few_shots = few_shots
@@ -53,23 +49,13 @@ class AcceptRecommendation(UserIntent):
         """
         return "User accepts recommended item"
 
-    def update_state(self, curr_state: StateManager) -> StateManager:
+    def update_state(self, curr_state: StateManager):
         """
         Mutate to update the curr_state and return them.
 
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        # Update current item
-        recommended_items = curr_state.get("recommended_items")
-
-        if recommended_items is not None and recommended_items != []:
-            curr_item = self._current_items_extractor.extract(
-                recommended_items, curr_state.get("conv_history"))
-
-            # If current items are not an empty array then user talking about new item
-            if curr_item:
-                curr_state.update("curr_items", curr_item)
 
         if curr_state.get("recommended_items") is not None:
             all_mentioned_items = list(chain.from_iterable(
@@ -87,7 +73,6 @@ class AcceptRecommendation(UserIntent):
             curr_state.update('accepted_items', [])
         curr_state.get('accepted_items').extend(items)
         curr_state.get("updated_keys")['accepted_items'] = True
-        return curr_state
 
     def get_prompt_for_classification(self, curr_state: StateManager) -> str:
         """
@@ -97,7 +82,7 @@ class AcceptRecommendation(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input, few_shots=self._few_shots,domain=self._domain)
+        prompt = self._template.render(user_input=user_input, few_shots=self._few_shots, domain=self._domain)
         return prompt
 
         

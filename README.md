@@ -66,7 +66,7 @@ Recommender: Great! Enjoy your meal! If you need any more assistance, feel free 
 
 Here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Installation and Running the System
 
@@ -104,6 +104,8 @@ Here are the steps to obtain an API key:
 
 4. Name your key and click on 'Create secret key' to generate your new API key.
 
+**Note that the system cannot be used without entering your credit card information to your OpenAI account since the system interactions exceed the free API limitations. A typical conversation costs < $0.02.**
+
 After you have the API key, you need to configure your `.env` file:
 
 1. Create a new file in your project root directory and name it `.env`.
@@ -118,11 +120,16 @@ Please ensure you do not upload your `.env` file to public repositories to keep 
 
 ### 5. Run the System
 
-If you want to run the restaurant demo, execute following command in the terminal:
+If you want to run the restaurant demo execute following command in the terminal:
 
 ```
 python restaurant_main.py
 ```
+The restaurant demo uses geocoding in order to verify location. It currently uses `Nominatim`, but can be configured to use Google Maps API. To do this, you must create a Google API Key. To get the API Key, go to https://console.developers.google.com/ and navigate to 'Credentials' tab after logging in to your google cloud account and then click on 'CREATE CREDENTIALS'. Make sure to have both Geocoding API and Time Zone API services enabled for this API key. 
+
+Inside the `.env ` file, create a new line and write `GOOGLE_API_KEY=` and then paste the API key in after the equals sign. For example:
+GOOGLE_API_KEY = hghrjkdkxhgyrujjedksdk
+
 
 If you want to run the clothing demo, execute following command in the terminal:
 
@@ -132,7 +139,7 @@ python clothing_main.py
 
 Or, here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Overall Conversation Flow
 
@@ -188,7 +195,8 @@ If you're looking to get started quickly, we've already set up two pre-configure
 
 Here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
+
 
 ## Setting Up Customized Domain
 
@@ -197,7 +205,7 @@ The domain specific files reside in the domain_specific folder, where there are 
 1. The `classes` folder stores all of the user defined domain specific classes (more information on this below), which are completely optional but allow for a better user experience.
 2. The `config` folder stores all of the domain specific configs necessary in order to make a recommendation.
 
-You must create a folder representing the new domain in both the `config` and `classes` folders. For example, we named the restaurant domain folders `restaurant_configs` (`domain_specific/configs/restaurant_configs`) and restaurants (`domain_specific/classes/restaurants`).
+If you want to follow our structure, create a folder representing the new domain in both the `config` and `classes` folders. For example, we named the restaurant domain folders `restaurant_configs` (`domain_specific/configs/restaurant_configs`) and restaurants (`domain_specific/classes/restaurants`).
 
 Note that key files should be stored in domain_specific folder, with all CSV and yaml files being stored in `domain_specific/configs/<YOUR_DOMAIN_CONFIG_FOLDER>`.
 
@@ -455,32 +463,45 @@ Note that the order of item_id in the review data must correspond to the order i
 User defined classes are used to implement domain specific tasks, for example, merging constraints in a specialized way.
 You can create your own implementations of the following classes:
 
-### Constraint Merger (state/constraints/constraint_merger.py):
+### Constraint Merger:
 
 Defines special way to merge constraint
-E.g. Location Merger merges two location using geocoding
 
-### Constraint Status (state/constraints/constraint_status.py):
+Example implementation:  `Location Merger` (merges two location using geocoding)
+
+Path to abstract class: `state/constraints/constraint_merger.py`
+
+
+### Status:
 
 Allows constraint to have custom status and corresponding to response from the recommender
-E.g. location can be “invalid”, “valid”, or “specific”
 
-### Filter (information_retriever/filter/filter.py):
+Example implementation: `Location Status` (location can be “invalid”, “valid”, or “specific”)
+
+Path to abstract class: `state/status.py`
+
+
+### Filter:
 
 Defines a way of filtering item based on the constraints and metadata
+
+Path to abstract class: `information_retriever/filter/filter.py`
+
+Example implementation: `Location Filter` (filters based off of location)
+
 
 ## 7. Domain Specific Config
 
 Once all the mentioned csv files and data files have been created, they can be put into one folder under the `domain_specific/configs` folder, and then modify the `PATH_TO_DOMAIN_CONFIGS` to be:
 
 ```
-PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/your_domain_config_folder
+PATH_TO_DOMAIN_CONFIGS: "domain_specific/configs/<YOUR_DOMAIN_CONFIG_FOLDER>"
 ```
 
 Then, create a `domain_specific_config.yaml` file and modify the file paths, similar to the below example:
 
 ```
-DOMAIN: < domain_name_as_a_noun >
+DOMAIN: < DOMAIN_NAME_AS_A_NOUN >
 
 EXPLANATION_METADATA_BLACKLIST: < all metadata keys that should be ignored when giving explanation of the item to the user, during recommendation stage >
 
@@ -510,11 +531,12 @@ HARD_CODED_RESPONSES_FILE: "hard_coded_responses.csv"
 
 FILTER_CONFIG_FILE: "filter_config.csv"
 
-PATH_TO_ITEM_METADATA: "large_data/item_metadata.json"
+PATH_TO_ITEM_METADATA: "data/item_metadata.json"
 
-PATH_TO_REVIEWS: "large_data/items_reviews.csv"
+PATH_TO_REVIEWS: "data/items_reviews.csv"
 
-PATH_TO_EMBEDDING_MATRIX: "large_data/reviews_embedding_matrix.pt"
+PATH_TO_EMBEDDING_MATRIX: "data/reviews_embedding_matrix.pt"
 
-PATH_TO_DATABASE: "large_data/database.faiss"
+PATH_TO_DATABASE: "data/database.faiss"
 ```
+If you do not want to follow our structure, then modify the paths above to where you stored the corresponding files.

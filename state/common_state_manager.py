@@ -12,6 +12,8 @@ from user_intent.reject_recommendation import RejectRecommendation
 from user_intent.user_intent import UserIntent
 from rec_action.rec_action import RecAction
 
+from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
+
 
 class CommonStateManager(StateManager):
     """
@@ -27,8 +29,9 @@ class CommonStateManager(StateManager):
     _possible_goals: set[UserIntent]
     _default_goal_original: UserIntent
     _default_goal: UserIntent
+    _current_items_extractor: CurrentItemsExtractor
 
-    def __init__(self, possible_goals: set[UserIntent], default_goal: UserIntent = None, data: dict[str, Any] = None):
+    def __init__(self, possible_goals: set[UserIntent], default_goal: UserIntent = None, data: dict[str, Any] = None, current_items_extractor: CurrentItemsExtractor = None):
         if data is None:
             data = {}
 
@@ -38,6 +41,7 @@ class CommonStateManager(StateManager):
         self._possible_goals = possible_goals
         self._default_goal_original = default_goal
         self._default_goal = default_goal
+        self._current_items_extractor = current_items_extractor
 
     def get(self, key: str) -> Any:
         """
@@ -85,6 +89,7 @@ class CommonStateManager(StateManager):
                 unsatisfied_goals.remove(goal)
 
         self.update("updated_keys", {})
+        self.update_curr_item()
 
         num_goals = 0
         for user_intent in user_intents:
@@ -96,6 +101,20 @@ class CommonStateManager(StateManager):
                                  not isinstance(user_intent, RejectRecommendation)):
                 self._update_goals(user_intent)
             user_intent.update_state(self)
+
+    def update_curr_item(self):
+        """
+        Update the current item mentioned in the state
+        """
+        recommended_items = self.get("recommended_items")
+
+        if recommended_items is not None and recommended_items != []:
+            curr_item = self._current_items_extractor.extract(
+                recommended_items, self.get("conv_history"))
+
+            # If current item is [] then just keep it the same
+            if curr_item:
+                self.update("curr_items", curr_item)
 
     def store_rec_actions(self, rec_actions: list) -> None:
         """

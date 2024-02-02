@@ -1,7 +1,0 @@
-key,description,is_mandatory,is_cumulative
-category,Desired category of the appliances,TRUE,TRUE
-brand,Desired brand or manufacturer of the appliances,FALSE,TRUE
-features,Desired specific features or functionalities of the appliances,FALSE,TRUE
-price range,Desired price range of the products,FALSE,TRUE
-design,Desired style or design of the appliances ,FALSE,TRUE
-others,Any additional constraints or preferred features.,FALSE,TRUE
