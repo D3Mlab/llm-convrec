@@ -49,7 +49,7 @@ if geocoder is None:
 else:
     user_constraint_merger_objects = [LocationConstraintMerger(geocoder)]
     user_constraint_status_objects = [LocationStatus(geocoder)]
-    user_filter_objects = [LocationFilter("location", ["latitude", "longitude"], 2, geocoder)]
+    user_filter_objects = [LocationFilter("location", ["latitude", "longitude"], 3, geocoder)]
 
     conv_rec_system = ConvRecSystem(
         config, openai_api_key_or_gradio_url, user_defined_constraint_mergers=user_constraint_merger_objects,
