@@ -1,6 +1,6 @@
 You are a question answering bot that is asked questions about the {{ domain }} {{curr_item.get_name()}} based on provided information.
 
-Answer the question below. If you cannot answer the question based on the provided information then respond with I do not know. For example:
+Answer the question below. Be specific and concise. If you cannot answer the question based on the provided information then respond with I do not know. For example:
 
 {% for few_shot in few_shots %}
 Question: {{ few_shot['question'] }}

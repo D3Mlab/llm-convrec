@@ -45,7 +45,6 @@ class AnswerPromptBasedResponse(Response):
     _format_mult_qs_template: Template
     _format_mult_resp_template: Template
     _extract_category_template: Template
-    _metadata_template: Template
     _ir_template: Template
     _enable_threading: bool
     _extract_category_few_shots: list[dict]
@@ -56,7 +55,7 @@ class AnswerPromptBasedResponse(Response):
                  information_retriever: InformationRetrieval, domain: str, hard_coded_responses: list[dict],
                  extract_category_few_shots: list[dict], ir_prompt_few_shots: list[dict],
                  separate_qs_prompt_few_shots: list[dict], observers=None) -> None:
-        
+
         self._filter_applier = filter_applier
         self._domain = domain
         self._observers = observers
@@ -84,12 +83,9 @@ class AnswerPromptBasedResponse(Response):
         self._extract_category_template = env.get_template(
             config['ANSWER_EXTRACT_CATEGORY_PROMPT'])
 
-        self._metadata_template = env.get_template(
-            config['ANSWER_METADATA_PROMPT'])
-
         self._ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
-        
+
         self._enable_threading = config['ENABLE_MULTITHREADING']
 
         self._extract_category_few_shots = extract_category_few_shots
@@ -112,7 +108,7 @@ class AnswerPromptBasedResponse(Response):
         if curr_mentioned_items is not None:
 
             user_questions = self._separate_input_into_multiple_qs(state_manager)
-            
+
             thread_list = []
 
             for question in user_questions:
@@ -121,10 +117,10 @@ class AnswerPromptBasedResponse(Response):
                         target=self._get_resp_one_q, args=(question, curr_mentioned_items, answers)))
                 else:
                     self._get_resp_one_q(question, curr_mentioned_items, answers)
-                
+
             if self._enable_threading:
                 start_thread(thread_list)
-            
+
         else:
             for response_dict in self._hard_coded_responses:
                 if response_dict['action'] == 'NoAnswer':
@@ -180,7 +176,7 @@ class AnswerPromptBasedResponse(Response):
 
         mult_item_resp = self._format_multiple_item_resp(
             question, curr_mentioned_items, answers[question])
-        
+
         answers[question] = mult_item_resp
 
     def _separate_input_into_multiple_qs(self, state_manager: StateManager) -> list[str]:
@@ -228,7 +224,7 @@ class AnswerPromptBasedResponse(Response):
 
         # flatten list because don't want to do preference elicitation
         topk_reviews_flattened_list = reviews[0]
-                    
+
         return self._format_review_resp(
             question, topk_reviews_flattened_list, curr_mentioned_item)
 
@@ -244,8 +240,8 @@ class AnswerPromptBasedResponse(Response):
         valid_categories = []
 
         for key in recommended_item.get_data():
-            valid_categories.append(key)        
-            
+            valid_categories.append(key)
+
         for valid_category in valid_categories:
             if self._remove_punct_string(valid_category) in self._remove_punct_string(classified_category):
                 return True
@@ -266,7 +262,7 @@ class AnswerPromptBasedResponse(Response):
 
             prompt = self._format_mult_qs_template.render(
                 user_input=user_input, all_answers=list(all_answers.values()))
-            
+
             resp = self._llm_wrapper.make_request(prompt)
 
         else:
@@ -282,11 +278,11 @@ class AnswerPromptBasedResponse(Response):
         :param resp: response from LLM
         :return: cleaned str
         """
-        
+
         if '"' in resp:
             # get rid of double quotes (llm sometimes outputs it)
             resp = resp.replace('"', "")
-        
+
         return resp.removeprefix('Response to user:').removeprefix('response to user:').strip()
 
     def _format_multiple_item_resp(self, question: str, current_mentioned_items: list[RecommendedItem], answers: dict) \
@@ -308,16 +304,11 @@ class AnswerPromptBasedResponse(Response):
         item_to_answ = {
             ', '.join([f'{key}: {val}' for key, val in answers.items()])}
 
-        if (len(answers) > 1):
+        prompt = self._format_mult_resp_template.render(
+            question=question, curr_ment_item_names_str=curr_ment_item_names_str,
+            res_to_answ=item_to_answ, domain=self._domain)
 
-            prompt = self._format_mult_resp_template.render(
-                question=question, curr_ment_item_names_str=curr_ment_item_names_str,
-                res_to_answ=item_to_answ, domain=self._domain)
-
-            resp = self._llm_wrapper.make_request(prompt)
-
-        else:
-            resp = list(answers.values())[0]
+        resp = self._llm_wrapper.make_request(prompt)
 
         if '"' in resp:
             # get rid of double quotes (gpt sometimes outputs it)
@@ -368,11 +359,9 @@ class AnswerPromptBasedResponse(Response):
 
         for key, val in recommended_item.get_data().items():
             if self._remove_punct_string(key) in self._remove_punct_string(category):
+                # TODO: remove template from this class/project once testing is done
 
-                prompt = self._metadata_template.render(
-                    question=question, key=key, val=val)
-                
-                return self._llm_wrapper.make_request(prompt)
+                return f"{key}: {val}"
 
         return ""
 
