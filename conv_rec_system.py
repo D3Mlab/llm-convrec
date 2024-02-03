@@ -84,9 +84,7 @@ class ConvRecSystem(WarningObserver):
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
 
-        temperature_zero_llm_wrapper = GPTWrapper(
-            openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
-        constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
+        constraints_updater = OneStepConstraintsUpdater(llm_wrapper,
                                                         constraints_categories,
                                                         constraints_fewshots, domain,
                                                         user_defined_constraint_mergers, config)
