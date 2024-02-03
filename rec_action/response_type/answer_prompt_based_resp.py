@@ -45,7 +45,6 @@ class AnswerPromptBasedResponse(Response):
     _format_mult_qs_template: Template
     _format_mult_resp_template: Template
     _extract_category_template: Template
-    _metadata_template: Template
     _ir_template: Template
     _enable_threading: bool
     _extract_category_few_shots: list[dict]
@@ -83,9 +82,6 @@ class AnswerPromptBasedResponse(Response):
 
         self._extract_category_template = env.get_template(
             config['ANSWER_EXTRACT_CATEGORY_PROMPT'])
-
-        self._metadata_template = env.get_template(
-            config['ANSWER_METADATA_PROMPT'])
 
         self._ir_template = env.get_template(
             config['ANSWER_IR_PROMPT'])
@@ -364,8 +360,6 @@ class AnswerPromptBasedResponse(Response):
         for key, val in recommended_item.get_data().items():
             if self._remove_punct_string(key) in self._remove_punct_string(category):
                 # TODO: remove template from this class/project once testing is done
-                prompt = self._metadata_template.render(
-                    question=question, key=key, val=val)
 
                 return f"{key}: {val}"
 

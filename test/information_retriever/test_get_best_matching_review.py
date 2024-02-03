@@ -27,7 +27,6 @@ config = {
     "ANSWER_FORMAT_MULTIPLE_RESP_PROMPT": "format_multiple_resp_prompt.jinja",
     "ANSWER_EXTRACT_CATEGORY_PROMPT": "extract_category_prompt.jinja",
     "ANSWER_HOURS_PROMPT": "hours_prompt.jinja",
-    "ANSWER_METADATA_PROMPT": "metadata_prompt.jinja",
     "ANSWER_IR_PROMPT": "ir_prompt.jinja",
     "ANSWER_MULT_QS_PROMPT": "seperate_questions_prompt.jinja",
     "ANSWER_GPT_PROMPT": "gpt_prompt.jinja",
