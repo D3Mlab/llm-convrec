@@ -40,16 +40,16 @@ class TestUserIntentsClassifier:
         accept_classification_fewshots = domain_specific_config_loader.load_accept_classification_fewshots()
         reject_classification_fewshots = domain_specific_config_loader.load_reject_classification_fewshots()
 
-        user_intents = [Inquire(None, inquire_classification_fewshots,domain,config),
+        user_intents = [Inquire(inquire_classification_fewshots,domain,config),
                         AcceptRecommendation(
-                            None,None, accept_classification_fewshots, domain,config),
-                        RejectRecommendation(None,None, reject_classification_fewshots, domain,config)]
+                            None, accept_classification_fewshots, domain,config),
+                        RejectRecommendation(None, reject_classification_fewshots, domain,config)]
         classifier = MultilabelUserIntentsClassifier(user_intents, llm_wrapper, config)
         message = Message("user", input_message)
         state = CommonStateManager(possible_goals)
         state.update_conv_history(message)
         result = classifier.classify(state)
-        #time.sleep(2)
+
         assert len(result) == leng
         
         if leng == 1:
