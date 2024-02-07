@@ -155,6 +155,8 @@ The conversation begins with user input. This input is passed to an Intent Class
 - **Inquire:** The user asks a question about a specific item or detail. (Example: "What's on their menu? Does the restaurant have a patio?")
 - **Accept/Reject Recommendation:** The user responds to a previous recommendation made by the system.(Example: "Sure, that first one sounds good!")
 
+The prompts used for intent classification can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/user_intent_prompts
+
 ### 2. State Update
 
 After identifying the user's intent, the system updates its internal state. This state stores critical information gathered during the conversation, including:
@@ -162,6 +164,10 @@ After identifying the user's intent, the system updates its internal state. This
 - **User's Preferences and Constraints:** These include their location, budget, dietary restrictions, etc.
 - **Current Item of Interest:** The specific item (e.g., restaurant) the user is currently referring to or interested in.
 - **Accepted and Rejected Items:** The system keeps track of the items that the user has accepted or rejected.
+
+The prompts used for preferences and constraints extraction can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/constraints_prompts  
+
+The prompts used for current, accepted, and rejected item extraction can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/items_extractor_prompts
 
 ### 3. Action Classification
 
@@ -176,6 +182,10 @@ With the updated state, the system then decides the action to take next. This co
 Following the action classification, the system produces a response that corresponds with the determined action. This response creation leverages retrieval augmented information retrieval, which is particularly employed in 'recommend' and 'answer' actions.
 
 The response is not only contextually in sync with the ongoing dialogue, but also respects the semi-structured conversation pattern that the system adheres to.
+
+The prompts used for recommendation and explanation can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/recaction_prompts/recommend_prompts  
+
+The prompts used for answering questions can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/recaction_prompts/answer_prompts
 
 ## Domain Initialization and Customization
 
