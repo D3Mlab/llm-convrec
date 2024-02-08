@@ -131,12 +131,6 @@ Inside the `.env ` file, create a new line and write `GOOGLE_API_KEY=` and then 
 GOOGLE_API_KEY = hghrjkdkxhgyrujjedksdk
 
 
-If you want to run the clothing demo, execute following command in the terminal:
-
-```
-python clothing_main.py
-```
-
 Or, here is the link to the Google Colab for a quick start:
 
 https://apoj.short.gy/d3m-llm-convrec-demo
@@ -193,15 +187,11 @@ This system is designed to be flexible and adaptable, allowing you to initialize
 
 ## Quick Start
 
-If you're looking to get started quickly, we've already set up two pre-configured domains: **Restaurant** and **Clothing**.
+If you're looking to get started quickly, we've already set up a pre-configured domain: **Restaurant**.
 
 - **Restaurant Domain:** This domain utilizes a Yelp dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
 
-  Note that the Restaurant domain is our MAIN domain -- we have spent the most time adjusting different components to ensure its stable behaviour.
-
   Due to data available, the location is restricted to Edmonton, Canada.
-
-- **Clothing Domain:** For the Clothing domain, we've integrated an Amazon dataset related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
 
 Here is the link to the Google Colab for a quick start:
 
