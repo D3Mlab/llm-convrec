@@ -39,7 +39,7 @@ class GPTWrapper(LLMWrapper):
     _max_sleep: int
     _timeout: float | None
 
-    def __init__(self, openai_api_key: str, model_name: str = "gpt-4o",
+    def __init__(self, openai_api_key: str, model_name: str = "gpt-3.5-turbo",
                  temperature: Optional[float] = 0,
                  observers=None, max_attempt=5, min_sleep=3, max_sleep=60, timeout=15):
         super().__init__()
