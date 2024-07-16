@@ -39,7 +39,7 @@ class GPTWrapper(LLMWrapper):
     _max_sleep: int
     _timeout: float | None
 
-    def __init__(self, openai_api_key: str, model_name: str = "gpt-3.5-turbo",
+    def __init__(self, openai_api_key: str, model_name: str = "gpt-4o",
                  temperature: Optional[float] = None,
                  observers=None, max_attempt=5, min_sleep=3, max_sleep=60, timeout=15):
         super().__init__()
@@ -63,11 +63,11 @@ class GPTWrapper(LLMWrapper):
         """
         logger.debug(f"gpt_input=\"{message}\"")
         response = self.completion_with_backoff(
-                model=self._model_name,
-                temperature=self._temperature,
-                messages=[{"role": "user", "content": message}],
-                max_tokens=1000
-            )
+            model=self._model_name,
+            temperature=self._temperature,
+            messages=[{"role": "user", "content": message}],
+            max_tokens=1000
+        )
 
         if response is None:
             return ""
@@ -79,7 +79,8 @@ class GPTWrapper(LLMWrapper):
 
         self.total_tokens_used += tokens_used
         self.total_cost += cost_of_response
-        logger.debug(f"gpt_output=\"{response['choices'][0]['message']['content']}\"")
+        logger.debug(
+            f"gpt_output=\"{response['choices'][0]['message']['content']}\"")
         return response['choices'][0]['message']['content']
 
     def _notify_observers(self, attempt_number: int, outcome: Future | None) -> None:
@@ -102,7 +103,8 @@ class GPTWrapper(LLMWrapper):
 
         :param retry_state: state of the retry
         """
-        logger.warning(f'Retrying {retry_state.fn}: attempt {retry_state.attempt_number} ended with: {retry_state.outcome}')
+        logger.warning(
+            f'Retrying {retry_state.fn}: attempt {retry_state.attempt_number} ended with: {retry_state.outcome}')
         self._notify_observers(retry_state.attempt_number, retry_state.outcome)
 
     @staticmethod
@@ -113,18 +115,21 @@ class GPTWrapper(LLMWrapper):
         :param func: function called
         :return: wrapper for the custom decorator
         """
+
         def wrapped(self, *args, **kwargs):
             if self._max_attempt is None:
                 t_decorator = retry(
-                    wait=wait_random_exponential(min=self._min_sleep, max=self._max_sleep),
+                    wait=wait_random_exponential(
+                        min=self._min_sleep, max=self._max_sleep),
                     retry=retry_if_exception_type((openai.error.RateLimitError, openai.error.Timeout, openai.APIError,
-                        openai.error.APIConnectionError, openai.error.ServiceUnavailableError)),
+                                                   openai.error.APIConnectionError, openai.error.ServiceUnavailableError)),
                     before_sleep=self._before_completion_sleep,
                     retry_error_callback=lambda retry_state: None
                 )
             else:
                 t_decorator = retry(
-                    wait=wait_random_exponential(min=self._min_sleep, max=self._max_sleep),
+                    wait=wait_random_exponential(
+                        min=self._min_sleep, max=self._max_sleep),
                     retry=retry_if_exception_type((
                         openai.error.RateLimitError, openai.error.Timeout, openai.APIError,
                         openai.error.APIConnectionError, openai.error.ServiceUnavailableError
@@ -144,9 +149,3 @@ class GPTWrapper(LLMWrapper):
         too long to get the response.
         """
         return openai.ChatCompletion.create(*args, **{**kwargs, **{'request_timeout': self._timeout}})
-
-
-
-
-
-
