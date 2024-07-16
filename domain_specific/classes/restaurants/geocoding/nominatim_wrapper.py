@@ -8,8 +8,11 @@ class NominatimWrapper(GeocoderWrapper):
     Wrapper for Nominatim geocoder.
     """
 
+    _geocoder: Nominatim
+    _mandatory_address_key: str
     _geocoder_history: dict[str, Location]
     _max_attempts: int
+    _location_bias: str
 
     def __init__(self, max_attempts: int = 5, mandatory_address_key='road', location_bias=None):
         super().__init__()

@@ -84,9 +84,7 @@ class ConvRecSystem(WarningObserver):
         constraints_categories = domain_specific_config_loader.load_constraints_categories()
         constraints_fewshots = domain_specific_config_loader.load_constraints_updater_fewshots()
 
-        temperature_zero_llm_wrapper = GPTWrapper(
-            openai_api_key_or_gradio_url, model_name=model, temperature=0, observers=[self])
-        constraints_updater = OneStepConstraintsUpdater(temperature_zero_llm_wrapper,
+        constraints_updater = OneStepConstraintsUpdater(llm_wrapper,
                                                         constraints_categories,
                                                         constraints_fewshots, domain,
                                                         user_defined_constraint_mergers, config)
@@ -206,8 +204,8 @@ class ConvRecSystem(WarningObserver):
         :param retry_info: dictionary that contains information about retry
         """
         if not self.is_gpt_retry_notified:
-            if isinstance(retry_info.get('output'), openai.error.ServiceUnavailableError) or \
-                    isinstance(retry_info.get('output'), openai.error.APIConnectionError):
+            if isinstance(retry_info.get('outcome').exception(), openai.error.ServiceUnavailableError) or \
+                    isinstance(retry_info.get('outcome').exception(), openai.error.APIConnectionError):
                 self.user_interface.display_warning(
                     "There were some issues with the OpenAI server. It might take longer than usual.")
             else:

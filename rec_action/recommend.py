@@ -21,7 +21,6 @@ class Recommend(RecAction):
     _mandatory_constraints: list[list[str]]
     _constraint_statuses: list[ConstraintStatus]
     _recommend_response: RecommendResponse
-    _is_hard_coded_response: bool
 
     def __init__(self, constraint_statuses: list,
                  hard_coded_response_list: list[dict], recommend_response: RecommendResponse,
@@ -42,7 +41,7 @@ class Recommend(RecAction):
         """
         return "Recommend"
 
-    def get_description(self):
+    def get_description(self) -> str:
         """
         Returns the description of this recommender action.
 

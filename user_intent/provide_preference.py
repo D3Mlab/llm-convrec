@@ -2,7 +2,6 @@ from state.state_manager import StateManager
 from state.constraints.constraint_status import ConstraintStatus
 from state.constraints.constraints_updater import ConstraintsUpdater
 from user_intent.user_intent import UserIntent
-from user_intent.extractors.current_items_extractor import CurrentItemsExtractor
 from jinja2 import Environment, FileSystemLoader, Template
 import threading
 from utility.thread_utility import start_thread
@@ -18,8 +17,8 @@ class ProvidePreference(UserIntent):
     """
     _constraints_updater: ConstraintsUpdater
     _constraint_statuses: list[ConstraintStatus]
-    template: Template
-    enable_threading: bool
+    _template: Template
+    _enable_threading: bool
 
     def __init__(self, constraints_updater: ConstraintsUpdater,
                  constraint_statuses: list[ConstraintStatus],
@@ -30,10 +29,10 @@ class ProvidePreference(UserIntent):
 
         env = Environment(loader=FileSystemLoader(
             config['INTENT_PROMPTS_PATH']))
-        self.template = env.get_template(
+        self._template = env.get_template(
             config['PROVIDE_PREFERENCE_PROMPT_FILENAME'])
         
-        self.enable_threading = config['ENABLE_MULTITHREADING']
+        self._enable_threading = config['ENABLE_MULTITHREADING']
 
     def get_name(self) -> str:
         """
@@ -60,7 +59,7 @@ class ProvidePreference(UserIntent):
         :param curr_state: current state representing the conversation
         :return: new updated state
         """
-        if self.enable_threading:
+        if self._enable_threading:
             constr_thread = threading.Thread(
                 target=self._constraints_updater.update_constraints, args=(curr_state,))
 
@@ -81,5 +80,5 @@ class ProvidePreference(UserIntent):
         :return: the prompt in string format
         """
         user_input = curr_state.get("conv_history")[-1].get_content()
-        prompt = self.template.render(user_input=user_input)
+        prompt = self._template.render(user_input=user_input)
         return prompt

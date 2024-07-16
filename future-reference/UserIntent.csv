@@ -1,0 +1,462 @@
+﻿Utterance,Accept,Reject,Inquire,Random
+please recommend some menu items,0,0,1,0
+What are the most popular items on their menu,0,0,1,0
+What's on their menu,0,0,1,0
+"No, that's not my style.",0,1,0,0
+How do these options relate to each other in quality?,0,0,1,0
+Do they have daily specials?,0,0,1,0
+Do they offer any loyalty or discount programs?,0,0,1,0
+How expensive is it?,0,0,1,0
+What makes one superior to the other?,0,0,1,0
+How do they differ in style?,0,0,1,0
+Can you present a comparison?,0,0,1,0
+All right,1,0,0,0
+What are the relative pros and cons?,0,0,1,0
+Are there any set menus or tasting menus?,0,0,1,0
+Do they offer buffet options?,0,0,1,0
+What's the average price for a meal there?,0,0,1,0
+What is the comparison in terms of price?,0,0,1,0
+Let's skip that one; I'm not a fan.,0,1,0,0
+I want some hotpot or grill,0,0,0,0
+Certain,1,0,0,0
+Do they play loud music?,0,0,1,0
+How fresh are their ingredients?,0,0,1,0
+Is it a Michelin-starred restaurant?,0,0,1,0
+Is the seating comfortable?,0,0,1,0
+Are they known for their desserts?,0,0,1,0
+Do they offer tasting menus?,0,0,1,0
+Love it,1,0,0,0
+Is it kid-friendly?,0,0,1,0
+"No, I'm looking for something different tonight.",0,1,0,0
+Are there any signature cocktails?,0,0,1,0
+Is there a children's menu?,0,0,1,0
+Do they offer multi-course meals?,0,0,1,0
+Like it,1,0,0,0
+"No, I'm not interested in that particular place.",0,1,0,0
+What's the neighborhood like?,0,0,1,0
+Do they serve tapas or small plates?,0,0,1,0
+How are the portion sizes?,0,0,1,0
+I don't like their dessert menu.,0,1,0,0
+I want some good restaurant in Shanghai,0,0,0,0
+How long has the place been open?,0,0,1,0
+What are their drink specials?,0,0,1,0
+What's their dessert menu like?,0,0,1,0
+Could you weigh the pros and cons of both?,0,0,1,0
+Do they serve halal or kosher food?,0,0,1,0
+Can you compare them in terms of service quality?,0,0,1,0
+Can you highlight the unique aspects of each?,0,0,1,0
+What's the differential between the two?,0,0,1,0
+Do they have any themed nights?,0,0,1,0
+"No, that's not the type of cuisine I'm interested in.",0,1,0,0
+What's the chef's background?,0,0,1,0
+How's the noise level?,0,0,1,0
+I don't like the lack of gluten-free options.,0,1,0,0
+Shanghai,0,0,0,0
+Thanks for the recommendation,1,0,0,0
+I don't like the online reviews for that restaurant.,0,1,0,0
+No,0,1,0,0
+Sushi,0,0,0,0
+Perfect choice.,1,0,0,0
+What's the variance between the two?,0,0,1,0
+How crowded does it get?,0,0,1,0
+Is it a casual or formal setting?,0,0,1,0
+How's their wine list?,0,0,1,0
+That doesn't fit my dietary needs.,0,1,0,0
+Do they take reservations?,0,0,1,0
+Are there any celebrity endorsements?,0,0,1,0
+Is it a casual or upscale place?,0,0,1,0
+Do they serve seafood?,0,0,1,0
+Can you recommend a good place to eat in Toronto,0,0,1,0
+"Sure, sounds good to me",1,0,0,0
+I wanna try their signature dish.,1,0,0,0
+I don't like their focus on seafood.,0,1,0,0
+Do they have a private dining room?,0,0,1,0
+Is the restaurant sustainable or eco-friendly?,0,0,1,0
+Is it family-friendly?,0,0,1,0
+Is it a smoking or non-smoking venue?,0,0,1,0
+What are the unique features of each?,0,0,1,0
+Do they have a full bar?,0,0,1,0
+I don't like the noise level at that place.,0,1,0,0
+Do they serve local or craft beers?,0,0,1,0
+Which is the more appealing choice?,0,0,1,0
+How big is the restaurant?,0,0,1,0
+Are they pet-friendly?,0,0,1,0
+How's the overall dining experience rated by others?,0,0,1,0
+Could you show me their dessert menu?,0,0,1,0
+"I've always wanted to try that place, let's go.",1,0,0,0
+Which has a more appealing interior?,0,0,1,0
+"Thanks, that sounds good.",1,0,0,0
+"No, that restaurant doesn't fit my budget.",0,1,0,0
+"I'll take your advice, let's eat there.",1,0,0,0
+Are they close to any landmarks or attractions?,0,0,1,0
+Can you clarify the contrasts between the two?,0,0,1,0
+Is there a smoking area?,0,0,1,0
+I don't like the pricing at that restaurant.,0,1,0,0
+What are the significant differences?,0,0,1,0
+How's the parking situation there?,0,0,1,0
+Do they have a kid's menu?,0,0,1,0
+"Let's go for it, sounds like a plan.",1,0,0,0
+Which one would be more suitable for a family dinner?,0,0,1,0
+How's the crowd there?,0,0,1,0
+Can they handle surprise occasions like birthdays?,0,0,1,0
+"No, I've tried that place, and I didn't enjoy it.",0,1,0,0
+I don't like how crowded that place gets.,0,1,0,0
+What's your comparative judgement on both?,0,0,1,0
+I don't like that it's not family-friendly.,0,1,0,0
+Is it noisy there?,0,0,1,0
+Can you detail the differences?,0,0,1,0
+What are the differentiating factors?,0,0,1,0
+How do these compare in terms of the overall experience?,0,0,1,0
+What's their most popular dish?,0,0,1,0
+Do they offer any specials?,0,0,1,0
+Do they offer buffet options?,0,0,1,0
+I don't like the lack of accessibility there.,0,1,0,0
+I don't like the ambiance of that place.,0,1,0,0
+Sure thing,1,0,0,0
+Which one has a better location?,0,0,1,0
+Do they have seasonal menus?,0,0,1,0
+Thanks a lot!,1,0,0,0
+Do they offer unique or experimental dishes?,0,0,1,0
+Can they cater to food allergies?,0,0,1,0
+Are there any notable chefs working there?,0,0,1,0
+Thanks so much.,1,0,0,0
+Do they have any cultural or regional specialties?,0,0,1,0
+Can I get a preview of their daily specials?,0,0,1,0
+What's the comparative rating between them?,0,0,1,0
+How do these compare in terms of their ratings?,0,0,1,0
+Can you give me a recommendation in Shanghai,0,0,0,0
+Okay,1,0,0,0
+Which one is more suitable for our needs?,0,0,1,0
+"I'm all for it, let's dine there.",1,0,0,0
+"No, their portions are not satisfying enough.",0,1,0,0
+"Hey, what's their best dish?",0,0,1,0
+"No, I want something more casual.",0,1,0,0
+"I'll go with your recommendation, thank you.",1,0,0,0
+good,1,0,0,0
+Which one is more renowned?,0,0,1,0
+appreciate it.,1,0,0,0
+Which one has more variety?,0,0,1,0
+what's pro and con of each,0,0,1,0
+How far is it from here?,0,0,1,0
+Pizza,0,0,0,0
+Sounds good,1,0,0,0
+How's their presentation and plating?,0,0,1,0
+How do they weigh against each other?,0,0,1,0
+Are they LGBTQ+ friendly?,0,0,1,0
+Can you break down the differences between them?,0,0,1,0
+Can I customize my order?,0,0,1,0
+How's the lighting inside?,0,0,1,0
+I don't like the wine list at that restaurant.,0,1,0,0
+How's their dessert menu?,0,0,1,0
+"I've been wanting to try that, thanks.",1,0,0,0
+"That's a good idea, thanks.",1,0,0,0
+"I'm eager to try that, thanks.",1,0,0,0
+Are there any famous dishes I should try?,0,0,1,0
+Is it suitable for business meetings?,0,0,1,0
+How long have they been in business?,0,0,1,0
+Hotpot,0,0,0,0
+Which is the more elegant option?,0,0,1,0
+Are there any ongoing promotions?,0,0,1,0
+Hi what's on their menu?,0,0,1,0
+How's their bread selection?,0,0,1,0
+I don't like their hours of operation.,0,1,0,0
+How does the cuisine differ between them?,0,0,1,0
+"No, I want something else",0,1,0,0
+Do they have high chairs for babies?,0,0,1,0
+Let's give it a go.,1,0,0,0
+What are their hours of operation?,0,0,1,0
+Is there any live music or entertainment?,0,0,1,0
+Are walk-ins welcome?,0,0,1,0
+What are the contrasting features of both?,0,0,1,0
+What separates these two options?,0,0,1,0
+What type of cuisine do they serve?,0,0,1,0
+Are they gluten-free friendly?,0,0,1,0
+Are there any unique features I should know about?,0,0,1,0
+How do they compare in terms of location?,0,0,1,0
+Appreciate it,1,0,0,0
+I don't like that there's no live music there.,0,1,0,0
+can you tell me somewhere to eat in Toronto,0,0,0,0
+Can I bring my own wine?,0,0,1,0
+Can you explain which one has more to offer?,0,0,1,0
+"Booked and ready to go, thanks.",1,0,0,0
+Can we sit by the window or get a booth?,0,0,1,0
+Is it a fine dining place?,0,0,1,0
+What's the best dish on their menu?,0,0,1,0
+Hello world,0,0,0,0
+I don't like that it's not suitable for a business dinner.,0,1,0,0
+What's the comparative analysis of the menus?,0,0,1,0
+Which one offers a better experience?,0,0,1,0
+Which is the better option for a date night?,0,0,1,0
+How do they compare in terms of presentation?,0,0,1,0
+What dishs do they serve?,0,0,1,0
+Which is the more sophisticated option?,0,0,1,0
+Do they take reservations?,0,0,1,0
+Great choice.,1,0,0,0
+Do they have a good wine selection?,0,0,1,0
+Which one stands out more?,0,0,1,0
+What are their signature dishes,0,0,1,0
+Are the chefs renowned or have any awards?,0,0,1,0
+I don't like that they don't offer outdoor seating.,0,1,0,0
+Do they have any reviews online?,0,0,1,0
+Is there a happy hour?,0,0,1,0
+I don't like this restaurant,0,1,0,0
+Do they serve organic food?,0,0,1,0
+Do they offer gift cards?,0,0,1,0
+I don't like the limited choices on their menu.,0,1,0,0
+Is there valet parking?,0,0,1,0
+I dislike it,0,1,0,0
+How do they differ in theme?,0,0,1,0
+What's their specialty?,0,0,1,0
+Are there options for large groups?,0,0,1,0
+Which is the more upscale choice?,0,0,1,0
+What's their dress code?,0,0,1,0
+"No, I've heard some negative reviews about that place.",0,1,0,0
+Do they serve breakfast or brunch?,0,0,1,0
+How do they equate in terms of price?,0,0,1,0
+I don't like the style of cuisine they offer.,0,1,0,0
+How's the ventilation or air conditioning?,0,0,1,0
+ok,1,0,0,0
+Can you tell me some recommended items on their menu?,0,0,1,0
+Do they focus on organic or farm-to-table?,0,0,1,0
+I don't like that I had a bad experience there before.,0,1,0,0
+Do they have an open kitchen?,0,0,1,0
+Is the place Instagram-worthy?,0,0,1,0
+Do they accommodate allergies?,0,0,1,0
+I don't like how far away that place is.,0,1,0,0
+Which one provides a better dining experience?,0,0,1,0
+How's the safety and cleanliness?,0,0,1,0
+I don't like it,0,1,0,0
+Great!,1,0,0,0
+Is the place wheelchair accessible?,0,0,1,0
+I don't like the interior design of that restaurant.,0,1,0,0
+"You know what I like, let's do it.",1,0,0,0
+How do they match up?,0,0,1,0
+Can we pay separately or split the bill?,0,0,1,0
+Do they offer any group discounts?,0,0,1,0
+"Great thinking, I'll try it out.",1,0,0,0
+Do they offer takeout or delivery?,0,0,1,0
+I don't like the wait time at that place.,0,1,0,0
+Are they open late?,0,0,1,0
+I want their menu,0,0,1,0
+Which one offers better value for money?,0,0,1,0
+"No, I don't",0,1,0,0
+I want some menu item recommendation,0,0,1,0
+How large is the place?,0,0,1,0
+Do they have a good selection of teas?,0,0,1,0
+How do they differ in value?,0,0,1,0
+Let's go,1,0,0,0
+Is it kid-friendly?,0,0,1,0
+Is there any cultural or historical significance?,0,0,1,0
+Can you tell me about the chef's specials,0,0,1,0
+"That's what I've been craving, perfect.",1,0,0,0
+Is it popular among locals?,0,0,1,0
+Do they have a good selection of beers?,0,0,1,0
+What are the comparative differences?,0,0,1,0
+"I don't like this recommendation, give me another recommendation",0,1,0,0
+Are there any healthy or low-calorie options?,0,0,1,0
+Perfect.,1,0,0,0
+What are the critical differences between the two?,0,0,1,0
+"Alright, booking a table there.",1,0,0,0
+Thanks,1,0,0,0
+Toronto,0,0,0,0
+Do they have any theme nights?,0,0,1,0
+How are the reviews?,0,0,1,0
+"No, I'm looking for something a bit more upscale.",0,1,0,0
+"hello, I want to see their menu.",0,0,1,0
+Do they offer gluten-free dishes?,0,0,1,0
+How do they fare in terms of ambiance?,0,0,1,0
+Do they serve halal or kosher food?,0,0,1,0
+"No, that's too far away from where I am.",0,1,0,0
+Is it a chain or independent restaurant?,0,0,1,0
+"I can't say no to that, let's eat there.",1,0,0,0
+"Sounds like a feast, let's eat there.",1,0,0,0
+Ok,1,0,0,0
+Is it a quiet place or lively?,0,0,1,0
+How do these match up in terms of quality?,0,0,1,0
+Is it accessible for people with disabilities?,0,0,1,0
+Is the water filtered or bottled?,0,0,1,0
+Do they rotate their dishes often?,0,0,1,0
+Is there a good variety of salads?,0,0,1,0
+Compare these 2,0,0,1,0
+How do they stand in comparison to each other?,0,0,1,0
+Which is more popular among locals?,0,0,1,0
+"That's just what I was thinking, perfect.",1,0,0,0
+Do they offer organic dishes?,0,0,1,0
+Do they offer outdoor seating?,0,0,1,0
+Do they have any celebrity endorsements?,0,0,1,0
+Do they source their ingredients locally?,0,0,1,0
+Is there a dress requirement?,0,0,1,0
+Are there any dishes they are particularly known for?,0,0,1,0
+Do they have outdoor seating?,0,0,1,0
+That sounds good,1,0,0,0
+Are they pet-friendly?,0,0,1,0
+"That's just what I'm in the mood for, thanks.",1,0,0,0
+I don't like this restaurant,0,1,0,0
+Do they have a loyalty program?,0,0,1,0
+How does the menu of the first compare with the second?,0,0,1,0
+Do they serve tapas or small plates?,0,0,1,0
+"Your recommendation is as good as gold, thanks.",1,0,0,0
+Is it a good place for large groups?,0,0,1,0
+Are there any dishes for sharing?,0,0,1,0
+Sure,1,0,0,0
+Do they offer any house-made drinks?,0,0,1,0
+Do they have seasonal dishes?,0,0,1,0
+How's the lighting there? Romantic or bright?,0,0,1,0
+Is it a good spot for date night?,0,0,1,0
+"That's just what I need, thanks.",1,0,0,0
+"That's just what I wanted, perfect.",1,0,0,0
+"I'm with you, let's try that.",1,0,0,0
+Which one is more fitting for tonight?,0,0,1,0
+Are there nearby attractions?,0,0,1,0
+Is their menu available online?,0,0,1,0
+How does the food quality compare?,0,0,1,0
+What are the rating comparisons for both?,0,0,1,0
+Do they cater to specific dietary needs?,0,0,1,0
+"No, I'm not a fan of the chef there.",0,1,0,0
+I don't like the vibe of that place.,0,1,0,0
+"No, I've been there recently, and I'd like to try something new.",0,1,0,0
+Do they offer international dishes?,0,0,1,0
+Can you give me a recommendation in Edmonton,0,0,0,0
+What are the comparative points for both?,0,0,1,0
+Is there a waiting area?,0,0,1,0
+Which is more favorably reviewed?,0,0,1,0
+Do they offer takeout or delivery?,0,0,1,0
+Which one has a better atmosphere?,0,0,1,0
+How do they hold up in comparison?,0,0,1,0
+Are there any notable awards they've won?,0,0,1,0
+Can you tell me which one has better reviews?,0,0,1,0
+Are there vegan options available?,0,0,1,0
+Are they vegetarian-friendly?,0,0,1,0
+Do they have any vegetarian main courses?,0,0,1,0
+Can you book online?,0,0,1,0
+What's your side-by-side comparison?,0,0,1,0
+Are there any ongoing promotions?,0,0,1,0
+Thanks.,1,0,0,0
+Let's go.,1,0,0,0
+Do they have any signature cocktails?,0,0,1,0
+How do these compare in taste?,0,0,1,0
+What's the differential in terms of quality?,0,0,1,0
+How's their coffee?,0,0,1,0
+I don't like the reputation that place has.,0,1,0,0
+Which one is more budget-friendly?,0,0,1,0
+Can you delineate the differences?,0,0,1,0
+How's the service typically?,0,0,1,0
+Is there a dress code?,0,0,1,0
+How do the two contrast in terms of service?,0,0,1,0
+What sets these apart?,0,0,1,0
+Do they have a private dining room?,0,0,1,0
+Do they offer gluten-free desserts?,0,0,1,0
+I'm in.,1,0,0,0
+"Let's try something else, I don't want to go there.",0,1,0,0
+Menu please,0,0,1,0
+I don't like the menu options there.,0,1,0,0
+Do you have access to their full menu?,0,0,1,0
+Thanks you,1,0,0,0
+Can you specify the distinctions?,0,0,1,0
+Thanks,1,0,0,0
+Which is the more satisfying option?,0,0,1,0
+Do they have vegetarian options?,0,0,1,0
+Is there any membership or loyalty perks?,0,0,1,0
+Excellent choice,1,0,0,0
+Can you book online?,0,0,1,0
+I don't like the portion sizes at that place.,0,1,0,0
+How does the first one compare to the second?,0,0,1,0
+"I'm up for that, let's go.",1,0,0,0
+Is there a wait usually?,0,0,1,0
+Is it easily accessible?,0,0,1,0
+Can you pit them against each other?,0,0,1,0
+Can you give me some recommendation in Edmonton,0,0,0,0
+What are the distinctions between these two?,0,0,1,0
+What's their most popular dish?,0,0,1,0
+"Let's give it a shot, I'm in.",1,0,0,0
+Sounds good,1,0,0,0
+I don't like the parking situation at that restaurant.,0,1,0,0
+Are there any signature mocktails?,0,0,1,0
+How's the service?,0,0,1,0
+Can you point out the disparities between them?,0,0,1,0
+"Sure, let's go with that.",1,0,0,0
+Can you analyze the differences between them?,0,0,1,0
+How expensive is it?,0,0,1,0
+Is there a view or any scenic spots nearby?,0,0,1,0
+"Your suggestions are always spot on, I'm in.",1,0,0,0
+Can I pre-order?,0,0,1,0
+What type of cuisine do they serve?,0,0,1,0
+New york,0,0,0,0
+Sure,1,0,0,0
+Is there parking available?,0,0,1,0
+What's their cancellation policy?,0,0,1,0
+How does each fare in terms of reputation?,0,0,1,0
+I don't like the area that restaurant is in.,0,1,0,0
+That's not quite what I had in mind.,0,1,0,0
+Is it easy to get a taxi or Uber from there?,0,0,1,0
+How's their coffee and tea selection?,0,0,1,0
+Do they have a full bar?,0,0,1,0
+Can you summarize the differences?,0,0,1,0
+How do the two contrast in terms of flavor?,0,0,1,0
+What's the distinction in terms of atmosphere?,0,0,1,0
+Which one should be our top choice?,0,0,1,0
+"No thanks, that's not what I'm in the mood for.",0,1,0,0
+What's the average waiting time?,0,0,1,0
+Are they currently offering any specials?,0,0,1,0
+How's the air conditioning or heating?,0,0,1,0
+Do they have live music?,0,0,1,0
+What are the contrasts between the two?,0,0,1,0
+Let's make a reservation there.,1,0,0,0
+Do they have vegan options?,0,0,1,0
+Do they serve local wines?,0,0,1,0
+Are gift cards available?,0,0,1,0
+Do they use MSG in their dishes?,0,0,1,0
+Can you explain the differences?,0,0,1,0
+I don't like the chef's choices there.,0,1,0,0
+Can you illustrate the differences?,0,0,1,0
+Is it easy to get a taxi or Uber from there?,0,0,1,0
+What's their specialty dish?,0,0,1,0
+What sets each one apart from the other?,0,0,1,0
+What's the average waiting time?,0,0,1,0
+Is it a family-owned place?,0,0,1,0
+I don't like the long drive to get to that place.,0,1,0,0
+Is there a view?,0,0,1,0
+How do they compare in terms of ambiance?,0,0,1,0
+Are they environmentally conscious?,0,0,1,0
+Is it suitable for business dinners?,0,0,1,0
+I don't like their food presentation.,0,1,0,0
+Do they offer any international dishes?,0,0,1,0
+"No, that place doesn't appeal to me.",0,1,0,0
+What's the ambiance like?,0,0,1,0
+How far is it from here?,0,0,1,0
+How's the ambiance there?,0,0,1,0
+What's the difference between them?,0,0,1,0
+Can you assess the differences?,0,0,1,0
+Can you evaluate the differences?,0,0,1,0
+What's the average price for a meal?,0,0,1,0
+How do these two options stack up against each other?,0,0,1,0
+Good call,1,0,0,0
+Can you provide an insight into the differences?,0,0,1,0
+What types of payment do they accept?,0,0,1,0
+Do they offer breakfast or brunch?,0,0,1,0
+How do these rank against each other?,0,0,1,0
+Do they offer set menus or group menus?,0,0,1,0
+"I don't like something, give me another recommendation",0,1,0,0
+"Great idea, I'll try it.",1,0,0,0
+I'm not interested in that option.,0,1,0,0
+Tell me pro and con of both options,0,0,1,0
+What's their soup of the day?,0,0,1,0
+Which one aligns more with my preferences?,0,0,1,0
+Which has the more unique menu?,0,0,1,0
+Do they focus on any specific cooking techniques?,0,0,1,0
+"Sounds appealing, let's try it.",1,0,0,0
+Are they seafood-heavy?,0,0,1,0
+Are there any low-carb or keto options?,0,0,1,0
+I don't like that place's ambiance.,0,1,0,0
+Give me another recommendation,0,1,0,0
+"No, that place just won't do for me.",0,1,0,0
+Can you contrast the two places?,0,0,1,0
+Do they have a bar area?,0,0,1,0
+I don't like the service at that restaurant.,0,1,0,0
+Can I see the menu?,0,0,1,0
+What are their hours?,0,0,1,0
+What food do they serve?,0,0,1,0
+Ok,1,0,0,0
+I want some place to eat in Toronto,0,0,0,0
+List pro and con of each,0,0,1,0
+Do they source locally?,0,0,1,0

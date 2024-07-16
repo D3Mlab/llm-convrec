@@ -66,7 +66,7 @@ Recommender: Great! Enjoy your meal! If you need any more assistance, feel free 
 
 Here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Installation and Running the System
 
@@ -104,6 +104,8 @@ Here are the steps to obtain an API key:
 
 4. Name your key and click on 'Create secret key' to generate your new API key.
 
+**Note that the system cannot be used without entering your credit card information to your OpenAI account since the system interactions exceed the free API limitations. A typical conversation costs < $0.02.**
+
 After you have the API key, you need to configure your `.env` file:
 
 1. Create a new file in your project root directory and name it `.env`.
@@ -129,15 +131,9 @@ Inside the `.env ` file, create a new line and write `GOOGLE_API_KEY=` and then 
 GOOGLE_API_KEY = hghrjkdkxhgyrujjedksdk
 
 
-If you want to run the clothing demo, execute following command in the terminal:
-
-```
-python clothing_main.py
-```
-
 Or, here is the link to the Google Colab for a quick start:
 
-https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=drive_link
+https://apoj.short.gy/d3m-llm-convrec-demo
 
 ## Overall Conversation Flow
 
@@ -153,6 +149,8 @@ The conversation begins with user input. This input is passed to an Intent Class
 - **Inquire:** The user asks a question about a specific item or detail. (Example: "What's on their menu? Does the restaurant have a patio?")
 - **Accept/Reject Recommendation:** The user responds to a previous recommendation made by the system.(Example: "Sure, that first one sounds good!")
 
+The prompts used for intent classification can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/user_intent_prompts
+
 ### 2. State Update
 
 After identifying the user's intent, the system updates its internal state. This state stores critical information gathered during the conversation, including:
@@ -160,6 +158,10 @@ After identifying the user's intent, the system updates its internal state. This
 - **User's Preferences and Constraints:** These include their location, budget, dietary restrictions, etc.
 - **Current Item of Interest:** The specific item (e.g., restaurant) the user is currently referring to or interested in.
 - **Accepted and Rejected Items:** The system keeps track of the items that the user has accepted or rejected.
+
+The prompts used for preferences and constraints extraction can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/constraints_prompts  
+
+The prompts used for current, accepted, and rejected item extraction can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/items_extractor_prompts
 
 ### 3. Action Classification
 
@@ -175,21 +177,21 @@ Following the action classification, the system produces a response that corresp
 
 The response is not only contextually in sync with the ongoing dialogue, but also respects the semi-structured conversation pattern that the system adheres to.
 
+The prompts used for recommendation and explanation can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/recaction_prompts/recommend_prompts  
+
+The prompts used for answering questions can be found here: https://github.com/D3Mlab/llm-convrec/tree/main/prompt_files/recaction_prompts/answer_prompts
+
 ## Domain Initialization and Customization
 
 This system is designed to be flexible and adaptable, allowing you to initialize and customize your own domain. With a configuration process involving providing some key files, you can utilize our robust system architecture tailored to your specific needs.
 
 ## Quick Start
 
-If you're looking to get started quickly, we've already set up two pre-configured domains: **Restaurant** and **Clothing**.
+If you're looking to get started quickly, we've already set up a pre-configured domain: **Restaurant**.
 
 - **Restaurant Domain:** This domain utilizes a Yelp dataset containing all Edmonton restaurants. The domain is already initialized and ready to use, providing a wide range of restaurant data.
 
-  Note that the Restaurant domain is our MAIN domain -- we have spent the most time adjusting different components to ensure its stable behaviour.
-
   Due to data available, the location is restricted to Edmonton, Canada.
-
-- **Clothing Domain:** For the Clothing domain, we've integrated an Amazon dataset related to clothing items. This domain is fully initialized and can provide insights into a broad spectrum of clothing items.
 
 Here is the link to the Google Colab for a quick start:
 

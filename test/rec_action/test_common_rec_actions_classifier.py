@@ -96,7 +96,7 @@ class TestCommonRecActionsClassifier:
         state_manager.update_conv_history(
             Message("user", "Do they have patio?"))
         state_manager.update("unsatisfied_goals", [
-                             {"user_intent": Inquire(None, None, "restaurant", config), "utterance_index": 0}])
+                             {"user_intent": Inquire(None, "restaurant", config), "utterance_index": 0}])
 
         result = rec_action_classifier.classify(state_manager, k=1)
 
@@ -138,6 +138,6 @@ class TestCommonRecActionsClassifier:
         state_manager = CommonStateManager(set())
         state_manager.update("conv_history", [Message("DUMMY", "DUMMY")] * 4)
         state_manager.update("unsatisfied_goals", [{"user_intent": AskForRecommendation(config), "utterance_index": 0},
-                                                   {"user_intent": Inquire(None, None, "restaurant", config), "utterance_index": 4}])
+                                                   {"user_intent": Inquire(None, "restaurant", config), "utterance_index": 4}])
         result = rec_action_classifier.classify(state_manager, k=5)
         assert len(result) == 2 and result == [rec_actions[0], rec_actions[2]]
