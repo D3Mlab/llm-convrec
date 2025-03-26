@@ -2,13 +2,30 @@
 [![Demo Page](https://img.shields.io/badge/Project-Demo-FF4B4B?logo=googlecolab)](https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=sharing)
 [![ACM Digital Library](https://img.shields.io/badge/ACM-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/abs/10.1145/3626772.3657670)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?logo)](https://github.com/D3Mlab/llm-convrec/tree/main?tab=MIT-1-ov-file#readme)
+
+Conversational Flow:
+<img width="1448" alt="Screenshot 2025-03-26 at 1 16 56 PM" src="https://github.com/user-attachments/assets/e894e6d3-284e-468a-a442-4c269805076a" />
+
 ## Introduction: A Semi-Structured Conversational Recommendation System
 
-LLM-ConvRec is a prompting-based, semi-structured conversational system that leverages the generative power of GPT to provide flexible and natural interaction. Unlike fully-structured conversational systems such as Siri, where utterances are often predefined and inflexible, LLM-ConvRec is designed for versatility and the production of more natural responses. Moreover, it incorporates past memory into the conversation, a feature often lacking in fully-structured systems.
+LLM-ConvRec is a **semi-structured** conversational recommendation system built on **retrieval-augmented generation** (RAG). It combines the **flexibility of LLM-driven** dialogue with the **reliability of grounded retrieval**, enabling high-quality, natural conversations backed by a factual item database and user reviews.
 
-While unstructured conversational systems like ChatGPT can produce fluid, engaging responses, their approach to utterance handling is often a "black box", which can lead to the generation of inappropriate or incorrect responses, or cause the conversation to go off the rails. This is where LLM-ConvRec distinguishes itself: although it provides the flexibility and naturalness of an unstructured system, its semi-structured nature ensures that utterance handling is not opaque, and that inappropriate responses can be avoided through structural constraints.
+Unlike end-to-end black-box models, LLM-ConvRec maintains an **explicit internal state** that tracks user preferences and constraints. This structure improves response consistency, memory retention, and control—mitigating common failure modes such as hallucination, repetition, or loss of context.
 
-The system retains important information about the conversation, ensuring that context and past interactions are reflected in the responses. This makes LLM-ConvRec not just a conversational system, but a conversational partner capable of delivering precise, personalized recommendations across diverse domains.
+The system operates in four stages per turn: **intent classification, state update, action selection**, and **LLM-based response generation**, with LLM prompting informed by both retrieved knowledge and structured memory. The result is a system that:
+
+- Produces fluent, adaptive responses via LLMs.
+
+- Grounds recommendations in a **real database** of items and reviews.
+
+- Maintains **interpretable and editable conversation state** for traceability and personalization.
+
+- Enforces **structural constraints** to ensure safe, relevant, and goal-driven dialogue.
+
+This architecture allows LLM-ConvRec to scale across domains with minimal reconfiguration while retaining domain-specific customization and control.
+
+## Example Conversation
+<img width="522" alt="Screenshot 2025-03-26 at 1 41 42 PM" src="https://github.com/user-attachments/assets/a817104a-230d-4e05-aa1a-df46677e0660" />
 
 ## Table of Content
 
@@ -35,34 +52,6 @@ The system retains important information about the conversation, ensuring that c
   - [5. Data](#5-data)
   - [6. User Defined Classes](#6-user-defined-classes)
   - [7. Domain Specific Config](#7-domain-specific-config)
-
-## Example Conversation
-
-Demonstration using the restaurant domain:
-
-User: I am looking for Japanese restaurants that serve excellent sushi, preferably in a casual setting.
-
-Recommender: Can you provide the location?
-
-User: Tower Road NW & Kingsway NW
-
-Recommender: How about trying Washoku Bistro for a comfortable and laid-back vibe while enjoying some delicious Japanese sushi? But if you're looking for something quick and easy without sacrificing taste, Tokyo Express is another great option near the same location.
-
-User: What kind of menu do they offer?
-
-Recommender: For Washoku Bistro, they offer a lunch menu with bento boxes and entrées, with limited options. They also have sushi rolls, such as spicy salmon rolls and California rolls. As for Tokyo Express, they have a wide variety of options including bento boxes, sushi combos, feature rolls, tempura, and noodles.
-
-User: Ok, then the first one doesn't seem to match my preference.
-
-Recommender: I'm sorry that you did not like the recommendation. Is there anything else I can assist you with?
-
-User: Does Tokyo Express have a parking lot?
-
-Recommender: Tokyo Express has a parking lot.
-
-User: Great. I will go there then. Thanks!
-
-Recommender: Great! Enjoy your meal! If you need any more assistance, feel free to ask.
 
 ## Quick Start
 
