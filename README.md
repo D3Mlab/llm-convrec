@@ -1,10 +1,15 @@
+<div align="center">
+
 # llm-convrec
+
 [![Demo Page](https://img.shields.io/badge/Project-Demo-FF4B4B?logo=googlecolab)](https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=sharing)
 [![ACM Digital Library](https://img.shields.io/badge/ACM-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/abs/10.1145/3626772.3657670)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?logo)](https://github.com/D3Mlab/llm-convrec/tree/main?tab=MIT-1-ov-file#readme)
 
-Conversational Flow:
-<img width="1448" alt="Screenshot 2025-03-26 at 1 16 56 PM" src="https://github.com/user-attachments/assets/e894e6d3-284e-468a-a442-4c269805076a" />
+Conversational Flow:  
+<img width="800" alt="Screenshot 2025-03-26 at 1 16 56 PM" src="https://github.com/user-attachments/assets/e894e6d3-284e-468a-a442-4c269805076a" />
+
+</div>
 
 ## Introduction: A Semi-Structured Conversational Recommendation System
 
@@ -24,8 +29,12 @@ The system operates in four stages per turn: **intent classification, state upda
 
 This architecture allows LLM-ConvRec to scale across domains with minimal reconfiguration while retaining domain-specific customization and control.
 
+<div align="center">
+  
 ## Example Conversation
 <img width="522" alt="Screenshot 2025-03-26 at 1 41 42 PM" src="https://github.com/user-attachments/assets/a817104a-230d-4e05-aa1a-df46677e0660" />
+
+</div>
 
 ## Table of Content
 
