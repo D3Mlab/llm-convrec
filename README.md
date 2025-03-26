@@ -1,5 +1,6 @@
 # llm-convrec
 [![ACM Digital Library](https://img.shields.io/badge/ACM-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/abs/10.1145/3626772.3657670)
+[![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?logo)](https://github.com/D3Mlab/llm-convrec/tree/main?tab=MIT-1-ov-file#readme)
 ## Introduction: A Semi-Structured Conversational Recommendation System
 
 LLM-ConvRec is a prompting-based, semi-structured conversational system that leverages the generative power of GPT to provide flexible and natural interaction. Unlike fully-structured conversational systems such as Siri, where utterances are often predefined and inflexible, LLM-ConvRec is designed for versatility and the production of more natural responses. Moreover, it incorporates past memory into the conversation, a feature often lacking in fully-structured systems.
