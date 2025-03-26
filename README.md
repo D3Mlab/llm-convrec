@@ -1,4 +1,5 @@
 # llm-convrec
+[![Demo Page](https://img.shields.io/badge/Project-Demo-FF4B4B?logo=googlecolab)](https://colab.research.google.com/drive/1oboNxF_XpSpa3MbTiVukObmFHP6l0bzD?usp=sharing)
 [![ACM Digital Library](https://img.shields.io/badge/ACM-0085CA?logo=acm&logoColor=fff&style=flat)](https://dl.acm.org/doi/abs/10.1145/3626772.3657670)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?logo)](https://github.com/D3Mlab/llm-convrec/tree/main?tab=MIT-1-ov-file#readme)
 ## Introduction: A Semi-Structured Conversational Recommendation System
